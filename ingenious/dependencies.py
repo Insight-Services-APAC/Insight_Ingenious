@@ -85,12 +85,14 @@ def get_security_service(
 
 def get_chat_service(
     chat_history_repository: Annotated[ChatHistoryRepository, Depends(get_chat_history_repository)],
+    openai_service: Annotated[OpenAIService, Depends(get_openai_service)],
     conversation_flow: str = ""
 ):
     cs_type = config.chat_service.type
     return ChatService(
         chat_service_type=cs_type,
         chat_history_repository=chat_history_repository,
+        openai_service=openai_service,
         conversation_flow=conversation_flow
     )
 

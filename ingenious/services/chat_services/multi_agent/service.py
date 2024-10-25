@@ -6,10 +6,12 @@ from openai.types.chat import ChatCompletionMessageParam
 
 from ingenious.db.chat_history_repository import ChatHistoryRepository
 from ingenious.errors.content_filter_error import ContentFilterError
+from ingenious.external_services.openai_service import OpenAIService
 from ingenious.models.chat import Action, ChatRequest, ChatResponse, Product
 from ingenious.models.message import Message
 from ingenious.utils.conversation_builder import (build_message, build_system_prompt, build_user_message)
 from ingenious.utils.namespace_utils import import_module_safely
+from autogen.token_count_utils import count_token, get_max_token_limit
 
 
 logger = logging.getLogger(__name__)
@@ -25,8 +27,10 @@ class multi_agent_chat_service:
     def __init__(
             self,
             chat_history_repository: ChatHistoryRepository,
+            openai_service: OpenAIService,
             conversation_flow: str):
         self.chat_history_repository = chat_history_repository
+        self.openai_service = openai_service
         self.conversation_flow = conversation_flow
 
     async def get_chat_response(self, chat_request: ChatRequest) -> ChatResponse:
@@ -160,11 +164,15 @@ class multi_agent_chat_service:
                 content=agent_response[1]),
         )
 
-        # Get token counts
-        # TODO: Update to get token count from the autogen token count utils
-        max_token_count = 100  # get_max_tokens(self.openai_service.model)
-        token_count = 10  # num_tokens_from_messages(messages)
-        logger.debug(f"Token count: {token_count}/{max_token_count}")
+        # Get token count and max token limit (if it fails, set to 0)
+        try:
+            max_token_count = get_max_token_limit(self.openai_service.model)     
+            token_count = count_token(agent_response, self.openai_service.model)
+            logger.debug(f"Token count: {token_count}/{max_token_count}")
+        except Exception as e:
+            logger.error(f"Error getting token count: {e}")
+            max_token_count = 0
+            token_count = 0
 
         return ChatResponse(
             thread_id=chat_request.thread_id,
