@@ -1,8 +1,8 @@
 profile: dev
 models: 
-  - model: gpt-4-deployment
+  - model: gpt-4o
     api_type: azure      
-    api_version: 2024-02-01
+    api_version: 2024-08-01-preview
 logging: 
   root_log_level: debug
   log_level: debug

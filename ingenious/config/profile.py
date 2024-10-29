@@ -37,7 +37,7 @@ class Profiles(profile_models.Profiles):
             return profile
 
         # Load the configuration from the YAML file
-        if profiles_path is None:
+        if profiles_path is None or profiles_path is '':
             if os.getenv('INGENIOUS_PROFILE_PATH', '') != '':
                 print("Profile Path loaded from environment variable")
                 profiles_path = Path(os.getenv('INGENIOUS_PROFILE_PATH'))
@@ -45,8 +45,8 @@ class Profiles(profile_models.Profiles):
                 print("Profile loaded from default path")
                 home_directory = os.path.expanduser('~')
                 profiles_path = Path(home_directory) / Path('.ingenious') / Path('profiles.yml')
-        
-        if Path(profiles_path).is_file():
+
+        if Path(profiles_path).is_file(): #this might need to change to
             print("Profile loaded from file")
             profiles = Profiles.from_yaml(file_path=profiles_path)
         else:

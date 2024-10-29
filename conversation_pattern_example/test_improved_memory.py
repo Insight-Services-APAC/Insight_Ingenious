@@ -35,7 +35,7 @@ chat_request: ChatRequest = ChatRequest(
         user_name="elliot",
         topic= "tennis, basketball",
         memory_record = True,
-        conversation_flow="classification_agent_v2"
+        conversation_flow="classification_agent"
     )
 
 
