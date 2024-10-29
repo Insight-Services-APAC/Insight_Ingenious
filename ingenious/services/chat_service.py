@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from ingenious.models.chat import ChatRequest, ChatResponse
 from ingenious.db.chat_history_repository import ChatHistoryRepository
+from ingenious.external_services.openai_service import OpenAIService
 import importlib
 
 
@@ -15,6 +16,7 @@ class ChatService:
             self,
             chat_service_type: str,
             chat_history_repository: ChatHistoryRepository,
+            openai_service: OpenAIService,
             conversation_flow: str
             ):
 
@@ -29,6 +31,7 @@ class ChatService:
 
         self.service_class = service_class(
             chat_history_repository=chat_history_repository,
+            openai_service=openai_service,
             conversation_flow=conversation_flow
         )
 
