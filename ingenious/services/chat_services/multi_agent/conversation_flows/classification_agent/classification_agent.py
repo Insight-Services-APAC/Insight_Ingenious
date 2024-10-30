@@ -1,10 +1,8 @@
 import autogen.runtime_logging
 import autogen
 import ingenious.config.config as config
-#import ingenious.dependencies as deps
-#from ingenious.services.chat_services.multi_agent.agent_factory import AgentFactory #Agent factory is not used in the current pattern, group chat has been adopted
 from ingenious.models.chat import Action, ChatRequest, ChatResponse, KnowledgeBaseLink, Product
-from ingenious.services.chat_services.multi_agent.conversation_patterns.classification_agent_v2.classification_agent_v2 import ConversationPattern
+from ingenious.services.chat_services.multi_agent.conversation_patterns.classification_agent.classification_agent import ConversationPattern
 
 
 class ConversationFlow:
@@ -20,16 +18,17 @@ class ConversationFlow:
                                                             memory_record_switch = memory_record_switch,
                                                             memory_path = memory_path,
                                                             thread_memory = thread_memory)
-        print(_classification_agent_pattern.classification_agent.system_message)
 
 
         # Add the topic agents to the classification agent pattern
         for topic in topics:
             topic_agent = autogen.AssistantAgent(
                 name= topic,
-                system_message=(f"You are a topic agent responsible for answering queries about {topic}. "
-                               "Ensure that your answers are accurate, concise, "
-                               "and formatted for easy readability. Do not provide memory or update context"),
+                system_message=(f"I am a topic agent responsible for answering queries about {topic}. "
+                               "I provide accurate and concise answers and formatted for easy readability."
+                               "I do not provide memory or update context."
+                               "I do not respond multiple time in one conversation."
+                               "If the research sends me the question out of my expertise, I response by 'The question is out of scope.' "),
                 description=f"You are a topic agent focused on providing information about {topic}.",
                 llm_config=llm_config,
             )

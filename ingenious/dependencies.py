@@ -18,6 +18,16 @@ security = HTTPBasic()
 config = Config.get_config(os.getenv("INGENIOUS_PROJECT_PATH", ""))
 
 
+def get_openai_service():
+    model = config.models[0]
+    return OpenAIService(
+        azure_endpoint=str(model.base_url),
+        api_key=str(model.api_key),
+        api_version=str(model.api_version),
+        open_ai_model=str(model.model)
+    )
+
+
 def get_chat_history_repository():
     db_type_val = config.chat_history.database_type.lower()
     try:
@@ -29,32 +39,6 @@ def get_chat_history_repository():
     chr = ChatHistoryRepository(db_type=db_type, config=config)
     
     return chr
-
-
-def get_ai_search_manager(index_name: str):
-    return AzureSearchService(
-        endpoint=os.getenv("AI_SEARCH_ENDPOINT", ""),
-        key=os.getenv("AI_SEARCH_KEY", ""),
-        index_name=index_name
-    )
-
-
-def get_guideline_search_manager():
-    return get_ai_search_manager("vector-sample-guideline")
-
-
-def get_data_search_manager():
-    return get_ai_search_manager("vector-tabulated-data")
-
-
-def get_openai_service():
-    model = config.models[0]
-    return OpenAIService(
-        azure_endpoint=str(model.base_url),
-        api_key=str(model.api_key),
-        api_version=str(model.api_version),
-        open_ai_model=str(model.model)
-    )
 
 
 def get_security_service(
@@ -101,3 +85,14 @@ def get_message_feedback_service(
     chat_history_repository: Annotated[ChatHistoryRepository, Depends(get_chat_history_repository)]
 ):
     return MessageFeedbackService(chat_history_repository)
+
+
+
+# def get_guideline_search_manager():
+#     return get_ai_search_manager("vector-sample-guideline")
+#
+#
+# def get_data_search_manager():
+#     return get_ai_search_manager("vector-tabulated-data")
+#
+#

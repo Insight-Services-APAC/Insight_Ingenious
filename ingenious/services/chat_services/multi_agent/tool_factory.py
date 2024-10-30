@@ -31,10 +31,10 @@ class ToolFunctions:
                     title = ""
         return text_results
 
-    def update_memory(context: str, last_response: str) -> str:
+    def update_memory(context: str) -> None:
         _config = config.get_config()
         memory_path = _config.chat_history.memory_path
         with open(f"{memory_path}/context.md", "w") as memory_file:
             memory_file.write(context)
-        return last_response
+
 

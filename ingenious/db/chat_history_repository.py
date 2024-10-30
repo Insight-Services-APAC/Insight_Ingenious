@@ -291,8 +291,8 @@ class ChatHistoryRepository:
     async def get_memory(self, message_id: str, thread_id: str) -> Message | None:
         return await self.repository.get_memory(message_id, thread_id)
 
-    async def update_sql_memory(self) -> Message | None:
-        return await self.repository.update_sql_memory()
+    async def update_memory(self) -> Message | None:
+        return await self.repository.update_memory()
 
     async def get_thread_messages(self, thread_id: str) -> Optional[list[IChatHistoryRepository.ThreadDict]]:
         return await self.repository.get_thread_messages(thread_id)
@@ -322,3 +322,7 @@ class ChatHistoryRepository:
 
     async def delete_thread_memory(self, thread_id: str) -> None:
         return await self.repository.delete_thread_memory(thread_id)
+
+
+    async def delete_user_memory(self, user_id: str) -> None:
+        return await self.repository.delete_user_memory(user_id)

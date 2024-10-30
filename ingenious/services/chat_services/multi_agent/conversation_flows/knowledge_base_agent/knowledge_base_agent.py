@@ -26,18 +26,19 @@ class ConversationFlow:
         #please revise index name in this section.
         search_agent = autogen.AssistantAgent(
             name="search_agent",
-            system_message=("I am a search agent responsible for retrieve result from search and pass to the researcher."
-                           "my responses must be based strictly on the information found in the search results or guidelines, "
-                           "without introducing any additional or external details. "
-                           "When the research says AMBIGUOUS, please pass the query keywords without alternation."
-                           "Tool Usage Rules:\n"
-                           "if search health related information, please use argument: search_query str, index_name: 'index-document-set-1'; " #Update
-                           "if search safety/emergency related information, please use argument: search_query str, index_name: 'index-document-set-2' "
-                           "if the query quiet is ambiguous, try search in all index for keyword match."
-                           "DO NOT say UPDATE CONTEXT"
-                           "DO NOT do repeated search"
-                           "DO NOT add extra information to search results."
-                           "DO NOT ask follow up question."),
+            system_message=("I am a search agent."
+                            "Tasks: "
+                            " - I use search_query given by researcher to conduct an AI search. "
+                            " - I can use the below arguments for the search_tool: "
+                            " - if the query is about health, please use argument: search_query str, index_name: 'index-document-set-1'; "
+                            " - if the query is about safety and emergency, please use argument: search_query str, index_name: 'index-document-set-2' "
+                            " - if the query contains AMBIGUOUS, I will search all index for a keyword match using the keyword provided by the researcher."
+                            "Rules: "
+                            " - The response must be based strictly on the information found in the search results or guidelines, without introducing any additional or external details. "
+                            " - I can delete the keyword AMBIGUOUS, but DO NOT change/refine the query passed by the researcher."
+                            " - DO NOT say anything more than the result from the search"
+                            " - DO NOT do repeated search"
+                            " - DO NOT ask follow up question."),
             description="I am a search agent focused on providing accurate information for search results.",
             llm_config=llm_config,
         )

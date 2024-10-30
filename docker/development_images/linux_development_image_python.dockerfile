@@ -14,6 +14,7 @@ COPY requirements.txt ./installs/requirements.txt
 
 # In bash create a directory and copy the app into it
 RUN pip install -r ./installs/requirements.txt
+
 # Change to the app directory
 WORKDIR /ingen_app
 RUN python -c "from transformers import AutoTokenizer, AutoModel; \

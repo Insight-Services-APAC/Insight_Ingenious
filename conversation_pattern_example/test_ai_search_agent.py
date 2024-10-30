@@ -34,7 +34,7 @@ chat_request: ChatRequest = ChatRequest(
     user_prompt="",
     user_name="elliot",
     conversation_flow="knowledge_base_agent",  # Using the classification agent flow
-    topic = "health, 'safety",
+    topic = "health, safety",
     memory_record = True,
 )
 
@@ -51,7 +51,6 @@ res = asyncio.run(process_message(chat_request=chat_request))
 # Example 2 search knowledge base under known topic(s)
 # chat_request.user_prompt = f"Who is our first aider in health and emergency coordinator in safety?"
 # res: ChatResponse = asyncio.run(process_message(chat_request=chat_request))
-
 
 
 

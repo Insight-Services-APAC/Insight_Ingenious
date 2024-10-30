@@ -7,7 +7,7 @@ logging:
   root_log_level: debug
   log_level: debug
 chat_history:  
-  database_type: sqlite # cosmos or sqlite
+  database_type: cosmos # cosmos or sqlite
   database_path: tmp/high_level_logs.db # only used for sqlite
   database_name: ToDoList # only used for cosmos
   memory_path: tmp
@@ -16,8 +16,8 @@ chat_service:
 tool_service:
   enable: false
 azure_search_services:
-  - service: default    
-    endpoint: https://search-demo-eli.search.windows.net
+  - service: search-index-demo
+    endpoint: https://search-index-demo.search.windows.net
 web_configuration:
   type: fastapi #currently only fastapi is supported
   ip_address: "0.0.0.0"

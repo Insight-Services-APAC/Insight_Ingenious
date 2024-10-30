@@ -3,9 +3,9 @@ import autogen.runtime_logging
 import autogen
 import ingenious.config.config as config
 import ingenious.dependencies as deps
-from ingenious.services.chat_services.multi_agent.agent_factory import AgentFactory
+from ingenious.services.chat_services.multi_agent.agent_factory_legacy import AgentFactory
 from ingenious.models.chat import Action, ChatRequest, ChatResponse, KnowledgeBaseLink, Product
-from ingenious.services.chat_services.multi_agent.agent_factory import ToolFunctions
+from ingenious.services.chat_services.multi_agent.agent_factory_legacy import ToolFunctions
 import json
 
 

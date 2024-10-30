@@ -12,7 +12,7 @@ from ingenious.models.message import Message
 from ingenious.utils.conversation_builder import (build_message, build_system_prompt, build_user_message)
 from ingenious.utils.namespace_utils import import_module_safely
 from autogen.token_count_utils import count_token, get_max_token_limit
-
+from ingenious.dependencies import get_openai_service
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ class multi_agent_chat_service:
         self.chat_history_repository = chat_history_repository
         self.openai_service = openai_service
         self.conversation_flow = conversation_flow
+        self.openai_service = get_openai_service()
 
     async def get_chat_response(self, chat_request: ChatRequest) -> ChatResponse:
 
@@ -53,17 +54,25 @@ class multi_agent_chat_service:
 
         # Check if thread exists
         if not chat_request.thread_id:
-            # Create thread
             chat_request.thread_id = await self.chat_history_repository.create_thread()
         else:
             # Get thread messages & add to messages list
             thread_messages = await self.chat_history_repository.get_thread_messages(chat_request.thread_id)
             thread_memory_list = await self.chat_history_repository.get_thread_memory(chat_request.thread_id)
+            thread_memory = 'New conversation'
 
-            for thread_memory in thread_memory_list:
-                thread_memory = thread_memory.content #only one row is retrieved per thread
-            if thread_memory == '':
-                thread_memory = 'New conversation'
+            if chat_request.memory_record:
+                if thread_memory_list:
+                    for thread_memory in thread_memory_list:
+                        if thread_memory != '':
+                            thread_memory = thread_memory.content  # only one row is retrieved per thread
+            else:
+                await self.chat_history_repository.delete_user_memory(user_id=chat_request.user_id)
+
+
+            msg = f'current_memory: {thread_memory}'
+            logger.log(level=logging.INFO, msg=msg)
+            print(msg)
 
             for thread_message in thread_messages:
                 # Validate user_id
@@ -135,11 +144,13 @@ class multi_agent_chat_service:
                 thread_chat_history = thread_chat_history
             )
             response = await response_task
+
         # except ContentFilterError as cfe:
         #     # Update user message with content filter results
         #     await self.chat_history_repository.update_message_content_filter_results(
         #         user_message_id, chat_request.thread_id, cfe.content_filter_results)
         #     raise
+
         except Exception as e:
             logger.error(f"Error occurred while processing conversation flow: {e}")
             raise e
@@ -164,10 +175,13 @@ class multi_agent_chat_service:
                 content=agent_response[1]),
         )
 
-        # Get token count and max token limit (if it fails, set to 0)
+        # Get token counts
         try:
-            max_token_count = get_max_token_limit(self.openai_service.model)     
-            token_count = count_token(agent_response, self.openai_service.model)
+            max_token_count = get_max_token_limit(self.openai_service.model)
+            if isinstance(agent_response, str):
+                token_count = count_token(agent_response, self.openai_service.model)
+            else:
+                token_count = count_token(agent_response[0], self.openai_service.model)
             logger.debug(f"Token count: {token_count}/{max_token_count}")
         except Exception as e:
             logger.error(f"Error getting token count: {e}")
