@@ -6,6 +6,7 @@ from openai.types.chat import ChatCompletionMessageParam
 
 from ingenious.db.chat_history_repository import ChatHistoryRepository
 from ingenious.errors.content_filter_error import ContentFilterError
+from ingenious.external_services.openai_service import OpenAIService
 from ingenious.models.chat import Action, ChatRequest, ChatResponse, Product
 from ingenious.models.message import Message
 from ingenious.utils.conversation_builder import (build_message, build_system_prompt, build_user_message)
@@ -26,8 +27,10 @@ class multi_agent_chat_service:
     def __init__(
             self,
             chat_history_repository: ChatHistoryRepository,
+            openai_service: OpenAIService,
             conversation_flow: str):
         self.chat_history_repository = chat_history_repository
+        self.openai_service = openai_service
         self.conversation_flow = conversation_flow
         self.openai_service = get_openai_service()
 
