@@ -1100,8 +1100,10 @@ Verify installation PowerShell 7+:</p>
 <p>Clone the repository from GitHub:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Insight-Services-APAC/Insight_Ingenious.git
 </code></pre></div>
-<p>Navigate to the project directory:</p>
+<p>Navigate to the project directory and get the latest release:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">cd</span><span class="w"> </span>Insight_Ingenious
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>git<span class="w"> </span>checkout<span class="w"> </span>v0.0.1
 </code></pre></div>
 <h3 id="profile-setup">Profile Setup<a class="headerlink" href="#profile-setup" title="Permanent link">&para;</a></h3>
 <ol>
@@ -1138,30 +1140,34 @@ Verify installation PowerShell 7+:</p>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Run the installation script using PowerShell:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">pwsh</span> <span class="p">.\</span><span class="n">run_container_installation</span><span class="p">.</span><span class="n">ps1</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">pwsh</span> <span class="p">.\</span><span class="n">run_container_installation_dev</span><span class="p">.</span><span class="n">ps1</span>
 </code></pre></div>
+or </p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">pwsh</span> <span class="p">.\</span><span class="n">run_container_installation_prod</span><span class="p">.</span><span class="n">ps1</span>
+</code></pre></div>
+if want deploy with a client site. </p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The default parameter for the installer is:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>    <span class="k">param</span> <span class="p">(</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="no">[string]</span><span class="nv">$podman_path</span> <span class="p">=</span> <span class="s2">&quot;C:\Program Files\Podman\bin\podman.exe&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="no">[string]</span><span class="nv">$image_name</span> <span class="p">=</span> <span class="s2">&quot;localhost/ingen_dev_ubuntu&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="no">[string]</span><span class="nv">$container_name</span> <span class="p">=</span> <span class="s2">&quot;ingen_dev_ubuntu&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="no">[string]</span><span class="nv">$dockerfile_path</span> <span class="p">=</span> <span class="s2">&quot;./docker/development_images/linux_development_image_ubuntu.dockerfile&quot;</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>    <span class="k">param</span> <span class="p">(</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    <span class="no">[string]</span><span class="nv">$podman_path</span> <span class="p">=</span> <span class="s2">&quot;C:\Program Files\Podman\bin\podman.exe&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="no">[string]</span><span class="nv">$image_name</span> <span class="p">=</span> <span class="s2">&quot;localhost/ingen_dev_ubuntu&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="no">[string]</span><span class="nv">$container_name</span> <span class="p">=</span> <span class="s2">&quot;ingen_dev_ubuntu&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="no">[string]</span><span class="nv">$dockerfile_path</span> <span class="p">=</span> <span class="s2">&quot;./docker/development_images/linux_development_image_ubuntu.dockerfile&quot;</span>
 </code></pre></div>
  you can modify it for difference images and base container. </p>
 </div>
 </div>
 <div class="tabbed-block">
 <p>Build the development Docker image using Podman:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">podman</span> <span class="n">build</span> <span class="o">-f</span> <span class="p">./</span><span class="n">docker</span><span class="p">/</span><span class="n">linux_development_image</span><span class="p">.</span><span class="n">dockerfile</span> <span class="n">-t</span> <span class="n">localhost</span><span class="p">/</span><span class="n">ingen_dev2</span> <span class="p">./</span><span class="n">docker</span><span class="p">/</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">podman</span> <span class="n">build</span> <span class="o">-f</span> <span class="p">./</span><span class="n">docker</span><span class="p">/</span><span class="n">linux_development_image</span><span class="p">.</span><span class="n">dockerfile</span> <span class="n">-t</span> <span class="n">localhost</span><span class="p">/</span><span class="n">ingen_dev2</span> <span class="p">./</span><span class="n">docker</span><span class="p">/</span>
 </code></pre></div>
 <p>After building the image, run the container using the PowerShell script:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">pwsh</span> <span class="p">.\</span><span class="n">run_image_in_podman</span><span class="p">.</span><span class="n">ps1</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">pwsh</span> <span class="p">.\</span><span class="n">run_image_in_podman</span><span class="p">.</span><span class="n">ps1</span>
 </code></pre></div>
 <h3 id="verify-running-containers">Verify Running Containers<a class="headerlink" href="#verify-running-containers" title="Permanent link">&para;</a></h3>
 <p>Check the status of your containers to ensure everything is running correctly:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">podman</span> <span class="nb">ps </span><span class="n">-a</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">podman</span> <span class="nb">ps </span><span class="n">-a</span>
 </code></pre></div>
 This command displays a list of all running and stopped containers.</p>
 </div>
@@ -1190,7 +1196,7 @@ The following steps will be optional. </p>
 </div>
 <div class="tabbed-block">
 <p>You can access the running container directly via the command line:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">podman</span> <span class="n">exec</span> <span class="n">-it</span> <span class="p">&lt;</span><span class="n">container-id</span><span class="p">&gt;</span> <span class="p">/</span><span class="n">bin</span><span class="p">/</span><span class="n">bash</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">podman</span> <span class="n">exec</span> <span class="n">-it</span> <span class="p">&lt;</span><span class="n">container-id</span><span class="p">&gt;</span> <span class="p">/</span><span class="n">bin</span><span class="p">/</span><span class="n">bash</span>
 </code></pre></div>
 <p>Replace <code>&lt;container-id&gt;</code> with the ID or name of your running container.</p>
 </div>
@@ -1201,28 +1207,28 @@ The following steps will be optional. </p>
 <div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Fast API</label><label for="__tabbed_6_2">Http Test</label><label for="__tabbed_6_3">Python Test File</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">python</span> <span class="n">run_ingen_cli</span><span class="p">.</span><span class="n">py</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">python</span> <span class="n">run_ingen_cli</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
 <p>Open your browser and navigate to, to authenticate, click <code>Authorize</code>, and using Web Configuration credentials in profile.yaml.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>http://localhost:9000/docs
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>http://localhost:9000/docs
 </code></pre></div>
 <p>Click on <code>POST</code>, then select <code>Try it Out</code>, and enter the following request for testing:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>{
-<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>  &quot;thread_id&quot;: &quot;sample&quot;,
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>  &quot;user_prompt&quot;: &quot;Tell me about basketball?&quot;,
-<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>  &quot;user_id&quot;: &quot;testuser123&quot;,
-<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>  &quot;user_name&quot;: &quot;testuser&quot;,
-<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>  &quot;topic&quot;: &quot;basketball, tennis, soccer&quot;,
-<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>  &quot;memory_record&quot;: true,
-<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>  &quot;conversation_flow&quot;: &quot;classification_agent&quot;
-<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>{
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>  &quot;thread_id&quot;: &quot;sample&quot;,
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>  &quot;user_prompt&quot;: &quot;Tell me about basketball?&quot;,
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>  &quot;user_id&quot;: &quot;testuser123&quot;,
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>  &quot;user_name&quot;: &quot;testuser&quot;,
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>  &quot;topic&quot;: &quot;basketball, tennis, soccer&quot;,
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>  &quot;memory_record&quot;: true,
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>  &quot;conversation_flow&quot;: &quot;classification_agent&quot;
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>}
 </code></pre></div>
 Please refer to <a href="/developer_guide/service_prefabs">service prefabs</a> for available conversation flows. </p>
 </div>
 <div class="tabbed-block">
 <p>In one Terminal:</p>
 <p>While your session from run_ingen_cli.py is still active, <strong>OPEN</strong> another Terminal and SSH into the container:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">python</span> <span class="n">run_tests_http</span><span class="p">.</span><span class="n">py</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">python</span> <span class="n">run_tests_http</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
