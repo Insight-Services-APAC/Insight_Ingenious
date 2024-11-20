@@ -29,8 +29,9 @@ azure_search_services:
     endpoint: https://search-index-demo.search.windows.net
 web_configuration:
   type: fastapi #currently only fastapi is supported
+  asynchronous: false
   ip_address: "0.0.0.0"
   port: 80
   authentication: 
     enable: false # true or false
-    type: basic # basic     
+    type: basic # basic

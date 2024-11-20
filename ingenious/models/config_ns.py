@@ -1,6 +1,5 @@
 from typing import List, Dict, Optional
 from pydantic import BaseModel, Field, ValidationError
-from ingenious.models import profile as profile_model
 
 
 class ChatHistoryConfig(BaseModel):
@@ -49,6 +48,7 @@ class WebConfig(BaseModel):
     ip_address: str = Field("0.0.0.0", description="IP address of the web server")
     port: int = Field(80, description="Port of the web server")
     type: str = Field("fastapi", description="Type of the web server (e.g. fastapi)")
+    asynchronous: bool = Field(False, description="Enables or Disables the Asynchronous Response")
 
 
 class LocaldbConfig(BaseModel):

@@ -6,14 +6,15 @@ from ingenious.models import config_ns as config_ns_models
 
 
 class ChatHistoryConfig(config_ns_models.ChatHistoryConfig):
-    database_connection_string: str = Field("", description="Connection string for the database. Only used for cosmosdb")
+    database_connection_string: str = Field("",
+                                            description="Connection string for the database. Only used for cosmosdb")
 
     def __init__(self, config: config_ns_models.ChatHistoryConfig, profile: profile_models.ChatHistoryConfig):
         super().__init__(
-            database_type=config.database_type, 
-            database_path=config.database_path, 
-            database_connection_string=profile.database_connection_string, 
-            database_name=config.database_name, 
+            database_type=config.database_type,
+            database_path=config.database_path,
+            database_connection_string=profile.database_connection_string,
+            database_name=config.database_name,
             memory_path=config.memory_path)
 
 
@@ -22,7 +23,8 @@ class ModelConfig(config_ns_models.ModelConfig):
     base_url: str
 
     def __init__(self, config: config_ns_models.ModelConfig, profile: profile_models.ModelConfig):
-        super().__init__(model=config.model, api_type=config.api_type, api_version=config.api_version, base_url=profile.base_url, api_key=profile.api_key)
+        super().__init__(model=config.model, api_type=config.api_type, api_version=config.api_version,
+                         base_url=profile.base_url, api_key=profile.api_key)
 
 
 class ChainlitConfig(config_ns_models.ChainlitConfig):
@@ -49,24 +51,31 @@ class LoggingConfig(config_ns_models.LoggingConfig):
 
 class AzureSearchConfig(config_ns_models.AzureSearchConfig):
     key: str = ""
+
     def __init__(self, config: config_ns_models.AzureSearchConfig, profile: profile_models.AzureSearchConfig):
         super().__init__(service=config.service, endpoint=config.endpoint, key=profile.key)
 
 
 class AzureSqlConfig(config_ns_models.AzureSqlConfig):
     database_connection_string: str = Field("", description="azure SQL Connection string")
+
     def __init__(self, config: config_ns_models.AzureSqlConfig, profile: profile_models.AzureSqlConfig):
         super().__init__(
             table_name=config.table_name,
             database_name=config.database_name,
             database_connection_string=profile.database_connection_string,
-            )
+        )
+
 
 class WebConfig(config_ns_models.WebConfig):
     authentication: profile_models.WebAuthConfig = {}
 
     def __init__(self, config: config_ns_models.WebConfig, profile: profile_models.WebConfig):
-        super().__init__(ip_address=config.ip_address, port=config.port, type=config.type, authentication=profile.authentication)
+        super().__init__(ip_address=config.ip_address,
+                         port=config.port,
+                         type=config.type,
+                         asynchronous=config.asynchronous,
+                         authentication=profile.authentication)
 
 
 class LocaldbConfig(config_ns_models.LocaldbConfig):
@@ -84,7 +93,7 @@ class Config(BaseModel):
     chainlit_configuration: ChainlitConfig
     azure_search_services: List[AzureSearchConfig]
     web_configuration: WebConfig
-    local_sql_db:LocaldbConfig
+    local_sql_db: LocaldbConfig
     azure_sql_services: AzureSqlConfig
 
     def __init__(self, config: config_ns_models.Config, profile: profile_models.Profile):
@@ -105,13 +114,13 @@ class Config(BaseModel):
         for config_model in config.models:
             for profile_model in profile.models:
                 if config_model.model == profile_model.model:
-                    models.append(config_models.ModelConfig(config_model, profile_model))      
+                    models.append(config_models.ModelConfig(config_model, profile_model))
         self.models = models
 
         self.azure_search_services = []
         for as_config in config.azure_search_services:
             for profile_as_config in profile.azure_search_services:
-                if as_config.service == profile_as_config.service: 
+                if as_config.service == profile_as_config.service:
                     self.azure_search_services.append(config_models.AzureSearchConfig(as_config, profile_as_config))
-        
+
 

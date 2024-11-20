@@ -50,7 +50,7 @@ class ConversationFlow:
 
         response_id = str(uuid.uuid4())
 
-        for topic in ['payload_type_1', 'payload_type_2', 'payload_type_3', 'undefined']:
+        for topic in ['is_wicket_ball', 'score_card_insight', 'game_status_changed', 'new_batter', 'undefined']:
             template = env.get_template(f'{topic}_prompt.jinja')
             system_message = template.render(
                 topic=topic,
@@ -61,7 +61,7 @@ class ConversationFlow:
                 overBall=overBall
             )
 
-            description = f"I **ONLY** respond when addressed by `planner`, focusing solely on insights about {topic}."
+            description = f"I **ONLY** respond when addressed by `planner`, focusing solely on insights using {topic} logic."
             if topic == 'undefined':
                 description = f"I **ONLY** respond when addressed by `planner` when the payload is undefined."
 
@@ -76,9 +76,5 @@ class ConversationFlow:
 
         res, memory_summary = await _classification_agent_pattern.get_conversation_response(message)
 
-        # try:
-        #     json.loads(res)
-        # except:
-        #     res = 'nonjson'
 
         return res, memory_summary
