@@ -7,10 +7,11 @@ import importlib
 
 
 class IChatService(ABC):
+    service_class = None
+
     @abstractmethod
     async def get_chat_response(self, chat_request: ChatRequest) -> ChatResponse:
         pass
-
 
 class ChatService:
     def __init__(
@@ -21,12 +22,12 @@ class ChatService:
             config: Config,
             revision: str = "dfe19b62-07f1-4cb5-ae9a-561a253e4b04"
             ):
-        
+
         class_name = f"{chat_service_type.lower()}_chat_service"
         self.config = config
         self.revision = revision
 
-        try:            
+        try:
             # First look for the module in the extensions namespace
             module_name = f"ingenious.services.chat_services.{chat_service_type.lower()}.service"
             if importlib.util.find_spec(module_name) is None:
@@ -34,7 +35,7 @@ class ChatService:
             else:
                 module = importlib.import_module( f"ingenious.services.chat_services.{chat_service_type.lower()}.service")
             service_class = getattr(module, class_name)
-            
+
         except (ImportError, AttributeError) as e:
             raise ValueError(f"Unsupported chat service type: {module_name}.{class_name}") from e
 
@@ -50,5 +51,5 @@ class ChatService:
         if not chat_request.conversation_flow:
             raise ValueError(f"conversation_flow not set {chat_request}")
         return await self.service_class.get_chat_response(chat_request)
-    
-    
+
+
