@@ -4,19 +4,115 @@ from abc import ABC, abstractmethod
 
 from autogen.token_count_utils import count_token, get_max_token_limit
 from openai.types.chat import ChatCompletionMessageParam
-
+import ingenious.config.config as config
 from ingenious.db.chat_history_repository import ChatHistoryRepository
 from ingenious.dependencies import get_openai_service
 from ingenious.errors.content_filter_error import ContentFilterError
 from ingenious.models.chat import ChatRequest, ChatResponse
 from ingenious.models.message import Message
 from ingenious.utils.conversation_builder import (build_user_message)
-from ingenious.utils.namespace_utils import import_class_with_fallback
+from ingenious.utils.namespace_utils import import_class_with_fallback, get_path_from_namespace_with_fallback
+import os
+from jinja2 import Environment, FileSystemLoader
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 
+class IConversationPattern(ABC):
+    _config: config.Config
+    _memory_path: str
+    _memory_file_path: str
+
+    def __init__(self):
+        super().__init__()
+        self._config = config.get_config()
+        self._memory_path = self.GetConfig().chat_history.memory_path
+        self._memory_file_path = f"{self._memory_path}/context.md"
+
+    def GetConfig(self):
+        return self._config
+
+    def Get_Models(self):
+        return self._config.models.__dict__
+
+    def Get_Memory_Path(self):
+        return self._memory_path
+
+    def Get_Memory_File(self):
+        return self._memory_file_path
+
+    def Maintain_Memory(self, new_content, max_words=150):
+        file_path = self._memory_file_path()
+        if os.path.exists(file_path):
+            with open(file_path, "r") as memory_file:
+                current_content = memory_file.read()
+        else:
+            current_content = ""
+
+        # Combine the current content and the new content
+        combined_content = current_content + " " + new_content
+        words = combined_content.split()
+
+        # Keep only the last `max_words` words
+        truncated_content = " ".join(words[-max_words:])
+
+        # Write the truncated content back to the file
+        with open(file_path, "w") as memory_file:
+            memory_file.write(truncated_content)
+
+    @abstractmethod
+    async def get_conversation_response(self, message: str, thread_memory: str) -> ChatResponse:
+        pass
+
+
 class IConversationFlow(ABC):
+    _config: config.Config
+    _memory_path: str
+    _memory_file_path: str
+    _logger: logging.Logger
+
+    def __init__(self):
+        super().__init__()
+        self._config = config.get_config()
+        self._memory_path = self.GetConfig().chat_history.memory_path
+        self._memory_file_path = f"{self._memory_path}/context.md"
+        self._logger = logging.getLogger(__name__)
+        template_path = get_path_from_namespace_with_fallback(str(Path("templates") / Path("prompts")))
+        self._logger.debug(f"Loading templates from: {template_path}")
+        self._prompt_template_env = Environment(loader=FileSystemLoader(template_path), autoescape=True)
+
+    def GetConfig(self):
+        return self._config
+
+    def Get_Models(self):
+        return self._config.models.__dict__
+
+    def Get_Memory_Path(self):
+        return self._memory_path
+
+    def Get_Memory_File(self):
+        return self._memory_file_path
+
+    def Maintain_Memory(self, new_content, max_words=150):
+        file_path = self._memory_file_path()
+        if os.path.exists(file_path):
+            with open(file_path, "r") as memory_file:
+                current_content = memory_file.read()
+        else:
+            current_content = ""
+
+        # Combine the current content and the new content
+        combined_content = current_content + " " + new_content
+        words = combined_content.split()
+
+        # Keep only the last `max_words` words
+        truncated_content = " ".join(words[-max_words:])
+
+        # Write the truncated content back to the file
+        with open(file_path, "w") as memory_file:
+            memory_file.write(truncated_content)
+
     @abstractmethod
     async def get_conversation_response(self, message: str, thread_memory: str) -> ChatResponse:
         pass
@@ -98,6 +194,7 @@ class multi_agent_chat_service:
 
             if chat_request.event_type:
                 response_task = conversation_flow_service_class.get_conversation_response(
+                    self,
                     message=chat_request.user_prompt,
                     memory_record_switch=chat_request.memory_record,
                     event_type=chat_request.event_type,
@@ -106,6 +203,7 @@ class multi_agent_chat_service:
                 )
             else:
                 response_task = conversation_flow_service_class.get_conversation_response(
+                    self,
                     message=chat_request.user_prompt,
                     memory_record_switch=chat_request.memory_record,
                     thread_memory=thread_memory,
