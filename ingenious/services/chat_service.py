@@ -28,11 +28,11 @@ class ChatService:
 
         try:            
             # First look for the module in the extensions namespace
-            module_name = f"ingenious_extensions.services.chat_services.{chat_service_type.lower()}.service"
+            module_name = f"ingenious.services.chat_services.{chat_service_type.lower()}.service"
             if importlib.util.find_spec(module_name) is None:
-                module = importlib.import_module( f"ingenious.services.chat_services.{chat_service_type.lower()}.service")
+                module_name = f"ingenious_extensions.services.chat_services.{chat_service_type.lower()}.service"
             else:
-                module = importlib.import_module(f"{module_name}")
+                module = importlib.import_module( f"ingenious.services.chat_services.{chat_service_type.lower()}.service")
             service_class = getattr(module, class_name)
             
         except (ImportError, AttributeError) as e:

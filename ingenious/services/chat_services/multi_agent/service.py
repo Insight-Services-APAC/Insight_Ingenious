@@ -16,7 +16,7 @@ from ingenious.utils.namespace_utils import import_class_with_fallback
 logger = logging.getLogger(__name__)
 
 
-class IConversationPattern(ABC):
+class IConversationFlow(ABC):
     @abstractmethod
     async def get_conversation_response(self, message: str, thread_memory: str) -> ChatResponse:
         pass
