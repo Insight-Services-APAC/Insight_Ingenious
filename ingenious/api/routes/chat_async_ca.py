@@ -120,6 +120,7 @@ async def chat(
                 file_name = pay_load_dict.get('File_Name')
                 session_id = pay_load_dict.get('Thread_Id')
                 #Blob_Url = pay_load_dict.get('Blob_Url')
+                #file_contents = await run_tests.fs.read_file(file_name=file_name, file_path=run_tests.directory)
 
                 await run_tests.rerun_single_event(event_type, ball_identifier, file_name, session_id)
 
