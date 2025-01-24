@@ -43,6 +43,10 @@ ingenious/files/__init__.py
 ingenious/files/files_repository.py
 ingenious/files/azure/__init__.py
 ingenious/files/local/__init__.py
+ingenious/ingenious/templates/data_structure/all_data.yml
+ingenious/ingenious/templates/data_structure/batsmen_data.yml
+ingenious/ingenious/templates/data_structure/bowlers_data.yml
+ingenious/ingenious/templates/data_structure/score_card_data.yml
 ingenious/ingenious/templates/html_pages/payload_template.html
 ingenious/ingenious/templates/html_pages/responses_template.html
 ingenious/ingenious/templates/prompts/__init__.py

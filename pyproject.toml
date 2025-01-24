@@ -88,4 +88,4 @@ include-package-data = true
 zip-safe = false
 
 [tool.setuptools.package-data]
-ingenious = ["**/*.py", "**/*.md", "**/*.jinja", "**/*.csv", "**/*.html", "**/*.dockerfile", "**/*.sh"]
+ingenious = ["**/*.py", "**/*.md", "**/*.jinja", "**/*.csv", "**/*.html", "**/*.yml", "**/*.dockerfile", "**/*.sh"]
