@@ -54,7 +54,7 @@ def import_module_with_fallback(module_name):
         Args:
             module_name (str): The name of the module to import (excluding the top level of ingenious or ingenious_extensions).            
     """
-    module_full_name = f"ingenious_extensions.{module_name}"
+    module_full_name = f"ingenious.{module_name}"
     working_dir = Path(os.getcwd())
     # Check if sys.path contains the working directory
     if working_dir not in sys.path:
@@ -117,5 +117,7 @@ def get_path_from_namespace_with_fallback(path: str):
     template_path = working_dir / "ingenious_extensions" / Path(path)
     if not template_path.exists():
         template_path = install_dir / "ingenious" / Path(path)
+        if not template_path.exists():
+            template_path = install_dir / "ingenious" / "ingenious" / Path(path)
     
     return template_path
