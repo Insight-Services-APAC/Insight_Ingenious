@@ -1,1 +1,0 @@
-`Charlie Dean` has taken **2 wickets** for **28 runs** in her **4 overs**, maintaining an economy rate of **7.0**, providing key breakthroughs for England.
