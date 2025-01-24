@@ -52,17 +52,17 @@ class FileStorage:
 
         self.repository = repository_class()
 
-    async def write_file(self, contents: str, file_name: str, file_path: str , container_name: str):
+    async def write_file(self, contents: str, file_name: str, file_path: str , container_name: str = 'container-app-deps'):
         return await self.repository.write_file(contents=contents, file_name=file_name, file_path=file_path, container_name=container_name)
 
-    async def read_file(self, file_name: str, file_path: str, container_name: str):
+    async def read_file(self, file_name: str, file_path: str, container_name: str= 'container-app-deps'):
         return await self.repository.read_file(file_name, file_path, container_name)
 
-    async def delete_file(self, file_name: str, file_path: str, container_name: str):
+    async def delete_file(self, file_name: str, file_path: str, container_name: str= 'container-app-deps'):
         return await self.repository.delete_file(file_name, file_path, container_name)
 
-    async def list_files(self, file_path: str, container_name: str):
+    async def list_files(self, file_path: str, container_name: str = 'container-app-deps'):
         return await self.repository.list_files(file_path, container_name)
     
-    async def check_if_file_exists(self, file_path: str, file_name: str, container_name: str):
+    async def check_if_file_exists(self, file_path: str, file_name: str, container_name: str= 'container-app-deps'):
         return await self.repository.check_if_file_exists(file_path, file_name, container_name)
