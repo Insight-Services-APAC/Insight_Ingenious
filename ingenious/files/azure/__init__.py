@@ -19,6 +19,12 @@ class azure_FileStorageRepository(IFileStorage):
 
 
     async def write_file(self, contents: str, file_name: str, file_path: str, container_name: str = 'container-app-deps'):
+        self.container_name = container_name
+        if container_name == "container-app-deps":
+            self.token =  self.config.azure_search_services[0].key
+        else:
+            self.token = self.config.file_storage.token
+        self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         """
         Asynchronously writes the given contents to a file in Azure Blob Storage.
         Args:
@@ -31,6 +37,11 @@ class azure_FileStorageRepository(IFileStorage):
             await write_file("Hello, World!", "example.txt", "path/to/directory")
         """
         self.container_name = container_name
+        if container_name == "container-app-deps":
+            self.token = self.config.azure_search_services[0].key
+        else:
+            self.token = self.config.file_storage.token
+        self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create the container if it does not exist
@@ -55,6 +66,11 @@ class azure_FileStorageRepository(IFileStorage):
         :param file_path: Path of the blob (file) to read.
         """
         self.container_name = container_name
+        if container_name == "container-app-deps":
+            self.token = self.config.azure_search_services[0].key
+        else:
+            self.token = self.config.file_storage.token
+        self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client
@@ -78,6 +94,11 @@ class azure_FileStorageRepository(IFileStorage):
         :param file_path: Path of the blob (file) to delete.
         """
         self.container_name = container_name
+        if container_name == "container-app-deps":
+            self.token = self.config.azure_search_services[0].key
+        else:
+            self.token = self.config.file_storage.token
+        self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client
@@ -97,6 +118,11 @@ class azure_FileStorageRepository(IFileStorage):
         :param file_path: Path within the storage container to list blobs from.
         """
         self.container_name = container_name
+        if container_name == "container-app-deps":
+            self.token = self.config.azure_search_services[0].key
+        else:
+            self.token = self.config.file_storage.token
+        self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         try:
             path = Path(self.config.file_storage.path) / Path(file_path)
             prefix = str(path).replace("\\", "/")  # Ensure the path is in the correct format for Azure
@@ -120,6 +146,11 @@ class azure_FileStorageRepository(IFileStorage):
         :return: True if the blob exists, False otherwise.
         """
         self.container_name = container_name
+        if container_name == "container-app-deps":
+            self.token = self.config.azure_search_services[0].key
+        else:
+            self.token = self.config.file_storage.token
+        self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client
