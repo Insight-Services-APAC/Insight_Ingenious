@@ -70,6 +70,16 @@ def send_response(response, thread_id):
             "error_detail": f"Error while sending response to API: {e}"
         }
 
+    try:
+        ascii_payload = json.dumps(payload).encode("ascii")
+    except UnicodeEncodeError as e:
+        print(f"Payload contains non-ASCII characters: {e}")
+        raise
+
+    payload["response"]["content"] = 'feedback'
+
+    # Send the POST request
+    # response = requests.post(api_url, data = ascii_payload, headers=headers)
     response = requests.post(api_url, json = payload, headers=headers)
 
     if response.status_code == 200:
