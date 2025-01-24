@@ -38,7 +38,6 @@ def get_chat_history_repository():
         raise ValueError(f"Unknown database type: {db_type_val}")
 
     chr = ChatHistoryRepository(db_type=db_type, config=config)
-    
     return chr
 
 
