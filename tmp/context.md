@@ -1,0 +1,1 @@
+`Yashasvi Jaiswal` with an impressive batting average of **55.19** over **34 innings** indicates his potential to anchor India's innings despite his cautious start today facing just 2 balls.
