@@ -10,7 +10,7 @@ class local_FileStorageRepository(IFileStorage):
         self.config = ig_deps.config
         self.base_path = Path(self.config.file_storage.path)
 
-    async def write_file(self, contents: str, file_name: str, file_path: str):
+    async def write_file(self, contents: str, file_name: str, file_path: str, container_name: str):
         """
         Write data to a local file.
 
@@ -27,7 +27,7 @@ class local_FileStorageRepository(IFileStorage):
         except Exception as e:
             print(f"Failed to write {path}: {e}")
 
-    async def read_file(self, file_name: str, file_path: str):
+    async def read_file(self, file_name: str, file_path: str, container_name: str):
         """
         Read data from a local file.
 
@@ -45,7 +45,7 @@ class local_FileStorageRepository(IFileStorage):
             print(f"Failed to read {path}: {e}")
             return None
         
-    async def delete_file(self, file_name: str, file_path: str):
+    async def delete_file(self, file_name: str, file_path: str, container_name: str):
         """
         Delete a local file.
 
@@ -59,7 +59,7 @@ class local_FileStorageRepository(IFileStorage):
         except Exception as e:
             print(f"Failed to delete {path}: {e}")
     
-    async def list_files(self, file_path: str):
+    async def list_files(self, file_path: str, container_name: str):
         """
         List files in a local directory.
 
@@ -74,7 +74,7 @@ class local_FileStorageRepository(IFileStorage):
             print(f"Failed to list files in {path}: {e}")
             return None
         
-    async def check_if_file_exists(self, file_path: str, file_name: str) -> bool:
+    async def check_if_file_exists(self, file_path: str, file_name: str, container_name: str) -> bool:
         """
         Check if a local file exists.
 

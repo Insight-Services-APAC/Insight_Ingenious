@@ -11,14 +11,14 @@ class azure_FileStorageRepository(IFileStorage):
         self.config = ig_deps.config
         self.url = self.config.file_storage.url
         self.token  = self.config.file_storage.token
-        self.container_name = self.config.file_storage.container_name
+        self.container_name = 'container-app-deps' #self.config.file_storage.container_name
         if self.token == "":
             self.blob_service_client = BlobServiceClient(account_url=self.url, credential= DefaultAzureCredential())
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
 
 
-    async def write_file(self, contents: str, file_name: str, file_path: str):
+    async def write_file(self, contents: str, file_name: str, file_path: str, container_name: str = 'container-app-deps'):
         """
         Asynchronously writes the given contents to a file in Azure Blob Storage.
         Args:
@@ -30,7 +30,7 @@ class azure_FileStorageRepository(IFileStorage):
         Example:
             await write_file("Hello, World!", "example.txt", "path/to/directory")
         """
-
+        self.container_name = container_name
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create the container if it does not exist
@@ -47,13 +47,14 @@ class azure_FileStorageRepository(IFileStorage):
         except Exception as e:
             print(f"Failed to upload {path} to container {self.container_name}: {e}")
 
-    async def read_file(self, file_name: str, file_path: str) -> str:
+    async def read_file(self, file_name: str, file_path: str, container_name: str = 'container-app-deps') -> str:
         """
         Download data from Azure Blob Storage.
 
         :param file_name: Name of the blob (file) to read.
         :param file_path: Path of the blob (file) to read.
         """
+        self.container_name = container_name
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client
@@ -69,13 +70,14 @@ class azure_FileStorageRepository(IFileStorage):
             print(f"Failed to download {path} from container {self.container_name}: {e}")
             return ""
 
-    async def delete_file(self, file_name: str, file_path: str):
+    async def delete_file(self, file_name: str, file_path: str, container_name: str = 'container-app-deps'):
         """
         Delete a blob from Azure Blob Storage.
 
         :param file_name: Name of the blob (file) to delete.
         :param file_path: Path of the blob (file) to delete.
         """
+        self.container_name = container_name
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client
@@ -88,12 +90,13 @@ class azure_FileStorageRepository(IFileStorage):
             print(f"Failed to delete {path} from container {self.container_name}: {e}")
 
 
-    async def list_files(self, file_path: str):
+    async def list_files(self, file_path: str, container_name: str = 'container-app-deps'):
         """
         List blobs in an Azure Blob container based on a path.
 
         :param file_path: Path within the storage container to list blobs from.
         """
+        self.container_name = container_name
         try:
             path = Path(self.config.file_storage.path) / Path(file_path)
             prefix = str(path).replace("\\", "/")  # Ensure the path is in the correct format for Azure
@@ -107,7 +110,7 @@ class azure_FileStorageRepository(IFileStorage):
             print(f"Failed to list blobs in container {self.container_name} with prefix {prefix}: {e}")
             return []
 
-    async def check_if_file_exists(self, file_path: str, file_name: str) -> bool:
+    async def check_if_file_exists(self, file_path: str, file_name: str, container_name: str = 'container-app-deps') -> bool:
         """
         Check if a blob exists in an Azure Blob container.
 
@@ -116,6 +119,7 @@ class azure_FileStorageRepository(IFileStorage):
         :param connection_string: Connection string to Azure Storage account.
         :return: True if the blob exists, False otherwise.
         """
+        self.container_name = container_name
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client

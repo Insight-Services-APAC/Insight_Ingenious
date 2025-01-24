@@ -80,7 +80,7 @@ class RunBatches:
             
         # Process JSON files
         json_files = sorted(
-            [f for f in await self.fs.list_files(file_path=self.directory) if f.endswith(".json")]
+            [f for f in await self.fs.list_files(file_path=self.directory, container_name='matchfeed') if f.endswith(".json")]
         )
         output_path = await self.get_output_path(self.test_run_session_id)
         # self.write_markdown_header(output_path)
@@ -415,7 +415,7 @@ class RunBatches:
         over = ball_identifier.split("_")[1]
         ball = ball_identifier.split("_")[2]
         output_path = await self.get_output_path(session_id=session_id, generate_new_id=False)
-        file_contents = await self.fs.read_file(file_name=file_name, file_path=self.directory)
+        file_contents = await self.fs.read_file(file_name=file_name, file_path=self.directory, container_name='matchfeed')
 
 
         json_object = json.loads(file_contents)
