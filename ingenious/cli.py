@@ -94,6 +94,10 @@ def run_all(
         src = Path(os.getcwd()) / Path('ingenious/')
         if os.path.exists(src):
             CliFunctions.copy_ingenious_folder(src, Path(get_paths()['purelib']) / Path(f'ingenious/'))
+
+        src = Path(os.getcwd()) / Path('ingenious_extensions/')
+        if os.path.exists(src):
+            CliFunctions.copy_ingenious_folder(src, Path(get_paths()['purelib']) / Path(f'ingenious_extensions/'))
     
     print(f"Current working directory: {os.getcwd()}")    
     
@@ -107,6 +111,8 @@ def run_all(
     os.environ["INGENIOUS_WORKING_DIR"] = str(Path(os.getcwd()))
     os.chdir(str(Path(os.getcwd())))
     print_namespace_modules('ingenious.services.chat_services.multi_agent.conversation_flows')
+    print_namespace_modules('ingenious_extensions.services.chat_services.multi_agent.conversation_flows')
+
 
     fast_agent_api = FastAgentAPI(config)
 
@@ -115,8 +121,7 @@ def run_all(
     
     # change directory to project dir    
     uvicorn.run(app, host=config.web_configuration.ip_address, port=config.web_configuration.port)
-    #import subprocess
-    #subprocess.run(["fastapi", "dev", "./ingenious/main.py"])
+
 
 
 @app.command()
