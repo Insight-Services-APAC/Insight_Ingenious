@@ -117,7 +117,4 @@ def get_path_from_namespace_with_fallback(path: str):
     template_path = working_dir / "ingenious_extensions" / Path(path)
     if not template_path.exists():
         template_path = install_dir / "ingenious" / Path(path)
-        if not template_path.exists():
-            template_path = install_dir / "ingenious" / "ingenious" / Path(path)
-    
     return template_path
