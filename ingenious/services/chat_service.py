@@ -32,7 +32,7 @@ class ChatService:
             # module_name = f"ingenious.services.chat_services.{chat_service_type.lower()}.service"
             module_name = f"ingenious_extensions.services.chat_services.{chat_service_type.lower()}.service"
             if importlib.util.find_spec(module_name) is None:
-                module_name = f"ingenious.services.chat_services.{chat_service_type.lower()}.service"
+                module = f"ingenious.services.chat_services.{chat_service_type.lower()}.service"
             else:
                 module = importlib.import_module(module_name)
             service_class = getattr(module, class_name)
