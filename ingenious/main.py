@@ -20,9 +20,9 @@ logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 if config.web_configuration.asynchronous:
-    import ingenious.api.routes.chat_async_ca as chat
+    import ingenious_extensions.api.routes.chat_async_ca as chat_async
 else:
-    import ingenious.api.routes.chat as chat
+    pass
 
 
 
@@ -35,6 +35,10 @@ class FastAgentAPI:
         self.app = FastAPI(title="FastAgent API", version="1.0.0")
 
         # Include routers
+        try:
+            self.app.include_router(chat_async.router, prefix="/api/v1", tags=["ChatAsync"])
+        except:
+            pass
         self.app.include_router(chat.router, prefix="/api/v1", tags=["Chat"])
         self.app.include_router(message_feedback.router, prefix="/api/v1", tags=["Message Feedback"])
 
@@ -70,9 +74,3 @@ class FastAgentAPI:
             content={"detail": f"An error occurred: {str(exc)}"}
         )
 
-    async def root(self):
-        # Locate the HTML file in ingenious.api
-        html_path = pkg_resources.files("ingenious.chainlit") / "index.html"
-        with html_path.open("r") as file:
-            html_content = file.read()
-        return HTMLResponse(content=html_content)

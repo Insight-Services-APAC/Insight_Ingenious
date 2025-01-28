@@ -4,7 +4,6 @@ ingenious/__init__.py
 ingenious/cli.py
 ingenious/dependencies.py
 ingenious/main.py
-ingenious/run_tests.py
 ingenious.egg-info/PKG-INFO
 ingenious.egg-info/SOURCES.txt
 ingenious.egg-info/dependency_links.txt
