@@ -54,7 +54,7 @@ def import_module_with_fallback(module_name):
         Args:
             module_name (str): The name of the module to import (excluding the top level of ingenious or ingenious_extensions).            
     """
-    module_full_name = f"ingenious.{module_name}"
+    module_full_name = f"ingenious_extensions.{module_name}"
     working_dir = Path(os.getcwd())
     # Check if sys.path contains the working directory
     if working_dir not in sys.path:
