@@ -1,7 +1,6 @@
 import os
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
-from chainlit.utils import mount_chainlit
 from dotenv import load_dotenv
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 import logging
@@ -47,11 +46,6 @@ class FastAgentAPI:
 
         # Add exception handler
         self.app.add_exception_handler(Exception, self.generic_exception_handler)
-
-        # Mount ChainLit
-        if config.chainlit_configuration.enable:
-            chainlit_path = pkg_resources.files("ingenious.chainlit") / "app.py"
-            mount_chainlit(app=self.app, target=str(chainlit_path), path="/chainlit")
 
         # Redirect `/` to `/docs`
         self.app.get("/", tags=["Root"])(self.redirect_to_docs)
