@@ -22,8 +22,7 @@ class azure_FileStorageRepository(IFileStorage):
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url,credential=ManagedIdentityCredential(client_id=self.client_id))
 
-    async def write_file(self, contents: str, file_name: str, file_path: str,
-                         container_name: str = 'container-app-deps'):
+    async def write_file(self, contents: str, file_name: str, file_path: str, container_name: str = 'container-app-deps'):
         """
         Asynchronously writes the given contents to a file in Azure Blob Storage.
         Args:
@@ -44,8 +43,7 @@ class azure_FileStorageRepository(IFileStorage):
             else:
                 self.token = self.config.file_storage.token
         else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url,
-                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
+            self.blob_service_client = BlobServiceClient(account_url=self.url,credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
