@@ -41,10 +41,6 @@ class azure_FileStorageRepository(IFileStorage):
         """
         if container_name != '':
             self.container_name = container_name
-        if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
-        else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
@@ -71,11 +67,6 @@ class azure_FileStorageRepository(IFileStorage):
         """
         if container_name != '':
             self.container_name = container_name
-        if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
-        else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url,
-                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
 
         try:
@@ -102,11 +93,6 @@ class azure_FileStorageRepository(IFileStorage):
         """
         if container_name != '':
             self.container_name = container_name
-        if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
-        else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url,
-                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
@@ -127,11 +113,6 @@ class azure_FileStorageRepository(IFileStorage):
         """
         if container_name != '':
             self.container_name = container_name
-        if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
-        else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url,
-                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
 
         try:
@@ -158,12 +139,6 @@ class azure_FileStorageRepository(IFileStorage):
         """
         if container_name != '':
             self.container_name = container_name
-
-        if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
-        else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url,
-                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
 
         try:
