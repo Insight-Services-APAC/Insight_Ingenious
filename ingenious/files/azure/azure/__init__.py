@@ -15,7 +15,7 @@ class azure_FileStorageRepository(IFileStorage):
         self.token = self.config.file_storage.token
         self.client_id = self.config.file_storage.token
         self.container_name = 'container-app-deps'  # self.config.file_storage.container_name
-        self.test = True
+        self.test = False
 
         if self.test:
             self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
