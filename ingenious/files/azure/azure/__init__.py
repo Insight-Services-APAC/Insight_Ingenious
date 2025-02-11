@@ -20,8 +20,7 @@ class azure_FileStorageRepository(IFileStorage):
         if self.test:
             self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         else:
-            self.blob_service_client = BlobServiceClient(account_url=self.url,
-                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
+            self.blob_service_client = BlobServiceClient(account_url=self.url,credential=ManagedIdentityCredential(client_id=self.client_id))
 
     async def write_file(self, contents: str, file_name: str, file_path: str,
                          container_name: str = 'container-app-deps'):
