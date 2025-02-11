@@ -33,6 +33,7 @@ class azure_FileStorageRepository(IFileStorage):
         Example:
             await write_file("Hello, World!", "example.txt", "path/to/directory")
         """
+
         self.container_name = container_name
         if self.test:
             self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
