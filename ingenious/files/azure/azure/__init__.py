@@ -15,7 +15,7 @@ class azure_FileStorageRepository(IFileStorage):
         self.token = self.config.file_storage.token
         self.client_id = self.config.file_storage.token
         self.container_name = 'container-app-deps'  # self.config.file_storage.container_name
-        self.test = False
+        self.test = True
 
         if self.test:
             self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
@@ -81,6 +81,8 @@ class azure_FileStorageRepository(IFileStorage):
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
+            print("=========================\n\n")
+            print(path, self.test)
             # Create a blob client
             blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=str(path))
 
