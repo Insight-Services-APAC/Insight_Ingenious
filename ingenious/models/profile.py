@@ -72,7 +72,7 @@ class FileStorage(BaseModel):
     url: str = Field("", description="File Storage SAS URL")    
     client_id: str = Field("", description="File Storage SAS Client ID")
     token: str = Field("", description="File Storage SAS Token")
-    authentication_method: AuthenticationMethod = Field(AuthenticationMethod.CLIENT_ID_AND_SECRET, description="File Storage SAS Authentication Method")
+    authentication_method: AuthenticationMethod = Field(AuthenticationMethod.MSI, description="File Storage SAS Authentication Method")
 
 
 class Profile(BaseModel):
