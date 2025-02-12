@@ -51,8 +51,8 @@ class functional_tests:
         self, event_type, identifier, file_name, agents: List[Agent], conversation_flow: str
     ):
         events = Events(self.fs)
-        # Note sample data will always come from code base and not local file storage. We may change this in the future
-        file_path = "sample_data"
+        # Note sample data is loaded from the revision folder
+        file_path = f"functional_test_outputs/{self.revision_id}"
         await Events.load_events_from_file(events, file_path)
         # Get payload file from the file system
         file_contents = await self.fs.read_file(

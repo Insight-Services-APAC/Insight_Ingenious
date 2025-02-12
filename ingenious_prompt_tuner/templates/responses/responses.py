@@ -101,7 +101,7 @@ def rerun_event():
         file_name = request.args.get("file_name", type=str)
         
         # Events are locked in source code and copied to the output folder each time.
-        events: Events = asyncio.run(utils.get_events())
+        events: Events = asyncio.run(utils.get_events(revision_id=get_selected_revision_direct_call()))
         event = events.get_event_by_identifier(identifier)
         
         ft = functional_tests(

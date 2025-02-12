@@ -9,7 +9,7 @@ from ingenious.db.chat_history_repository import ChatHistoryRepository
 from ingenious.dependencies import get_openai_service
 from ingenious.errors.content_filter_error import ContentFilterError
 from ingenious.files.files_repository import FileStorage
-from ingenious.models.chat import ChatRequest, ChatResponse
+from ingenious.models.chat import IChatRequest, IChatResponse
 from ingenious.models.message import Message
 from ingenious.utils.conversation_builder import (build_user_message)
 from ingenious.utils.namespace_utils import import_class_with_fallback, get_path_from_namespace_with_fallback
@@ -37,7 +37,7 @@ class multi_agent_chat_service:
         self.conversation_flow = conversation_flow
         self.openai_service = get_openai_service()
 
-    async def get_chat_response(self, chat_request: ChatRequest) -> ChatResponse:
+    async def get_chat_response(self, chat_request: IChatRequest) -> IChatResponse:
         if not chat_request.conversation_flow:
             raise ValueError(f"conversation_flow not set {chat_request}")
 
@@ -45,7 +45,7 @@ class multi_agent_chat_service:
             chat_request.topic = [topic.strip() for topic in chat_request.topic.split(',')]
 
         # Initialize additional response fields - to be populated later
-        thread_chat_history = [{"role": "user", "content": ""}]
+        chat_request.thread_chat_history = [{"role": "user", "content": ""}]
         thread_memory = ''
 
         # Check if thread exists
@@ -54,9 +54,9 @@ class multi_agent_chat_service:
         else:
             # Get thread messages & add to messages list
             thread_messages = await self.chat_history_repository.get_thread_messages(chat_request.thread_id)
-            thread_memory = 'no existing context.'
+            chat_request.thread_memory = 'no existing context.'
 
-            msg = f'current_memory: {thread_memory}'
+            msg = f'current_memory: {chat_request.thread_memory}'
             logger.log(level=logging.INFO, msg=msg)
             # print(msg)
 
@@ -69,7 +69,7 @@ class multi_agent_chat_service:
                 if thread_message.content_filter_results:
                     raise ContentFilterError(content_filter_results=thread_message.content_filter_results)
 
-                thread_chat_history.append({"role": thread_message.role, "content": thread_message.content})
+                chat_request.thread_chat_history.append({"role": thread_message.role, "content": thread_message.content})
 
         # Add latest user message
         user_message = build_user_message(chat_request.user_prompt, chat_request.user_name)
@@ -93,61 +93,18 @@ class multi_agent_chat_service:
             conversation_flow_service_class: IConversationFlow = import_class_with_fallback(module_name, class_name)
 
             conversation_flow_service_class_instance = conversation_flow_service_class()
-
-            if chat_request.event_type:
-                response_task = conversation_flow_service_class_instance.get_conversation_response(                    
-                    message=chat_request.user_prompt,
-                    memory_record_switch=chat_request.memory_record,
-                    event_type=chat_request.event_type,
-                    thread_memory=thread_memory,
-                    thread_chat_history=thread_chat_history
-                )
-            else:
-                response_task = conversation_flow_service_class_instance.get_conversation_response(                    
-                    message=chat_request.user_prompt,
-                    memory_record_switch=chat_request.memory_record,
-                    thread_memory=thread_memory,
-                    thread_chat_history=thread_chat_history
-                )
+            
+            response_task = conversation_flow_service_class_instance.get_conversation_response(
+                chat_request=chat_request
+            )
+    
             agent_response = await response_task
-
-        # except ContentFilterError as cfe:
-        #     # Update user message with content filter results
-        #     await self.chat_history_repository.update_message_content_filter_results(
-        #         user_message_id, chat_request.thread_id, cfe.content_filter_results)
-        #     raise
 
         except Exception as e:
             logger.error(f"Error occurred while processing conversation flow: {e}")
             raise e
 
-        # Save agent response
-        agent_message_id = await self.chat_history_repository.add_message(
-            Message(
-                user_id=chat_request.user_id,
-                thread_id=chat_request.thread_id,
-                role="assistant",
-                content=agent_response[0])
-        )
-
-        # print("the response:", agent_response)
-        _ = await self.chat_history_repository.add_memory(
-            Message(
-                user_id=chat_request.user_id,
-                thread_id=chat_request.thread_id,
-                role="memory_assistant",
-                content=agent_response[1]),
-        )
-
-
-        return ChatResponse(
-            thread_id=chat_request.thread_id,
-            message_id=agent_message_id,
-            agent_response=agent_response[0] or "Sorry we were unable to generate a response. Please try again.",
-            token_count=0,
-            max_token_count=0,
-            memory_summary=agent_response[1],
-        )
+        return agent_response
 
 
 class IConversationPattern(ABC):
@@ -209,7 +166,7 @@ class IConversationPattern(ABC):
             await fs.write_file(this_response, f"agent_response_{event_type}_{res['chat_title']}.md", output_path)
 
     @abstractmethod
-    async def get_conversation_response(self, message: str, thread_memory: str) -> ChatResponse:
+    async def get_conversation_response(self, message: str, thread_memory: str) -> IChatResponse:
         pass
 
 
@@ -291,5 +248,25 @@ class IConversationFlow(ABC):
             await fs.write_file(this_response, f"agent_response_{event_type}_{res['chat_title']}_{identifier}.md", output_path)
 
     @abstractmethod
-    async def get_conversation_response(self, message: str, thread_memory: str) -> ChatResponse:
+    async def get_conversation_response(self, chat_request: IChatRequest) -> IChatResponse:
         pass
+
+
+
+# Save agent response
+        # agent_message_id = await self.chat_history_repository.add_message(
+        #     Message(
+        #         user_id=chat_request.user_id,
+        #         thread_id=chat_request.thread_id,
+        #         role="assistant",
+        #         content=agent_response[0])
+        # )
+
+        # # print("the response:", agent_response)
+        # _ = await self.chat_history_repository.add_memory(
+        #     Message(
+        #         user_id=chat_request.user_id,
+        #         thread_id=chat_request.thread_id,
+        #         role="memory_assistant",
+        #         content=agent_response[1]),
+        # )

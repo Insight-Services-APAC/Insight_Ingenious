@@ -9,6 +9,7 @@ import autogen.runtime_logging
 from jinja2 import Environment, FileSystemLoader
 
 import ingenious.config.config as config
+from ingenious.models.chat import ChatRequest
 import ingenious.utils.match_parser as mp
 from ingenious.services.chat_services.multi_agent.conversation_patterns.classification_agent.classification_agent import \
     ConversationPattern
@@ -16,12 +17,15 @@ from ingenious.services.chat_services.multi_agent.conversation_patterns.classifi
 
 class ConversationFlow:
     @staticmethod
-    async def get_conversation_response(message: str,
-                                        topics: list = [],
-                                        thread_memory: str = '',
-                                        memory_record_switch=True,
-                                        event_type: str = '',
-                                        thread_chat_history: list = []) -> [str, str]:
+    async def get_conversation_response(chatrequest: ChatRequest):
+
+        message = chatrequest.user_prompt
+        topics = chatrequest.topic
+        thread_memory = chatrequest.thread_memory
+        memory_record_switch = chatrequest.memory_record
+        event_type = chatrequest.event_type
+        thread_chat_history = chatrequest.thread_chat_history
+        
         _config = config.get_config()
         llm_config = _config.models[0].__dict__
         memory_path = _config.chat_history.memory_path

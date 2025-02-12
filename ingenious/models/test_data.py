@@ -65,7 +65,7 @@ class Events(BaseModel):
                         raise e
                 
             else:
-                print("No responses folder found")
+                print(f"No event.yml found at {file_path}")
 
-        except ValueError:
-            print("No responses folder found")
+        except ValueError as e:
+            print(f"No event.yml found at {file_path} and error is {e}")

@@ -92,8 +92,9 @@ class utils_class:
 
         return self.functional_tests_folder
 
-    async def get_events(self) -> Events:
-        await self.events.load_events_from_file("sample_data")
+    async def get_events(self, revision_id) -> Events:
+
+        await self.events.load_events_from_file(f"functional_test_outputs/{revision_id}")
         return self.events
 
 

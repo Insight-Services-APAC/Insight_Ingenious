@@ -36,7 +36,7 @@ class ProjectAgents(IProjectAgents):
         )
         local_agents.append(
             Agent(
-                agent_name="summary_agent",
+                agent_name="summary",
                 agent_model_name="gpt-4o",
                 agent_display_name="Summarizer",
                 agent_description="A sample agent.",
