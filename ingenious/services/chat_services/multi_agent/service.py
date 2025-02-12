@@ -17,7 +17,6 @@ import os
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,10 +25,10 @@ class multi_agent_chat_service:
     chat_history_repository: ChatHistoryRepository
     conversation_flow: str
     openai_service: Optional[ChatCompletionMessageParam]
-    
+
     def __init__(
             self,
-            config: ig_config.Config, 
+            config: ig_config.Config,
             chat_history_repository: ChatHistoryRepository,
             conversation_flow: str):
         self.config = config
@@ -95,7 +94,7 @@ class multi_agent_chat_service:
             conversation_flow_service_class_instance = conversation_flow_service_class()
 
             if chat_request.event_type:
-                response_task = conversation_flow_service_class_instance.get_conversation_response(                    
+                response_task = conversation_flow_service_class_instance.get_conversation_response(
                     message=chat_request.user_prompt,
                     memory_record_switch=chat_request.memory_record,
                     event_type=chat_request.event_type,
@@ -103,7 +102,7 @@ class multi_agent_chat_service:
                     thread_chat_history=thread_chat_history
                 )
             else:
-                response_task = conversation_flow_service_class_instance.get_conversation_response(                    
+                response_task = conversation_flow_service_class_instance.get_conversation_response(
                     message=chat_request.user_prompt,
                     memory_record_switch=chat_request.memory_record,
                     thread_memory=thread_memory,
@@ -139,7 +138,6 @@ class multi_agent_chat_service:
                 content=agent_response[1]),
         )
 
-
         return ChatResponse(
             thread_id=chat_request.thread_id,
             message_id=agent_message_id,
@@ -154,22 +152,22 @@ class IConversationPattern(ABC):
     _config: ig_config.Config
     _memory_path: str
     _memory_file_path: str
-    
+
     def __init__(self):
         super().__init__()
         self._config = ig_config.get_config()
         self._memory_path = self.GetConfig().chat_history.memory_path
         self._memory_file_path = f"{self._memory_path}/context.md"
-    
+
     def GetConfig(self):
         return self._config
-    
+
     def Get_Models(self):
         return self._config.models.__dict__
 
     def Get_Memory_Path(self):
         return self._memory_path
-    
+
     def Get_Memory_File(self):
         return self._memory_file_path
 
@@ -225,15 +223,15 @@ class IConversationFlow(ABC):
         self._memory_path = self.GetConfig().chat_history.memory_path
         self._memory_file_path = f"{self._memory_path}/context.md"
         self._logger = logging.getLogger(__name__)
-        
+
     def GetConfig(self):
         return self._config
-    
+
     async def Get_Template(self, revision_id: str = None, file_name: str = "user_prompt.md"):
         if revision_id:
-            template_path = str(Path("templates")/Path("prompts")/Path(revision_id))
-        else: 
-            template_path = str(Path("templates")/Path("prompts"))
+            template_path = str(Path("prompts") / Path(revision_id))
+        else:
+            template_path = str(Path("templates") / Path("prompts"))
 
         fs = FileStorage(self._config)
         content = await fs.read_file(file_name=file_name, file_path=template_path)
@@ -243,13 +241,13 @@ class IConversationFlow(ABC):
         env = Environment()
         template = env.from_string(content)
         return template.render()
-    
+
     def Get_Models(self):
         return self._config.models
 
     def Get_Memory_Path(self):
         return self._memory_path
-    
+
     def Get_Memory_File(self):
         return self._memory_file_path
 
@@ -288,7 +286,8 @@ class IConversationFlow(ABC):
             else:
                 this_response = "Insight not yet generated"
 
-            await fs.write_file(this_response, f"agent_response_{event_type}_{res['chat_title']}_{identifier}.md", output_path)
+            await fs.write_file(this_response, f"agent_response_{event_type}_{res['chat_title']}_{identifier}.md",
+                                output_path)
 
     @abstractmethod
     async def get_conversation_response(self, message: str, thread_memory: str) -> ChatResponse:
