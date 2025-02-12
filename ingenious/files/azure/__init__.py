@@ -37,11 +37,11 @@ class azure_FileStorageRepository(IFileStorage):
 
         self.container_name = container_name
         if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
             if container_name == "container-app-deps":
                 self.token = self.config.azure_search_services[0].key
             else:
                 self.token = self.config.file_storage.token
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url,credential=ManagedIdentityCredential(client_id=self.client_id))
 
@@ -70,19 +70,17 @@ class azure_FileStorageRepository(IFileStorage):
         """
         self.container_name = container_name
         if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
             if container_name == "container-app-deps":
                 self.token = self.config.azure_search_services[0].key
             else:
                 self.token = self.config.file_storage.token
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url,
                                                          credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
-            print("=========================\n\n")
-            print(path, self.test)
             # Create a blob client
             blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=str(path))
 
@@ -105,11 +103,11 @@ class azure_FileStorageRepository(IFileStorage):
         """
         self.container_name = container_name
         if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
             if container_name == "container-app-deps":
                 self.token = self.config.azure_search_services[0].key
             else:
                 self.token = self.config.file_storage.token
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url,
                                                          credential=ManagedIdentityCredential(client_id=self.client_id))
@@ -133,11 +131,11 @@ class azure_FileStorageRepository(IFileStorage):
         """
         self.container_name = container_name
         if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
             if container_name == "container-app-deps":
                 self.token = self.config.azure_search_services[0].key
             else:
                 self.token = self.config.file_storage.token
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url,
                                                          credential=ManagedIdentityCredential(client_id=self.client_id))
@@ -167,11 +165,11 @@ class azure_FileStorageRepository(IFileStorage):
         """
         self.container_name = container_name
         if self.test:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
             if container_name == "container-app-deps":
                 self.token = self.config.azure_search_services[0].key
             else:
                 self.token = self.config.file_storage.token
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
         else:
             self.blob_service_client = BlobServiceClient(account_url=self.url,
                                                          credential=ManagedIdentityCredential(client_id=self.client_id))
