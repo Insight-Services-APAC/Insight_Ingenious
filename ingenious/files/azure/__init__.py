@@ -1,10 +1,10 @@
-from azure.storage.blob import BlobServiceClient
-from azure.identity import ManagedIdentityCredential, DefaultAzureCredential, ClientSecretCredential
-import ingenious.dependencies as ig_deps
-from ingenious.files.files_repository import IFileStorage
 from pathlib import Path
 
-from ingenious.models.config import AuthenticationMethod as file_storage_AuthenticationMethod
+from azure.identity import ManagedIdentityCredential
+from azure.storage.blob import BlobServiceClient
+
+import ingenious.dependencies as ig_deps
+from ingenious.files.files_repository import IFileStorage
 
 
 class azure_FileStorageRepository(IFileStorage):
@@ -14,20 +14,15 @@ class azure_FileStorageRepository(IFileStorage):
         self.url = self.config.file_storage.url
         self.token = self.config.file_storage.token
         self.client_id = self.config.file_storage.token
-        self.container_name = self.config.file_storage.container_name
-        self.authentication_method = self.config.file_storage.authentication_method
+        self.container_name = 'container-app-deps'  # self.config.file_storage.container_name
+        self.test = True
 
-        if self.authentication_method == file_storage_AuthenticationMethod.CLIENT_ID_AND_SECRET:
-            cred = ClientSecretCredential(self.client_id, self.token)
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=cred)
-        
-        if self.authentication_method == file_storage_AuthenticationMethod.MSI:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=ManagedIdentityCredential(client_id=self.client_id))
-        
-        if self.authentication_method == file_storage_AuthenticationMethod.DEFAULT_CREDENTIAL:
-            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=DefaultAzureCredential())
+        if self.test:
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
+        else:
+            self.blob_service_client = BlobServiceClient(account_url=self.url,credential=ManagedIdentityCredential(client_id=self.client_id))
 
-    async def write_file(self, contents: str, file_name: str, file_path: str, container_name: str = ''):
+    async def write_file(self, contents: str, file_name: str, file_path: str, container_name: str = 'container-app-deps'):
         """
         Asynchronously writes the given contents to a file in Azure Blob Storage.
         Args:
@@ -39,8 +34,16 @@ class azure_FileStorageRepository(IFileStorage):
         Example:
             await write_file("Hello, World!", "example.txt", "path/to/directory")
         """
-        if container_name != '':
-            self.container_name = container_name
+
+        self.container_name = container_name
+        if self.test:
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
+            if container_name == "container-app-deps":
+                self.token = self.config.azure_search_services[0].key
+            else:
+                self.token = self.config.file_storage.token
+        else:
+            self.blob_service_client = BlobServiceClient(account_url=self.url,credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
@@ -54,22 +57,32 @@ class azure_FileStorageRepository(IFileStorage):
 
             # Upload the data
             blob_client.upload_blob(contents, overwrite=True)
-            #print(f"Successfully uploaded {path} to container {self.container_name}.")
+            # print(f"Successfully uploaded {path} to container {self.container_name}.")
         except Exception as e:
             print(f"Failed to upload {path} to container {self.container_name}: {e}")
 
-    async def read_file(self, file_name: str, file_path: str, container_name: str = '') -> str:
+    async def read_file(self, file_name: str, file_path: str, container_name: str = 'container-app-deps') -> str:
         """
         Download data from Azure Blob Storage.
 
         :param file_name: Name of the blob (file) to read.
         :param file_path: Path of the blob (file) to read.
         """
-        if container_name != '':
-            self.container_name = container_name
+        self.container_name = container_name
+        if self.test:
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
+            if container_name == "container-app-deps":
+                self.token = self.config.azure_search_services[0].key
+            else:
+                self.token = self.config.file_storage.token
+        else:
+            self.blob_service_client = BlobServiceClient(account_url=self.url,
+                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
+            print("=========================\n\n")
+            print(path, self.test)
             # Create a blob client
             blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=str(path))
 
@@ -77,21 +90,29 @@ class azure_FileStorageRepository(IFileStorage):
             downloader = blob_client.download_blob(max_concurrency=1, encoding='UTF-8')
             data = downloader.readall()
 
-            #print(f"Successfully downloaded {path} from container {self.container_name}.")
+            # print(f"Successfully downloaded {path} from container {self.container_name}.")
             return data
         except Exception as e:
             print(f"Failed to download {path} from container {self.container_name}: {e}")
             return ""
 
-    async def delete_file(self, file_name: str, file_path: str, container_name: str = ''):
+    async def delete_file(self, file_name: str, file_path: str, container_name: str = 'container-app-deps'):
         """
         Delete a blob from Azure Blob Storage.
 
         :param file_name: Name of the blob (file) to delete.
         :param file_path: Path of the blob (file) to delete.
         """
-        if container_name != '':
-            self.container_name = container_name
+        self.container_name = container_name
+        if self.test:
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
+            if container_name == "container-app-deps":
+                self.token = self.config.azure_search_services[0].key
+            else:
+                self.token = self.config.file_storage.token
+        else:
+            self.blob_service_client = BlobServiceClient(account_url=self.url,
+                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
@@ -100,18 +121,26 @@ class azure_FileStorageRepository(IFileStorage):
 
             # Delete the blob
             blob_client.delete_blob()
-            #print(f"Successfully deleted {path} from container {self.container_name}.")
+            # print(f"Successfully deleted {path} from container {self.container_name}.")
         except Exception as e:
             print(f"Failed to delete {path} from container {self.container_name}: {e}")
 
-    async def list_files(self, file_path: str, container_name: str = ''):
+    async def list_files(self, file_path: str, container_name: str = 'container-app-deps'):
         """
         List blobs in an Azure Blob container based on a path.
 
         :param file_path: Path within the storage container to list blobs from.
         """
-        if container_name != '':
-            self.container_name = container_name
+        self.container_name = container_name
+        if self.test:
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
+            if container_name == "container-app-deps":
+                self.token = self.config.azure_search_services[0].key
+            else:
+                self.token = self.config.file_storage.token
+        else:
+            self.blob_service_client = BlobServiceClient(account_url=self.url,
+                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path)
@@ -120,13 +149,14 @@ class azure_FileStorageRepository(IFileStorage):
             # List blobs in the container with the specified prefix
             container_client = self.blob_service_client.get_container_client(self.container_name)
             blobs = [blob.name for blob in container_client.list_blobs(name_starts_with=prefix)]
-            #print(f"Blobs in container {self.container_name} with prefix {prefix}: {blobs}")
+            # print(f"Blobs in container {self.container_name} with prefix {prefix}: {blobs}")
             return blobs
         except Exception as e:
             print(f"Failed to list blobs in container {self.container_name} with prefix {prefix}: {e}")
             return []
 
-    async def check_if_file_exists(self, file_path: str, file_name: str, container_name: str = '') -> bool:
+    async def check_if_file_exists(self, file_path: str, file_name: str,
+                                   container_name: str = 'container-app-deps') -> bool:
         """
         Check if a blob exists in an Azure Blob container.
 
@@ -135,15 +165,23 @@ class azure_FileStorageRepository(IFileStorage):
         :param connection_string: Connection string to Azure Storage account.
         :return: True if the blob exists, False otherwise.
         """
-        if container_name != '':
-            self.container_name = container_name
+        self.container_name = container_name
+        if self.test:
+            self.blob_service_client = BlobServiceClient(account_url=self.url, credential=self.token)
+            if container_name == "container-app-deps":
+                self.token = self.config.azure_search_services[0].key
+            else:
+                self.token = self.config.file_storage.token
+        else:
+            self.blob_service_client = BlobServiceClient(account_url=self.url,
+                                                         credential=ManagedIdentityCredential(client_id=self.client_id))
 
         try:
             path = Path(self.config.file_storage.path) / Path(file_path) / Path(file_name)
             # Create a blob client
             blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=str(path))
             exists = blob_client.exists()
-            #print(f"Blob {path} exists in container {self.container_name}: {exists}")
+            # print(f"Blob {path} exists in container {self.container_name}: {exists}")
             return exists
         except Exception as e:
             print(f"Failed to check if blob {path} exists in container {self.container_name}: {e}")
