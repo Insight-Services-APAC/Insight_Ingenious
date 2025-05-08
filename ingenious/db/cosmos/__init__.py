@@ -267,3 +267,6 @@ class cosmos_ChatHistoryRepository(IChatHistoryRepository):
         # Delete each memory record found
         for item in items:
             self.container_memory.delete_item(item=item['id'], partition_key=user_id)
+
+    async def add_step(self, step_dict: IChatHistoryRepository.StepDict):
+        pass

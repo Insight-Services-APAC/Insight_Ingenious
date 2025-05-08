@@ -162,7 +162,7 @@ To set up the development environment, follow these steps:
 
 To set up a new project:
 
-1. Run `ingen_cli initialize_new_project` to create the necessary folder structure
+1. Run `ingen_cli initialize-new-project` to create the necessary folder structure
 2. Configure your application in `config.yml` and profiles in `~/.ingenious/profiles.yml`
 3. Develop your extensions in the `ingenious_extensions` directory
 4. Run your application with `ingen_cli run-rest-api-server`

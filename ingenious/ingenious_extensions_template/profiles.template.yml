@@ -28,7 +28,7 @@
   # Data Lake Storage Configuration
   file_storage:
     revisions:
-      url: https:/#############.blob.core.windows.net/
+      url: https://#############.blob.core.windows.net/
       authentication_method: default_credential # msi, default_credential
     data:
       url: https://#############.blob.core.windows.net/
