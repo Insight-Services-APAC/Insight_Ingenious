@@ -3,18 +3,17 @@
 This project uses uv for Python package and environment management.
 
 ## Common Commands
-
-- **Add a dependency:**
-  `uv add <package>`
-
-- **Add a dev dependency:**
-  `uv add <package> --dev`
-
-- **Remove a dependency:**
-  `uv remove <package>`
-
 - **Run a command in the project environment:**
   `uv run <command>`
+
+- **Add a dependency:**
+  `uv add <package>` or `uv add <package> --dev` for dev dependencies
+
+- **Remove a dependency:**
+  `uv remove <package>` or `uv remove <package> --group dev` for dev dependencies
+
+- **Run tests (run after implementing changes to ensure nothing broke):**
+  `uv run pytest`
 
 - **List out packages in environment in a tree structure**
   `uv tree`

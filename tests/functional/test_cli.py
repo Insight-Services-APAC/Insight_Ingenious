@@ -23,7 +23,8 @@ class TestCLI:
         """Test the help output for init command."""
         result = runner.invoke(app, ["init", "--help"])
         assert result.exit_code == 0
-        assert "Generate template folders for a new project" in result.stdout
+        # Updated help string assertion to match new help text
+        assert "Generate template folders for a new Ingenious project." in result.stdout
 
     def test_run_prompt_tuner_help(self, runner):
         """Test the help output for run-prompt-tuner command."""
