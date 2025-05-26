@@ -51,7 +51,7 @@ def init():
 def run(
     project_dir: Annotated[
         Optional[str],
-        typer.Argument(help="The path to the config file. "),
+        typer.Argument(help="The path to the config file."),
     ] = None,
     profile_dir: Annotated[
         Optional[str],
