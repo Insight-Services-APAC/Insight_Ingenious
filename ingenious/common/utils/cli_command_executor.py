@@ -11,7 +11,6 @@ from typing import Optional
 from rich.console import Console
 
 import ingenious.common.utils.stage_executor as stage_executor_module
-from ingenious.common.utils.log_levels import LogLevel
 from ingenious.common.utils.namespace_utils import import_class_with_fallback
 from ingenious.common.utils.project_setup_manager import ProjectSetupManager
 
@@ -42,56 +41,6 @@ class CliCommandExecutor:
         """
         if self.console:
             self.console.print(f"[{style}]{message}[/{style}]")
-
-
-class TestBatchExecutor(CliCommandExecutor):
-    """
-    Executes test batches.
-
-    This class handles running test batches using the stage executor.
-    """
-
-    def __init__(self, console: Optional[Console] = None):
-        """
-        Initialize the TestBatchExecutor.
-
-        Args:
-            console: Optional console for output
-        """
-        super().__init__(console)
-
-    async def run_test_batch(self, log_level: str = "WARNING", run_args: str = ""):
-        """
-        Run all tests in the project.
-
-        Args:
-            log_level: The log level to use (DEBUG, INFO, WARNING, ERROR)
-            run_args: Key value pairs to pass to the test runner
-        """
-        # Parse log level
-        _log_level: LogLevel = LogLevel.from_string(log_level)
-
-        # Create stage executor
-        se: stage_executor_module.stage_executor = stage_executor_module.stage_executor(
-            log_level=_log_level, console=self.console
-        )
-
-        # Parse run args
-        kwargs = {}
-        if run_args:
-            for arg in run_args.split("--"):
-                if not arg:
-                    continue
-                key, value = arg.split("=")
-                kwargs[key] = value
-
-        # Run the tests
-        await se.perform_stage(
-            option=True,
-            action_callables=[RunTestBatchAction()],
-            stage_name="Batch Tests",
-            **kwargs,
-        )
 
 
 class ProjectSetupExecutor(CliCommandExecutor):

@@ -145,12 +145,6 @@ Always create new branches from `develop`.
 
 ## Testing
 
-Run all tests to ensure your changes don't break existing functionality:
-
-```bash
-ingen run-test-batch
-```
-
 When adding new features, include appropriate tests. See [Testing Documentation](./docs/testing.md) for more details.
 
 ## Code Quality

@@ -115,14 +115,6 @@ uv run pytest -m "integration"
 uv run pytest -m "functional"
 ```
 
-### Running Tests with the CLI
-
-The easiest way to run all tests is through the CLI command:
-
-```bash
-ingen_cli run-test-batch
-```
-
 ## Writing Tests
 
 ### Test Fixtures

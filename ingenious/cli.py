@@ -1,4 +1,3 @@
-import asyncio
 import os
 from pathlib import Path
 from sysconfig import get_paths
@@ -123,38 +122,6 @@ def run_rest_api_server(
         host=host,
         port=port,
     )
-
-
-@app.command()
-def run_test_batch(
-    log_level: Annotated[
-        Optional[str],
-        typer.Option(
-            help="The option to set the log level. This controls the verbosity of the output. Allowed values are `DEBUG`, `INFO`, `WARNING`, `ERROR`. Default is `WARNING`.",
-        ),
-    ] = "WARNING",
-    run_args: Annotated[
-        Optional[str],
-        typer.Option(
-            help="Key value pairs to pass to the test runner. For example, `--run_args='--test_name=TestName --test_type=TestType'`",
-        ),
-    ] = "",
-):
-    """
-    This command will run all the tests in the project
-    """
-    from ingenious.common.utils.cli_command_executor import TestBatchExecutor
-
-    # Create a test batch executor
-    executor = TestBatchExecutor(console=console)
-
-    # Run the tests
-    if log_level is None:
-        log_level = "WARNING"
-    if run_args is None:
-        run_args = ""
-
-    asyncio.run(executor.run_test_batch(log_level=log_level, run_args=run_args))
 
 
 @app.command()

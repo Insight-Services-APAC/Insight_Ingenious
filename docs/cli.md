@@ -8,7 +8,6 @@ The Insight Ingenious CLI (`ingen`) is a powerful tool that allows you to:
 
 - Initialize new projects
 - Run the REST API server
-- Run tests
 - Launch the prompt tuner
 - Manage project resources
 
@@ -43,25 +42,6 @@ ingen run-rest-api-server [OPTIONS]
 **Example:**
 ```bash
 ingen run-rest-api-server --host 0.0.0.0 --port 8000
-```
-
-### `run-test-batch`
-
-Runs the test batch for the project.
-
-```bash
-ingen run-test-batch [OPTIONS]
-```
-
-**Options:**
-- `--project-dir TEXT`: The path to the config file.
-- `--profile-dir TEXT`: The path to the profiles file.
-- `--log-level TEXT`: The log level (DEBUG, INFO, WARNING, ERROR). Default is WARNING.
-- `--run-args TEXT`: Key-value pairs to pass to the test runner.
-
-**Example:**
-```bash
-ingen run-test-batch --log-level INFO --run-args='--test_name=TestName --test_type=TestType'
 ```
 
 ### `initialize-new-project`
