@@ -20,13 +20,15 @@ Thank you for your interest in contributing to Insight Ingenious! This document 
 
 ## Code of Conduct
 
-Please ensure all interactions with the project community align with our values of respect, inclusivity, and constructive feedback. All contributors are expected to:
+We want everyone to feel welcome here! Please:
 
-- Use welcoming and inclusive language
-- Be respectful of differing viewpoints and experiences
-- Gracefully accept constructive criticism
-- Focus on what is best for the community
-- Show empathy towards other community members
+- Use friendly, inclusive language
+- Respect different opinions and experiences
+- Take feedback in stride and keep it positive
+- Focus on making the community better for everyone
+- Be kind and considerate to others
+
+Let’s work together to keep things respectful and supportive.
 
 ## Prerequisites
 
@@ -67,13 +69,13 @@ Before contributing, ensure you have:
 We use pre-commit hooks to enforce code quality and formatting standards:
 
 ```bash
-pre-commit install
+uv run pre-commit install
 ```
 
 Run all pre-commit hooks manually:
 
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ### Configuration
@@ -164,18 +166,18 @@ We use [Vulture](https://github.com/jendrikseipp/vulture) to identify unused cod
 
 2. Run Vulture on the project:
    ```bash
-   vulture ingenious/ --min-confidence 80
+   uv run vulture ingenious/ --min-confidence 80
    ```
 
 3. To exclude specific files or directories:
    ```bash
-   vulture ingenious/ --exclude "*/tests/*,*/migrations/*" --min-confidence 80
+   uv run vulture ingenious/ --exclude "*/tests/*,*/migrations/*" --min-confidence 80
    ```
 
 4. Create whitelists for false positives:
    ```bash
-   vulture ingenious/ --make-whitelist > whitelist.py
-   vulture ingenious/ whitelist.py
+   uv run vulture ingenious/ --make-whitelist > whitelist.py
+   uv run vulture ingenious/ whitelist.py
    ```
 
 For detailed usage and configuration options, refer to the [Code Quality Documentation](./docs/code_quality.md).
