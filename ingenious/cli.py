@@ -36,7 +36,7 @@ def log_levels():
 
 
 @app.command()
-def run_rest_api_server(
+def run(
     project_dir: Annotated[
         Optional[str],
         typer.Argument(help="The path to the config file. "),
@@ -125,7 +125,7 @@ def run_rest_api_server(
 
 
 @app.command()
-def initialize_new_project():
+def init():
     """Generate template folders for a new project using the Ingenious framework."""
     from ingenious.common.utils.cli_command_executor import ProjectSetupExecutor
 

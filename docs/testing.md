@@ -236,7 +236,7 @@ def test_cli_initialization(temp_test_dir):
 
     # Act
     result = subprocess.run(
-        ["ingen_cli", "initialize-new-project"],
+        ["ingen_cli", "init"],
         capture_output=True,
         text=True
     )

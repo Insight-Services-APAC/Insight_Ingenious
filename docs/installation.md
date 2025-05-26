@@ -34,7 +34,7 @@ Before installing Insight Ingenious, ensure you have the following prerequisites
 
 4. **Initialize a new project**:
    ```bash
-   ingen initialize-new-project
+   ingen init
    ```
 
 5. **Verify installation**:
@@ -71,7 +71,7 @@ Before installing Insight Ingenious, ensure you have the following prerequisites
 
 5. **Initialize a new project**:
    ```bash
-   ingen initialize-new-project
+   ingen init
    ```
 
 ## Docker Installation
@@ -94,7 +94,7 @@ After installing Insight Ingenious, you'll need to configure it:
 
 ### 1. Project Configuration
 
-The framework uses a `config.yml` file for its main configuration. When you run `ingen_cli initialize-new-project`, a template configuration file is created in your current directory.
+The framework uses a `config.yml` file for its main configuration. When you run `ingen_cli init`, a template configuration file is created in your current directory.
 
 ### 2. Profile Configuration
 
@@ -146,7 +146,7 @@ For developers who want to contribute to the project:
 
 4. **Initialize a new project**:
    ```bash
-   ingen initialize-new-project
+   ingen init
    ```
 
 ## Troubleshooting

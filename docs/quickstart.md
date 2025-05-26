@@ -19,21 +19,14 @@ This quickstart guide will help you get up and running with Insight Ingenious in
 
 3. **(Recommended for development) Install pre-commit hooks**:
    ```bash
-   uv pip install pre-commit
-   pre-commit install
+   uv add pre-commit --dev
+   uv run pre-commit install
    ```
 
 4. **Initialize a new project**:
    ```bash
-   ingen initialize-new-project
+   ingen init
    ```
-
-5. **Verify installation**:
-   ```bash
-   ingen run-test-batch
-   ```
-
-   This command will run the test suite to verify that everything is working correctly.
 
 ## Your First Conversation
 
@@ -51,7 +44,7 @@ profiles:
 ### 2. Start the API Server
 
 ```bash
-ingen run-rest-api-server --host 127.0.0.1 --port 8000
+ingen run
 ```
 
 ### 3. Send a Test Request

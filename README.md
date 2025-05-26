@@ -31,7 +31,7 @@ A powerful framework for building, managing, and deploying multi-agent AI conver
 
 3. **Initialize a new project**:
    ```bash
-   ingen initialize-new-project
+   ingen init
    ```
 
 4. **Configure API keys** in `~/.ingenious/profiles.yml`:

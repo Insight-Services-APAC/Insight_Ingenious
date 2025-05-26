@@ -10,10 +10,10 @@ chat_service:
   type: basic
 file_storage:
   containers:
-    - name: data
-      path: ./data
-    - name: revisions
-      path: ./revisions
+  - name: data
+    path: ./data
+  - name: revisions
+    path: ./revisions
   data:
     add_sub_folders: true
     path: ./data
@@ -30,12 +30,12 @@ logging:
   log_level: INFO
   root_log_level: INFO
 models:
-  - api_key: test-api-key
-    api_type: azure
-    api_version: '2023-05-15'
-    base_url: https://example.com/openai
-    model: gpt-4o
-    name: test-model
+- api_key: test-api-key
+  api_type: azure
+  api_version: '2023-05-15'
+  base_url: https://example.com/openai
+  model: gpt-4o
+  name: test-model
 profile: test
 tool_service:
   enable: false

@@ -36,15 +36,16 @@ class TestCliCommands:
         """Test the main CLI help output."""
         result = runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "run-rest-api-server" in result.stdout
-        assert "initialize-new-project" in result.stdout
+        assert "run" in result.stdout
+        assert "init" in result.stdout
         assert "run-prompt-tuner" in result.stdout
 
-    def test_initialize_new_project_help(self, runner):
-        """Test the help output for initialize-new-project command."""
-        result = runner.invoke(app, ["initialize-new-project", "--help"])
+    def test_init_help(self, runner):
+        """Test the help output for init command."""
+        result = runner.invoke(app, ["init", "--help"])
         assert result.exit_code == 0
         assert "Generate template folders for a new project" in result.stdout
+        assert "PROJECT_DIR" not in result.stdout  # It's not an argument for init
 
     def test_run_prompt_tuner_help(self, runner):
         """Test the help output for run-prompt-tuner command."""
@@ -52,14 +53,14 @@ class TestCliCommands:
         assert result.exit_code == 0
         assert "Run the prompt tuner web application" in result.stdout
 
-    def test_run_rest_api_server_help(self, runner):
-        """Test the help output for run-rest-api-server command."""
-        result = runner.invoke(app, ["run-rest-api-server", "--help"])
+    def test_run_help(self, runner):
+        """Test the help output for run command."""
+        result = runner.invoke(app, ["run", "--help"])
         assert result.exit_code == 0
         assert "This command will run a fastapi server" in result.stdout
         assert "PROJECT_DIR" in result.stdout  # It's an argument, not an option
 
-    def test_initialize_new_project(self, runner, temp_project_dir):
+    def test_init(self, runner, temp_project_dir):
         """Test initializing a new project."""
         # Mock the ProjectSetupExecutor to avoid actual file operations
         with patch(
@@ -70,7 +71,7 @@ class TestCliCommands:
             mock_executor.return_value = mock_instance
 
             # Run the command
-            result = runner.invoke(app, ["initialize-new-project"])
+            result = runner.invoke(app, ["init"])
 
             # Check the result
             assert result.exit_code == 0
@@ -79,10 +80,10 @@ class TestCliCommands:
             mock_instance.initialize_new_project.assert_called_once()
 
     @patch("uvicorn.run")
-    def test_run_rest_api_server(self, mock_run, runner):
+    def test_run(self, mock_run, runner):
         """Test the REST API server command."""
         # Simplified test - skip the actual execution but check help output
-        result = runner.invoke(app, ["run-rest-api-server", "--help"])
+        result = runner.invoke(app, ["run", "--help"])
         assert result.exit_code == 0
         assert "This command will run a fastapi server" in result.stdout
 
