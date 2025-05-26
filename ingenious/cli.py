@@ -36,6 +36,18 @@ def log_levels():
 
 
 @app.command()
+def init():
+    """Generate template folders for a new Ingenious project."""
+    from ingenious.common.utils.cli_command_executor import ProjectSetupExecutor
+
+    # Create a project setup executor
+    executor = ProjectSetupExecutor(console=console)
+
+    # Initialize a new project
+    executor.initialize_new_project()
+
+
+@app.command()
 def run(
     project_dir: Annotated[
         Optional[str],
@@ -63,7 +75,7 @@ def run(
     ] = "",
 ):
     """
-    This command will run a fastapi server and present your agent workflows via a rest endpoint.
+    Run a FastAPI server and present your agent workflows via a REST endpoint.
     """
     # Set environment variables
     if project_dir is not None:
@@ -122,18 +134,6 @@ def run(
         host=host,
         port=port,
     )
-
-
-@app.command()
-def init():
-    """Generate template folders for a new project using the Ingenious framework."""
-    from ingenious.common.utils.cli_command_executor import ProjectSetupExecutor
-
-    # Create a project setup executor
-    executor = ProjectSetupExecutor(console=console)
-
-    # Initialize a new project
-    executor.initialize_new_project()
 
 
 @app.command()

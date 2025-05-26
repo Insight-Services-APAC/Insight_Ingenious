@@ -2,10 +2,7 @@
 Functional tests for the CLI commands.
 """
 
-import os
-import tempfile
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from typer.testing import CliRunner
