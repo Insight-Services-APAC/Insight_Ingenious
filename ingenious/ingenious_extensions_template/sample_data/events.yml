@@ -1,7 +1,0 @@
-- identifier: '04'
-  event_type: default
-  file_name: bike_sales_april_2023.json
-  response_content: no response generated
-  conversation_flow: "bike_insights"
-  identifier_group: "week1"
-

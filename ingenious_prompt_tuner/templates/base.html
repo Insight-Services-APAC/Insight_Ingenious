@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Markdown Editor & Responses{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    {% block head %}{% endblock %}
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            {% block title %}Markdown Editor & Responses{% endblock %}
+        </title>
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        {% block head %}{% endblock %}
+        <style>
         html, body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             font-size: 16px;
@@ -91,7 +95,7 @@
             background-color: rgba(255,255,255,0.1);
             color: white;
         }
-        
+
         .navbar-collapse.collapse.show {
             background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
             padding: 1rem; /* Optional: add padding for spacing */
@@ -102,43 +106,57 @@
             margin-right: 8px;
         }
 
-        
-    </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="topbar navbar sticky-top navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="https://companieslogo.com/img/orig/NSIT-65c6ad49.png" alt="Bootstrap" width="35" height="35">
-                <span style="margin-left: 15px">Ingenious - Prompt Tuner</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index.home') }}" data-url="{{ url_for('index.home') }}">Home</a>
-                    </li>
-                    <li class="nav-item" id="editPromptsNav">
-                        <a class="nav-link" href="{{ url_for('prompts.list') }}" data-url="{{ url_for('prompts.list') }}">Edit Prompts</a>
-                    </li>
-                    <li class="nav-item" id="runTestsNav" >
-                        <a class="nav-link" href="{{ url_for('responses.list') }}" data-url="{{ url_for('responses.list') }}">Run Tests</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-    {% block scripts %}{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+        </style>
+    </head>
+    <body>
+        <!-- Navbar -->
+        <nav class="topbar navbar sticky-top navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <img src="https://companieslogo.com/img/orig/NSIT-65c6ad49.png"
+                         alt="Bootstrap"
+                         width="35"
+                         height="35">
+                    <span style="margin-left: 15px">Ingenious - Prompt Tuner</span>
+                </a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav"
+                        aria-controls="navbarNav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="{{ url_for('index.home') }}"
+                               data-url="{{ url_for('index.home') }}">Home</a>
+                        </li>
+                        <li class="nav-item" id="editPromptsNav">
+                            <a class="nav-link"
+                               href="{{ url_for('prompts.list') }}"
+                               data-url="{{ url_for('prompts.list') }}">Edit Prompts</a>
+                        </li>
+                        <li class="nav-item" id="runTestsNav">
+                            <a class="nav-link"
+                               href="{{ url_for('responses.list') }}"
+                               data-url="{{ url_for('responses.list') }}">Run Tests</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+        {% block scripts %}{% endblock %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -172,7 +190,7 @@
             setActiveNav(element);
             // navigate to the selected page
             window.location.href = url;
-            
+
         }
 
         function showEdit(element) {
@@ -180,7 +198,7 @@
             document.getElementById('editSection').style.display = 'block';
             document.getElementById('responsesSection').style.display = 'none';
         }
-        
+
         // Function to get cookie value by name
         function getCookie(name) {
             var value = "; " + document.cookie;
@@ -188,6 +206,6 @@
             if (parts.length == 2) return parts.pop().split(";").shift();
         }
 
-    </script>
-</body>
+        </script>
+    </body>
 </html>

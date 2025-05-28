@@ -1,33 +1,49 @@
 <div class="markdown-content" markdown='1'>
     <div class="row btn-font-size-sm">
         <div class="col-8">
-            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-toolbar"
+                 role="toolbar"
+                 aria-label="Toolbar with button groups">
                 <div class="btn-group me-2" role="group">
-                    <button type="button" class="btn btn-danger btn-sm disabled"><span style="font-size:x-small;">{{agent_name}}</span></button>
-                    <button type="button" class="btn btn-secondary btn-sm disabled"><span style="font-size:x-small;">Start Time: {{start_time}}</span></button>
-                    <button type="button" class="btn btn-warning btn-sm disabled"><span style="font-size:x-small;">Execution Time: {{execution_time}}</span></button>
-                    <button type="button" class="btn btn-info btn-sm disabled"><span style="font-size:x-small;">Prompt Tokens: {{ prompt_tokens }}</span></button>
-                    <button type="button" class="btn btn-dark btn-sm disabled"><span style="font-size:x-small;">Completion Tokens: {{ completion_tokens }}</span></button>
+                    <button type="button" class="btn btn-danger btn-sm disabled">
+                        <span style="font-size:x-small;">{{ agent_name }}</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm disabled">
+                        <span style="font-size:x-small;">Start Time: {{ start_time }}</span>
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm disabled">
+                        <span style="font-size:x-small;">Execution Time: {{ execution_time }}</span>
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm disabled">
+                        <span style="font-size:x-small;">Prompt Tokens: {{ prompt_tokens }}</span>
+                    </button>
+                    <button type="button" class="btn btn-dark btn-sm disabled">
+                        <span style="font-size:x-small;">Completion Tokens: {{ completion_tokens }}</span>
+                    </button>
                 </div>
             </div>
         </div>
         <div class="col-4">
-            <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-toolbar justify-content-end"
+                 role="toolbar"
+                 aria-label="Toolbar with button groups">
                 <div class="btn-group me-2" role="group">
-                    <button type="button" 
+                    <button type="button"
                             class="btn btn-dark btn-sm"
-                            data-bs-toggle="tooltip" 
+                            data-bs-toggle="tooltip"
                             data-bs-placement="bottom"
-                            data-bs-title="View System Prompt" 
-                            onclick="get_agent_inputs('{{ identifier  }}', '{{ event_type }}', '{{ agent_name }}', 'system_prompt', '{{ identifier_group }}')"
-                    ><i class="fa-solid fa-screwdriver-wrench"></i></button>
-                    <button type="button" 
+                            data-bs-title="View System Prompt"
+                            onclick="get_agent_inputs('{{ identifier }}', '{{ event_type }}', '{{ agent_name }}', 'system_prompt', '{{ identifier_group }}')">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </button>
+                    <button type="button"
                             class="btn btn-warning btn-sm"
-                            data-bs-toggle="tooltip" 
-                            data-bs-placement="bottom" 
-                            data-bs-title="View Input Message" 
-                            onclick="get_agent_inputs('{{ identifier  }}', '{{ event_type }}', '{{ agent_name }}', 'user_input', '{{ identifier_group }}')"
-                    ><i class="fa-solid fa-code"></i></button>
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="bottom"
+                            data-bs-title="View Input Message"
+                            onclick="get_agent_inputs('{{ identifier }}', '{{ event_type }}', '{{ agent_name }}', 'user_input', '{{ identifier_group }}')">
+                        <i class="fa-solid fa-code"></i>
+                    </button>
                 </div>
             </div>
         </div>

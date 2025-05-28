@@ -1,2 +1,0 @@
-[console_scripts]
-ingen_cli = ingenious.cli:app

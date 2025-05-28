@@ -1,0 +1,29 @@
+# Config template for Ingenious projects
+# This is a template file that will be copied to your project root as config.yml
+
+project:
+  name: my_ingenious_project
+  description: A new Ingenious framework project
+  version: 0.1.0
+web_configuration:
+  ip_address: 0.0.0.0
+  port: 80
+  logging_level: INFO
+extensions:
+  enabled: true
+  paths:
+    - ./extensions
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    organization: ${OPENAI_ORGANIZATION}
+    # Uncomment to use Azure OpenAI
+    # azure_endpoint: ${AZURE_OPENAI_ENDPOINT}
+    # api_version: "2023-05-15"
+    # deployment_name: ${AZURE_OPENAI_DEPLOYMENT_NAME}
+models:
+  default:
+    provider: openai
+    model_name: gpt-4o
+    temperature: 0.7
+    max_tokens: 1000

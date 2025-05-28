@@ -1,80 +1,83 @@
-[build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "ingenious"
-version = "1.0.0"
-description = "A python library for accelerating Generative AI projects"
+name = "insight-ingenious"
+version = "0.1.0"
+description = "GenAI Accelerator"
 readme = "README.md"
-authors = [
-    {name = "John Rampono", email = "john.rampono@insight.com"},
-    {name = "Elliot Zhu", email = "elliot.zhu@insight.com"}
-]
-urls = { "Homepage" = "https://github.com/Insight-Services-APAC/Insight_Ingenious" }
-requires-python = ">=3.12"
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: Microsoft :: Windows",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: POSIX :: Linux",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12"
-]
+requires-python = ">=3.13"
 dependencies = [
-    "Jinja2==3.1.4",
+    "aiosqlite>=0.21.0",
     "annotated-types==0.7.0",
+    "anyio>=4.9.0",
+    "autogen-agentchat==0.4.2",
+    "autogen-ext[openai]==0.4.2",
     "azure-core==1.30.2",
+    "azure-cosmos>=4.9.0",
+    "azure-identity>=1.17.1",
+    "azure-keyvault>=4.2.0",
     "azure-search-documents==11.4.0",
-    "azure.cosmos",
-    "azure.identity",
-    "azure.keyvault",
-    "azure.storage.blob",
+    "azure-storage-blob>=12.25.1",
     "certifi==2024.6.2",
     "chainlit==2.0.602",
     "chromadb==0.5.5",
+    "colorlog>=6.9.0",
     "duckdb==1.1.3",
-    "fastapi-cli==0.0.7",
     "fastapi==0.115.7",
+    "fastapi-cli==0.0.7",
     "flask==3.0.3",
     "ipython==8.27.0",
+    "jinja2==3.1.4",
     "jsonpickle==4.0.1",
-    "markdown-it-py==3.0.0",
     "markdown==3.7",
+    "markdown-it-py==3.0.0",
     "markdownify==0.13.1",
     "markpickle==1.6.1",
     "matplotlib==3.9.2",
     "numpy==1.26.4",
     "openai==1.59.6",
     "pandas==2.2.3",
-    "autogen-agentchat==0.4.2",
-    "autogen-ext[openai]==0.4.2",
     "pydantic==2.10.6",
     "pyodbc==5.2.0",
     "pypdf==4.3.1",
     "seaborn==0.13.2",
-    "typer",
+    "typer>=0.15.4",
 ]
 
-[project.optional-dependencies]
-windows = ["pywin32==3.0.6"]
-ChatHistorySummariser = [
-    "sentence_transformers==3.1.1"
-]
-
-[project.scripts]
-ingen_cli = "ingenious.cli:app"
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["ingenious", "ingenious/**", "ingenious_prompt_tuner", "ingenious_prompt_tuner/**"]
-exclude = ["ingenious_extensions", "ingenious_extensions/**"]
-
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-include-package-data = true
-zip-safe = false
+packages = ["ingenious"]
 
-[tool.setuptools.package-data]
-ingenious = ["**/*.py", "**/*.md", "**/*.jinja", "**/*.csv", "**/*.html", "**/*.dockerfile", "**/*.sh", "**/*.json", "**/*.css", "**/*.js", "**/*.png", "**/*.yml"]
+[project.scripts]
+ingen = "ingenious.cli:app"
+
+[tool.ruff.lint]
+extend-select = ["I"]
+ignore = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "functional: Functional tests",
+    "slow: Slow running tests",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-cov>=6.1.1",
+    "pytest-mock>=3.14.0",
+    "pytest-timeout>=2.4.0",
+    "ruff>=0.11.10",
+    "vulture>=2.14",
+]

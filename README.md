@@ -1,158 +1,86 @@
 # Insight Ingenious
 
-Insight Ingenious is a flexible, extensible AI framework for building, managing, and deploying intelligent agent-based conversations. It provides a robust infrastructure for creating multi-agent conversations with LLM-based agents, enabling complex workflows and sophisticated AI interactions.
+A powerful framework for building, managing, and deploying multi-agent AI conversations with modern Python.
 
-## Overview
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/release/python-3130/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Insight Ingenious serves as a comprehensive platform for developing AI solutions with the following key capabilities:
+## Key Features
 
-- **Multi-agent orchestration**: Enables the coordination of multiple specialized AI agents in a collaborative conversation flow
-- **Flexible deployment**: Supports both web API and command-line interfaces
-- **Database integration**: Connects with various databases (SQLite, Cosmos DB) for conversation history and data persistence
-- **Template-based prompting**: Uses Jinja templates to create consistent prompting patterns
-- **Extensibility**: Allows custom conversation flows through a plugin architecture
-- **Visualization**: Includes tools for data visualization and analysis
+- **Multi-Agent Orchestration**: Create and manage conversations between multiple AI agents
+- **Extensible Architecture**: Easily extend with custom agents, templates, and APIs
+- **Database Integration**: Store conversations in SQLite or Azure Cosmos DB
+- **Modern Package Management**: Built with [uv](https://docs.astral.sh/uv/) for fast dependency management
+- **Web Interfaces**: Access via REST API, ChainLit UI, or Prompt Tuner
+- **Comprehensive Documentation**: Detailed guides and references
 
-The framework is designed to facilitate complex interactions between AI components, making it suitable for applications in education, analytics, knowledge management, and more.
+## Quickstart
 
-## Key Components
-
-### Core Framework
-
-- **`ingenious/main.py`**: The main entry point for the FastAPI application, responsible for setting up API routes and middleware
-- **`ingenious/cli.py`**: Command-line interface for various operations including launching the REST API server
-- **`ingenious/dependencies.py`**: Dependency injection system for service registration and configuration
-
-### Configuration
-
-- **`ingenious/config/`**: Configuration management including profile handling and environment-based settings
-- **`ingenious/models/config.py`**: Configuration models (Pydantic) for type-safe configuration
-
-### Data Layer
-
-- **`ingenious/db/`**: Database abstractions with implementations for SQLite and Cosmos DB
-- **`ingenious/files/`**: Storage abstractions for file operations with local and Azure implementations
-
-### Chat Services
-
-- **`ingenious/services/chat_service.py`**: Core service for managing chat interactions
-- **`ingenious/services/chat_services/multi_agent/`**: Multi-agent conversation management
-- **`ingenious/services/chat_services/multi_agent/conversation_flows/`**: Specialized conversation flow implementations
-
-### Agent Patterns
-
-- **`ingenious/services/chat_services/multi_agent/conversation_patterns/`**: Reusable conversation patterns for different use cases
-- **`ingenious/services/chat_services/multi_agent/agents/`**: Agent definitions and implementations
-
-### API
-
-- **`ingenious/api/routes/`**: API route definitions for the REST interface
-- **`ingenious/models/chat.py`**: Data models for chat requests and responses
-
-### Utilities
-
-- **`ingenious/utils/`**: Various utilities including namespace handling, token counting, and templating
-- **`ingenious/templates/`**: Template files for agent prompts and responses
-
-## Available Conversation Flows
-
-The framework comes with several pre-built conversation flows:
-
-- **Classification Agent**: For classifying content in a conversational context
-- **Knowledge Base Agent**: For retrieving information from knowledge bases
-- **SQL Manipulation Agent**: For generating and executing SQL queries
-- **Web Critic Agent**: For analyzing and critiquing web content
-- **Pandas Agent**: For data analysis and visualization using pandas
-
-## Extension Points
-
-Insight Ingenious is designed to be extended through:
-
-1. **Custom conversation flows**: Add new flows in `ingenious_extensions/services/chat_services/multi_agent/conversation_flows/`
-2. **Custom agent implementations**: Define new agents in `ingenious_extensions/services/chat_services/multi_agent/agents/`
-3. **Custom API routes**: Add new API endpoints in `ingenious_extensions/api/routes/`
-4. **Custom prompt templates**: Create new templates in `ingenious_extensions/templates/prompts/`
-
-## Setup Development Environment
-
-To set up the development environment, follow these steps:
-
-1. **Deactivate and Remove Existing Virtual Environment (if applicable)**:
-
+1. **Clone the repository**:
    ```bash
-   deactivate
-   rm -rf .venv
+   git clone https://github.com/Insight-Services-APAC/Insight_Ingenious.git
+   cd Insight_Ingenious
    ```
 
-2. **Create and Activate a New Virtual Environment**:
-
+2. **Install dependencies** with uv:
    ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
+   curl -LsSf https://astral.sh/uv/install.sh | sh   # If you don't have uv installed
+   uv venv
+   uv pip install -e .
    ```
 
-3. **Install the Base Ingenious Package**:
-   Run the following command to install the `ingenious` package without dependencies:
-
+3. **Initialize a new project**:
    ```bash
-   pip install git+https://github.com/Insight-Services-APAC/Insight_Ingenious.git#egg=ingenious --force-reinstall
+   ingen init
    ```
 
-   This installs the base framework which is extended by custom extensions such as models, services, and templates.
+4. **Configure API keys** in `~/.ingenious/profiles.yml`:
+   ```yaml
+   profiles:
+     - name: default
+       openai:
+         api_key: your_openai_api_key
+   ```
 
-4. **Create a `.gitignore` File**:
-   Generate a `.gitignore` file to exclude unnecessary files and directories from version control:
-
+5. **Start the API server**:
    ```bash
-   echo "
-   .DS_Store
-   /.venv
-   /.chainlit
-   /.idea
-   /.cache
-   /env_mkdocs/
-   /tmp/context.md
-   /tmp/*.db
-   /dist/
-   /functional_test_outputs/
-   __pycache__" > .gitignore
+   ingen run-rest-api-server --host 127.0.0.1 --port 8000
    ```
 
-5. **Create Profile and Configure Environment Variables**:
-   Set up the `APPSETTING_INGENIOUS_CONFIG` and `APPSETTING_INGENIOUS_PROFILE` environment variables.
+6. **Access the interfaces**:
+   - REST API: http://127.0.0.1:8000/api/v1
+   - ChainLit UI: http://127.0.0.1:8000/chainlit
+   - Prompt Tuner: http://127.0.0.1:8000/prompt-tuner
 
-6. **Add/Create Template Folders**:
+## Documentation
 
-   ```bash
-   ingen_cli initialize_new_project
-   ```
+Comprehensive documentation is available in the [docs/](docs/) directory:
 
-   Check the `ingenious_extensions` and `tmp` folder in your project root directory. Ensure it contains the following structure:
+- [Architecture Overview](docs/architecture.md)
+- [Installation Guide](docs/installation.md)
+- [Quickstart Guide](docs/quickstart.md)
+- [API Documentation](docs/api.md)
+- [Configuration Guide](docs/configuration.md)
+- [Working with Agents](docs/agents.md)
+- [Extension System](docs/extensions.md)
+- [Testing Framework](docs/testing.md)
+- [CLI Reference](docs/cli.md)
 
-   ```
-   tmp/
-   ├── context.md
-   ingenious_extensions/
-   ├── local_files/
-   ├── models/
-   ├── services/
-   ├── templates/
-   └── tests/
-   ```
+## Core Components
 
-7. **Run Tests**:
-   Execute the test batch using the following command:
+- **FastAgentAPI**: The main application class that initializes the system
+- **Agent System**: Define and orchestrate conversations between AI agents
+- **Chat Services**: Handle different types of agent conversations
+- **Storage Layer**: Persist conversations and files
+- **Extension System**: Customize and extend functionality
 
-   ```bash
-   ingen_cli run-test-batch
-   ```
+## Contributing
 
-8. **AI Test Harness**:
+Contributions to Insight Ingenious are welcome! Please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) file for detailed contribution guidelines including code standards, pull request process, and development setup.
 
-   ```bash
-   python ingenious_extensions/tests/run_flask_app.py
-   ```
+## License
 
+<<<<<<< HEAD
 9. **CLI Test Harness**:
    ```bash
    python ingenious_extensions/tests/run_ingen_cli.py
@@ -168,3 +96,6 @@ To set up a new project:
 4. Run your application with `ingen_cli run-rest-api-server`
 
 The framework includes templates and examples to help you get started quickly with your own AI applications.
+=======
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+>>>>>>> origin/main

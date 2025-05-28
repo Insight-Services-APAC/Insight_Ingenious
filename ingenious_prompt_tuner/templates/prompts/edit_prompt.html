@@ -1,39 +1,38 @@
 {% extends "base.html" %}
-
 {% block title %}Edit File{% endblock %}
-
 {% block head %}
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor/dist/tiny-mde.min.css"
-/>
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/tiny-markdown-editor/dist/tiny-mde.min.css" />
 {% endblock %}
-
 {% block content %}
-<div class="alert alert-primary alert-dismissible fade show" role="alert">
-    <h4 class="alert-heading">Prompts</h4>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    <p>Use this page edit the agent prompts</p>
-    <p><em>Note: The prompt template folder is: {{ prompt_template_folder }}</em>
-    </p>
-    
-</div>
-
-<h3 class="header-space" >Editing: {{ filename }}</h3>
-<form method="POST">
-    <div id="toolbar"></div>
-    <textarea id="editor" name="file_content" rows="25" class="form-control">{{ content }}</textarea>
-    <br>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="{{ url_for('prompts.list') }}" class="btn btn-secondary">Back</a>
-</form>
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading">Prompts</h4>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+        <p>Use this page edit the agent prompts</p>
+        <p>
+            <em>Note: The prompt template folder is: {{ prompt_template_folder }}</em>
+        </p>
+    </div>
+    <h3 class="header-space">Editing: {{ filename }}</h3>
+    <form method="POST">
+        <div id="toolbar"></div>
+        <textarea id="editor" name="file_content" rows="25" class="form-control">{{ content }}</textarea>
+        <br>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('prompts.list') }}" class="btn btn-secondary">Back</a>
+    </form>
 {% endblock %}
-
 {% block scripts %}
-<script src="https://unpkg.com/tiny-markdown-editor/dist/tiny-mde.min.js"></script>
-<script>
+    <script src="https://unpkg.com/tiny-markdown-editor/dist/tiny-mde.min.js"></script>
+    <script>
     var tinyMDE = new TinyMDE.Editor({element: 'editor'});
     var commandBar = new TinyMDE.CommandBar({
     element: "toolbar",
     editor: tinyMDE,
 });
-</script>
+    </script>
 {% endblock %}

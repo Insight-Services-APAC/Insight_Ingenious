@@ -1,36 +1,46 @@
-<div class="event card border-primary focus-ring" id='{{ identifier }}_{{ event_type }}'>
+<div class="event card border-primary focus-ring"
+     id='{{ identifier }}_{{ event_type }}'>
     <div class="data_file_heading card-header">
         <div class="row">
             <div class="col">
                 <em>{{ file_name }}</em>
                 <span class="event_type badge text-bg-warning">Event Type: {{ event_type }}</span>
-                <span class="identifier badge text-bg-secondary">Identifier: {{ identifier }} </span>
-                <span class="identifier_group badge text-bg-secondary">Identifier_Group: {{ identifier_group }} </span>
+                <span class="identifier badge text-bg-secondary">Identifier: {{ identifier }}</span>
+                <span class="identifier_group badge text-bg-secondary">Identifier_Group: {{ identifier_group }}</span>
             </div>
             <div class="col ">
-                <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-toolbar justify-content-end"
+                     role="toolbar"
+                     aria-label="Toolbar with button groups">
                     <div class="btn-group me-2" role="group">
-                        <button class="btn btn-danger" 
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Generate or Regenerate Response" 
-                                onclick="reRunEventAsync('{{ identifier  }}', '{{ event_type }}', '{{ file_name }}', '{{ identifier_group }}')">
+                        <button class="btn btn-danger"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-title="Generate or Regenerate Response"
+                                onclick="reRunEventAsync('{{ identifier }}', '{{ event_type }}', '{{ file_name }}', '{{ identifier_group }}')">
                             <i class="fa-solid fa-repeat"></i>
                         </button>
                     </div>
-                    <div class="btn-group me-2" role="group">        
-                        {% for agent in agents %}    
-                        <button class="btn btn-primary" id="{{ identifier }}_{{ event_type }}_{{ agent.agent_name }}" 
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View the response for the {{ agent.agent_name }}"
-                                onclick="get_agent_response('{{ identifier  }}', '{{ event_type }}', '{{ agent.agent_name }}', '{{ identifier_group }}')">
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                            <i class="fa-solid fa-comment-dots icon"></i>{{ loop.index }}
-                        </button>
+                    <div class="btn-group me-2" role="group">
+                        {% for agent in agents %}
+                            <button class="btn btn-primary"
+                                    id="{{ identifier }}_{{ event_type }}_{{ agent.agent_name }}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="View the response for the {{ agent.agent_name }}"
+                                    onclick="get_agent_response('{{ identifier }}', '{{ event_type }}', '{{ agent.agent_name }}', '{{ identifier_group }}')">
+                                <span class="spinner-border spinner-border-sm"
+                                      role="status"
+                                      aria-hidden="true"
+                                      style="display: none"></span>
+                                <i class="fa-solid fa-comment-dots icon"></i>{{ loop.index }}
+                            </button>
                         {% endfor %}
-                        
                     </div>
                 </div>
             </div>
-        </div>    
-    </div>    
+        </div>
+    </div>
     <div class="card-body">
         <div class="markdown-content"></div>
     </div>

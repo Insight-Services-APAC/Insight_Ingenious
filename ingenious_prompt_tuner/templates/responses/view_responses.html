@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-
 {% block title %}View Responses - Markdown Editor & Responses{% endblock %}
-
 {% block head %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
- <!-- DataTables CSS -->
- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.min.css">
-<style>
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.min.css">
+    <style>
 hr {
     border: 0;
     border-top: 1px solid #e0e0e0;
@@ -28,11 +28,11 @@ hr {
     padding-bottom: 0.5rem;
 }
 
-.markdown-content h1::before, 
-.markdown-content h2::before, 
-.markdown-content h3::before, 
-.markdown-content h4::before, 
-.markdown-content h5::before, 
+.markdown-content h1::before,
+.markdown-content h2::before,
+.markdown-content h3::before,
+.markdown-content h4::before,
+.markdown-content h5::before,
 .markdown-content h6::before {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
@@ -74,7 +74,7 @@ hr {
     color: #495057;
 }
 
-.markdown-content ul, 
+.markdown-content ul,
 .markdown-content ol {
     margin-bottom: 1rem;
     padding-left: 2rem;
@@ -189,96 +189,109 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .codehilite .vm { color: #19177C } /* Name.Variable.Magic */
 .codehilite .il { color: #666666 } /* Literal.Number.Integer.Long */
 
-</style>
-
+    </style>
 {% endblock %}
-
 {% block content %}
-
-<div id="spinner" class="spinner-border" role="status" style="display: block; margin: 0 auto;">
-    <span class="visually-hidden">Loading...</span>
-</div> 
-
-<!-- Modal -->
-<div class="modal fade"  id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Console Window</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="progressContainer">...</div>
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <div id="spinner"
+         class="spinner-border"
+         role="status"
+         style="display: block;
+                margin: 0 auto">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade"
+         id="myModal"
+         tabindex="-1"
+         aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Console Window</h1>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="progressContainer">...</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- End Modal -->
-
-<br/>
-<div class="alert alert-primary alert-dismissible fade show" role="alert">
-    <h4 class="alert-heading">Agent Responses</h4>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    <p> Use this page to view and regenerate agent responses.</p>
-    <ul>
-        <li><em>The prompt template folder is: {{ prompt_template_folder }}</em></li>
-        <li><em> The data folder is: {{ data_template_folder }}</em></li>
-    </ul>
-    <br/>
-    <button class="btn btn-danger" onclick="refreshAllResponses()">
-        <i class="bi bi-arrow-clockwise icon"></i> Refresh All Responses
-    </button>
-</div>
-<div class="collapse" id="advSettingsSection">
-    <div class="card-body">
-        <p class="card-text"> Edit advanced settings here!</p>
-        <hr/>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <div class="btn-group w-100 mb-3" role="group">
-                    <button class="btn btn-secondary" onclick="refreshResponses()">
-                        <i class="bi bi-arrow-clockwise icon"></i> Show Responses
-                    </button>
-                    <button class="btn btn-danger" id="runTestsBtn" onclick="runLocalTest()">
-                        <i class="bi bi-play-circle icon"></i> Re-Run
-                    </button>
-                    <button class="btn btn-outline-dark" id="showConsole" data-bs-toggle="modal" data-bs-target="#myModal">
-                        <i class="bi bi-download icon"></i> View Console
-                    </button>
+    <!-- End Modal -->
+    <br />
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading">Agent Responses</h4>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+        <p>Use this page to view and regenerate agent responses.</p>
+        <ul>
+            <li>
+                <em>The prompt template folder is: {{ prompt_template_folder }}</em>
+            </li>
+            <li>
+                <em>The data folder is: {{ data_template_folder }}</em>
+            </li>
+        </ul>
+        <br />
+        <button class="btn btn-danger" onclick="refreshAllResponses()">
+            <i class="bi bi-arrow-clockwise icon"></i> Refresh All Responses
+        </button>
+    </div>
+    <div class="collapse" id="advSettingsSection">
+        <div class="card-body">
+            <p class="card-text">Edit advanced settings here!</p>
+            <hr />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="btn-group w-100 mb-3" role="group">
+                        <button class="btn btn-secondary" onclick="refreshResponses()">
+                            <i class="bi bi-arrow-clockwise icon"></i> Show Responses
+                        </button>
+                        <button class="btn btn-danger" id="runTestsBtn" onclick="runLocalTest()">
+                            <i class="bi bi-play-circle icon"></i> Re-Run
+                        </button>
+                        <button class="btn btn-outline-dark"
+                                id="showConsole"
+                                data-bs-toggle="modal"
+                                data-bs-target="#myModal">
+                            <i class="bi bi-download icon"></i> View Console
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="input-group">
-                    <label for="maxProcessedEvents" class="input-group-text">Max Processed Events</label>
-                    <input type="number" class="form-control" id="maxProcessedEvents" value="1">
-                    <label for="eventType" class="input-group-text ms-3">Event Type</label>
-                    <select class="form-select" id="eventType">
-                        <option value="all">All</option>
-                        <option value="iswicket">Wicket</option>
-                        <option value="score">Scorecard</option>
-                        <option value="status">Status Change</option>
-                    </select>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <label for="maxProcessedEvents" class="input-group-text">Max Processed Events</label>
+                        <input type="number" class="form-control" id="maxProcessedEvents" value="1">
+                        <label for="eventType" class="input-group-text ms-3">Event Type</label>
+                        <select class="form-select" id="eventType">
+                            <option value="all">All</option>
+                            <option value="iswicket">Wicket</option>
+                            <option value="score">Scorecard</option>
+                            <option value="status">Status Change</option>
+                        </select>
+                    </div>
+                    <span id="testStatusSpan" class="ms-3"></span>
                 </div>
-                <span id="testStatusSpan" class="ms-3"></span>
             </div>
         </div>
     </div>
-</div>
-<div id="responsesContainer"></div>
-
-
+    <div id="responsesContainer"></div>
 {% endblock %}
-
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- DataTables JS -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
-<script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript"
+            charset="utf8"
+            src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
+    <script>
     fetchInProgress = false;
     window.addEventListener('load', function() {
         document.getElementById('spinner').style.display = 'none';
@@ -326,9 +339,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                 </div>
                 </div>
             `;
-        
+
             document.body.appendChild(modal);
-            
+
             init_tooltips();
 
             const bootstrapModal = new bootstrap.Modal(modal);
@@ -375,7 +388,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
             </div>
         `;
         document.body.appendChild(modal);
-        
+
         init_tooltips();
         init_datatables();
         const bootstrapModal = new bootstrap.Modal(modal);
@@ -410,7 +423,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     const ballIdentifier = event.identifier;
                     const identifier_group = event.identifier_group;
                     await reRunEventAsync(ballIdentifier, eventType, event.file_name, identifier_group);
-                    // wait for fetchInProgress to be false 
+                    // wait for fetchInProgress to be false
                     while(fetchInProgress) {
                         await new Promise(resolve => setTimeout(resolve, 1000));
                     }
@@ -445,7 +458,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
                     var identifier_group = $(this).find('.identifier_group').text().split(':')[1].trim();
                     getFileContent(ballIdentifier, eventType, identifier_group);
                 });
-                init_tooltips();    
+                init_tooltips();
             })
             .catch(err => {
                 responsesContainer.innerHTML = "<p class='text-danger'>Error loading responses. Please try again later.</p>";
@@ -484,7 +497,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         $.ajax({
             url: '{{ url_for("responses.get_agent_response_from_file") }}',
             type: 'POST',
-            data: { 
+            data: {
                 identifier: identifier,
                 event_type: event_type,
                 identifier_group: identifier_group
@@ -575,5 +588,5 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
         progressModal.show();
     }
-</script>
+    </script>
 {% endblock %}

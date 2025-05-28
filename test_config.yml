@@ -1,0 +1,48 @@
+azure_search_services: []
+azure_sql_services:
+  database_connection_string: ''
+chainlit_configuration:
+  enable: false
+chat_history:
+  connection_string: ':memory:'
+  database_type: sqlite
+chat_service:
+  type: basic
+file_storage:
+  containers:
+  - name: data
+    path: ./data
+  - name: revisions
+    path: ./revisions
+  data:
+    add_sub_folders: true
+    path: ./data
+    storage_type: local
+  path: ./storage
+  revisions:
+    add_sub_folders: true
+    path: ./revisions
+    storage_type: local
+  storage_type: local
+local_sql_db:
+  connection_string: ''
+logging:
+  log_level: INFO
+  root_log_level: INFO
+models:
+- api_key: test-api-key
+  api_type: azure
+  api_version: '2023-05-15'
+  base_url: https://example.com/openai
+  model: gpt-4o
+  name: test-model
+profile: test
+tool_service:
+  enable: false
+web_configuration:
+  authentication:
+    enable: false
+    password: password
+    username: test_user
+  ip_address: 0.0.0.0
+  port: 8000

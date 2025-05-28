@@ -1,78 +1,96 @@
 {% extends "base.html" %}
-
-
 {% block head %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/3.0.0/css/select.dataTables.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.css">
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://cdn.datatables.net/select/3.0.0/css/select.dataTables.min.css">
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.css">
 {% endblock %}
-
 {% block title %}Home - Ingenious Prompt Tuner{% endblock %}
-
 {% block content %}
-<br/>
-<div class="alert alert-primary alert-dismissible fade show" role="alert">
-    <h4 class="alert-heading">Welcome</h4>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    <p> This is the the home page of the Ingenious prompt tuning application. It is a development tool designed to help you iterate and ideate on AI agent prompts quickly and efficiently.</p>
-    <p> Revisions folder is: {{ base_folder }}.</p>
-    
-</div>
-
-<p></p>
-<p class="lead" id="selectedRevisionNotice">To begin select a revision from the list below. </p>
-<div class="btn-group" role="group" aria-label="Revision Actions">
-    <button id="createRevisionButton" onclick=javascript:window.open('{{ url_for('index.create_revision') }}') class="btn btn-outline-primary" disabled>
-        <i class="bi bi-copy"></i>  Copy Selected Revision
-    </button>
-    <button id="syncSampleData" 
-        onclick="SyncSampleData()" 
-        class="btn btn-outline-warning" 
-        disabled>
-        <i class="bi bi-arrow-repeat"></i>  Sync Sample Data 
-        <span id="syncSampleDataSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-    </button>
-    <button id="syncPrompts" 
-        onclick="SyncPrompts()" 
-        class="btn btn-outline-warning" 
-        disabled>
-        <i class="bi bi-arrow-repeat"></i>  Sync Prompts 
-        <span id="syncPromptsSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-    </button>
-    <button id="clearCookiesButton" onclick="clearCookies()" class="btn btn-outline-danger">
-        <i class="bi bi-trash"></i>  Clear Selection
-    </button>
-</div>
-
-<table id="revisionsTable" class="display">
-    <thead>
-        <tr>
-            <th>Revision Name</th>
-            <th>Revision Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for revision in files %}
-        <tr>
-            <td>{{ revision.name }}</td>
-            <td>{{ revision.description }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-
-
+    <br />
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading">Welcome</h4>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+        <p>
+            This is the the home page of the Ingenious prompt tuning application. It is a development tool designed to help you iterate and ideate on AI agent prompts quickly and efficiently.
+        </p>
+        <p>Revisions folder is: {{ base_folder }}.</p>
+    </div>
+    <p></p>
+    <p class="lead" id="selectedRevisionNotice">To begin select a revision from the list below.</p>
+    <div class="btn-group" role="group" aria-label="Revision Actions">
+        <button id="createRevisionButton"
+                onclick="javascript"
+                :window.open
+                '
+                {{ url_for("index.create_revision") }}
+                '
+                class="btn btn-outline-primary"
+                disabled>
+            <i class="bi bi-copy"></i>  Copy Selected Revision
+        </button>
+        <button id="syncSampleData"
+                onclick="SyncSampleData()"
+                class="btn btn-outline-warning"
+                disabled>
+            <i class="bi bi-arrow-repeat"></i>  Sync Sample Data
+            <span id="syncSampleDataSpinner"
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                  style="display: none"></span>
+        </button>
+        <button id="syncPrompts"
+                onclick="SyncPrompts()"
+                class="btn btn-outline-warning"
+                disabled>
+            <i class="bi bi-arrow-repeat"></i>  Sync Prompts
+            <span id="syncPromptsSpinner"
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                  style="display: none"></span>
+        </button>
+        <button id="clearCookiesButton"
+                onclick="clearCookies()"
+                class="btn btn-outline-danger">
+            <i class="bi bi-trash"></i>  Clear Selection
+        </button>
+    </div>
+    <table id="revisionsTable" class="display">
+        <thead>
+            <tr>
+                <th>Revision Name</th>
+                <th>Revision Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for revision in files %}
+                <tr>
+                    <td>{{ revision.name }}</td>
+                    <td>{{ revision.description }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
-
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/select/3.0.0/js/dataTables.select.min.js"></script>
-<script src="https://cdn.datatables.net/select/3.0.0/js/select.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.js"></script>
-        
-<script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript"
+            charset="utf8"
+            src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/select/3.0.0/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.datatables.net/select/3.0.0/js/select.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.js"></script>
+    <script>
     function clearCookies() {
         document.cookie.split(";").forEach(function(c) {
             document.cookie = c.trim().split("=")[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
@@ -108,7 +126,7 @@
         spinner.style.display = 'inline-block';
         syncButton.disabled = true;
         var url = "{{ url_for('index.sync_prompts') }}";
-        
+
         fetch(url, {
             method: 'GET'
         })
@@ -131,7 +149,7 @@
         spinner.style.display = 'inline-block';
         syncButton.disabled = true;
         var url = "{{ url_for('index.sync_sample_data') }}";
-        
+
         fetch(url, {
             method: 'GET'
         })
@@ -152,8 +170,8 @@
             window.location.href(url);
         }
 
-    
-    
+
+
     async function getSelectedRevision(name) {
         return fetch("{{ url_for('index.get_selected_revision') }}", {
             method: 'GET'
@@ -176,7 +194,7 @@
         })
         .then(response => {
             if (response.ok) {
-                return null; 
+                return null;
             } else {
                 alert('Failed to get selected cookie');
                 return null;
@@ -184,7 +202,7 @@
         });
     }
 
-    
+
 
     $(document).ready(async function() {
         table = $('#revisionsTable').DataTable({
@@ -209,7 +227,7 @@
                         // Additional actions if needed after button state update
                     });
                 });
-                
+
         });
 
         const selectedRevision = await getSelectedRevision('selected_revision');
@@ -228,12 +246,7 @@
 
     });
 
-    
 
-</script>
 
+    </script>
 {% endblock %}
-
-
-
-

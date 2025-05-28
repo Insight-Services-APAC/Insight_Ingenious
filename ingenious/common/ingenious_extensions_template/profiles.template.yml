@@ -1,0 +1,15 @@
+# Profiles template for Ingenious projects
+# This file will be copied to your home directory at ~/.ingenious/profiles.yml
+
+profiles:
+  default:
+    name: default
+    description: Default profile for Ingenious
+    providers:
+      openai:
+        api_key: ${OPENAI_API_KEY}
+        organization: ${OPENAI_ORGANIZATION}
+        # Uncomment to use Azure OpenAI
+        # azure_endpoint: ${AZURE_OPENAI_ENDPOINT}
+        # api_version: "2023-05-15"
+        # deployment_name: ${AZURE_OPENAI_DEPLOYMENT_NAME}

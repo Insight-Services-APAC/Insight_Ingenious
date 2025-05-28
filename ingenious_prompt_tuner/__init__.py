@@ -1,37 +1,23 @@
-import asyncio
+"""Ingenious Prompt Tuner - A modular Flask app for prompt tuning and testing."""
+
 import os
 import sys
 
-from ingenious.models.test_data import Events
 from flask import Flask
-from functools import wraps
-from pathlib import Path
-from ingenious.utils.namespace_utils import import_class_with_fallback, get_path_from_namespace_with_fallback
-from ingenious.models.agent import Agent, AgentChats, Agents, IProjectAgents
 
-
-# Get the current working directory
+# Add parent directory to sys.path if not already there
 current_dir = os.path.abspath(os.getcwd())
-
-# Add the current working directory to sys.path if it doesn't exist
 if current_dir not in sys.path:
-    print(f"Adding {current_dir} to sys.path")
     sys.path.append(current_dir)
 
-import ingenious_prompt_tuner.utilities as uti
-import ingenious.dependencies as ig_deps
-from ingenious_prompt_tuner.templates.responses import responses
-from ingenious_prompt_tuner.templates import home
-from ingenious_prompt_tuner.templates.prompts import prompts
-from ingenious_prompt_tuner import auth
-
-config = ig_deps.get_config()
+from ingenious_prompt_tuner.config import APP_CONFIG
+from ingenious_prompt_tuner.services import FileService
+from ingenious_prompt_tuner.services.event_service import EventService
 
 
-def create_app():
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-
+def create_app(test_config=None):
+    """Create and configure the Flask application."""
+    # Create the Flask app instance
     app = Flask(
         __name__,
         static_folder="static",
@@ -39,49 +25,43 @@ def create_app():
         template_folder="templates",
     )
 
-    app.secret_key = config.web_configuration.authentication.password
-    app.config["username"] = config.web_configuration.authentication.username
-    app.config["password"] = config.web_configuration.authentication.password
-    app.config["revisions_folder"] = str(Path("revisions"))
+    # Configure the app
+    app.secret_key = APP_CONFIG["SECRET_KEY"]
+    app.config.update(APP_CONFIG)
 
-    # Set utils so that downstream blueprints have access to the config
-    app.utils = uti.utils_class(config)
-    
-    # Get the list of agents -- note this should preference the Agents class in the project level extensions dir
-    # Note the Agents module and ProjectAgents class must be defined in the project level extensions dir
-    agents_class: IProjectAgents = import_class_with_fallback('models.agent', "ProjectAgents")
-    agents_instance = agents_class()
-    agents_class: Agents = agents_instance.Get_Project_Agents(config)
+    if test_config:
+        app.config.update(test_config)
 
-    agents = agents_class.get_agents()
-    app.config["agents"] = agents_class
-    
-    if config.file_storage.data.add_sub_folders:
-        app.config["events_path"] = str(Path("functional_test_outputs"))
-    else:
-        app.config["events_path"] = str(Path("./"))
-    
-    app.config["test_output_path"] = str(Path("functional_test_outputs"))   
+    # Setup service providers
+    file_service = FileService(app.config)
+    event_service = EventService(file_service)
 
-    app.config["response_agent_name"] = None
-    for agent in agents:
-        agent: Agent = agent  # type hinting
-        if agent.return_in_response:
-            app.config["response_agent_name"] = agent.agent_name
-    
-    if app.config["response_agent_name"] is None:
-        raise ValueError("Response agent not found in agents list. You must set one agent to return in response.")
-        
-    # ensure the instance folder exists
+    # Add services to app context for access in blueprints
+    app.file_service = file_service
+    app.event_service = event_service
+
+    # Ensure instance folder exists
     try:
-        # os.makedirs(app.instance_path)
-        print(app.instance_path)
+        os.makedirs(app.instance_path, exist_ok=True)
+        os.makedirs(APP_CONFIG["REVISIONS_FOLDER"], exist_ok=True)
     except OSError:
         pass
 
+    # Register blueprints
+    from ingenious_prompt_tuner import auth
+
     app.register_blueprint(auth.bp)
+
+    from ingenious_prompt_tuner.routes import home
+
     app.register_blueprint(home.bp)
+
+    from ingenious_prompt_tuner.routes import prompts
+
     app.register_blueprint(prompts.bp)
+
+    from ingenious_prompt_tuner.routes import responses
+
     app.register_blueprint(responses.bp)
 
     return app

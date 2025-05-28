@@ -1,13 +1,12 @@
-    <div>
+<div>
     <h2 id="responses">Summary of Responses</h2>
-    <p>Use the links below to quickly navigate to specific event / response </p>
+    <p>Use the links below to quickly navigate to specific event / response</p>
     <ul>
         {% for file in files %}
-            <li><a href='#{{ file.identifier }}_{{ file.event_type }}''>{{ file.file_name }} - {{ file.identifier }} - {{ file.event_type }}</a></li>
+            <li>
+                <a href='#{{ file.identifier }}_{{ file.event_type }}''>{{ file.file_name }} - {{ file.identifier }} - {{ file.event_type }}</a>
+            </li>
         {% endfor %}
     </ul>
-    </div>
-
-    <div id="response_details" >
-    {{ events_html | safe }}
-    </div>
+</div>
+<div id="response_details">{{ events_html | safe }}</div>
