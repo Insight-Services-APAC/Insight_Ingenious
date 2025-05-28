@@ -80,4 +80,22 @@ Contributions to Insight Ingenious are welcome! Please refer to the [CONTRIBUTIN
 
 ## License
 
+<<<<<<< HEAD
+9. **CLI Test Harness**:
+   ```bash
+   python ingenious_extensions/tests/run_ingen_cli.py
+   ```
+
+## Getting Started (For New Projects)
+
+To set up a new project:
+
+1. Run `ingen_cli initialize-new-project` to create the necessary folder structure
+2. Configure your application in `config.yml` and profiles in `~/.ingenious/profiles.yml`
+3. Develop your extensions in the `ingenious_extensions` directory
+4. Run your application with `ingen_cli run-rest-api-server`
+
+The framework includes templates and examples to help you get started quickly with your own AI applications.
+=======
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+>>>>>>> origin/main
