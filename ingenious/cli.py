@@ -281,7 +281,9 @@ def initialize_new_project():
     if template_profile_path.exists():
         # Get user home directory
         home_dir = os.path.expanduser("~")
-        profile_path = Path(home_dir) / Path(".ingenious") / Path("profiles.yml")
+        profile_dir_path = Path(home_dir) / Path(".ingenious")
+        os.makedirs(profile_dir_path, exist_ok=True)
+        profile_path = profile_dir_path / Path("profiles.yml")
         shutil.copy2(template_profile_path, profile_path)
         console.print(
             f"[info]Profile file created successfully created at {profile_path}[/info]"
