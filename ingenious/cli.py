@@ -17,8 +17,11 @@ from typing_extensions import Annotated
 import ingenious.utils.stage_executor as stage_executor_module
 from ingenious.utils.log_levels import LogLevel
 from ingenious.utils.namespace_utils import import_class_with_fallback
+from ingenious.dataprep.cli import dataprep as _dataprep
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_show_locals=False)
+
+app.add_typer(_dataprep, name="dataprep")
 
 custom_theme = Theme(
     {

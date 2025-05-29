@@ -54,6 +54,23 @@ dev = [
     "vulture>=2.14",
 ]
 
+[project.optional-dependencies]
+dataprep = [
+    "scrapfly-sdk==0.8.23",
+    "python-dotenv==1.0.1"
+]
+
+tests = [
+  "pytest==8.3.5",
+  "pytest-asyncio==0.26.0",
+  "pytest-timeout==2.4.0",
+  "pytest-mock==3.14.0",
+  "pytest-cov==6.1.1",
+  "pre-commit==4.2.0",
+  "ruff==0.11.10",
+  "vulture==2.14",
+]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
@@ -67,3 +84,8 @@ ingen = "ingenious.cli:app"
 [tool.ruff.lint]
 extend-select = ["I"]
 ignore = ["E402"]
+
+[tool.pytest.ini_options]
+markers = [
+    "e2e: live network integration test (requires SCRAPFLY_API_KEY)",
+]
