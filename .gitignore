@@ -150,3 +150,5 @@ test-output/
 
 #ruff
 .ruff_cache/
+
+.chainlit/

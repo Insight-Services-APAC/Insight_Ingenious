@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, FastAPI
 
-from ingenious.config import config
+from ingenious.config.config import get_config
 from ingenious.files import files_repository
 from ingenious.models.api_routes import IApiRoutes
 
@@ -15,6 +15,7 @@ class Api_Routes(IApiRoutes):
         def chat_custom_sample():
             logger = logging.getLogger(__name__)
 
+            config = get_config()
             fs = files_repository.FileStorage(config=config, Category="revisions")
             fs_data = files_repository.FileStorage(config=config, Category="data")
 
