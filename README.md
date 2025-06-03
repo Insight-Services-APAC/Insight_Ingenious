@@ -67,6 +67,9 @@ For detailed documentation, see the [docs/](docs/) directory:
 - [Usage Examples](docs/usage/README.md)
 - [Development Guide](docs/development/README.md)
 - [Components Reference](docs/components/README.md)
+- **Optional Dependencies**
+  &nbsp;&nbsp;&nbsp;• [Optional Dependencies Index](docs/optional_dependencies/README.md)
+  &nbsp;&nbsp;&nbsp;• [Dataprep Crawler](docs/optional_dependencies/dataprep/README.md) – Scrapfly-powered scraping CLI
 
 ## Contributing
 
