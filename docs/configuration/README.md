@@ -38,7 +38,7 @@ chat_history:
   database_type: "sqlite"  # or "cosmos"
   database_name: "chat_history"
   memory_path: "./tmp"
-  
+
 profile: "development"  # Name of the profile to use from profiles.yml
 
 models:
@@ -71,7 +71,7 @@ web_configuration:
 
 local_sql_db:
   connection_string: "sqlite:///sample.db"
-  
+
 azure_sql_services:
   database_name: "your_database"
   table_name: "your_table"
@@ -93,33 +93,33 @@ file_storage:
     - model: "gpt-3.5-turbo"
       api_key: "your-api-key"
       base_url: "https://your-openai-endpoint.openai.azure.com"
-  
+
   chat_history:
     database_connection_string: ""
-  
+
   azure_search_services:
     - service: "knowledge-base"
       key: "your-search-key"
-  
+
   azure_sql_services:
     database_connection_string: ""
-  
+
   web_configuration:
     authentication:
       username: "admin"
       password: "your-secure-password"
-  
+
   receiver_configuration:
     enable: false
     api_url: ""
     api_key: ""
-  
+
   chainlit_configuration:
     authentication:
       enable: false
       github_client_id: ""
       github_secret: ""
-  
+
   file_storage:
     enable: true
     storage_type: "local"
@@ -261,7 +261,7 @@ You can define multiple profiles in `profiles.yml` for different environments:
 ```yaml
 - name: "development"
   # Development settings
-  
+
 - name: "production"
   # Production settings
 ```

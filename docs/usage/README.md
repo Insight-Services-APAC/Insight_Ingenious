@@ -137,27 +137,27 @@ class ConversationPattern:
         self.memory_record_switch = memory_record_switch
         self.memory_path = memory_path
         self.thread_memory = thread_memory
-        
+
         # Initialize agents
         self.user_proxy = autogen.UserProxyAgent(
             name="user_proxy",
             human_input_mode="NEVER",
             system_message="I represent the user's request"
         )
-        
+
         self.your_agent = autogen.AssistantAgent(
             name="your_agent",
             system_message="Your agent's system message",
             llm_config=self.default_llm_config
         )
-    
+
     async def get_conversation_response(self, input_message: str) -> [str, str]:
         # Set up agent interactions
         result = await self.user_proxy.a_initiate_chat(
             self.your_agent,
             message=input_message
         )
-        
+
         return result.summary, ""
 ```
 
@@ -176,7 +176,7 @@ class ConversationFlow:
         _config = config.get_config()
         llm_config = _config.models[0].__dict__
         memory_path = _config.chat_history.memory_path
-        
+
         # Initialize the conversation pattern
         agent_pattern = ConversationPattern(
             default_llm_config=llm_config,
@@ -185,10 +185,10 @@ class ConversationFlow:
             memory_path=memory_path,
             thread_memory=thread_memory
         )
-        
+
         # Get the conversation response
         res, memory_summary = await agent_pattern.get_conversation_response(message)
-        
+
         return res, memory_summary
 ```
 
@@ -227,7 +227,7 @@ Response format:
 async def get_conversation_response(self, chat_request: ChatRequest) -> ChatResponse:
     # Load the template
     template_content = await self.Get_Template(file_name="your_prompt_name.jinja")
-    
+
     # Render the template with dynamic values
     env = Environment()
     template = env.from_string(template_content)
@@ -235,7 +235,7 @@ async def get_conversation_response(self, chat_request: ChatRequest) -> ChatResp
         topic="example topic",
         user_input=chat_request.user_prompt
     )
-    
+
     # Use the rendered prompt
     your_agent.system_prompt = rendered_prompt
 ```
@@ -273,11 +273,11 @@ class Api_Routes(IApiRoutes):
         self.config = config
         self.app = app
         self.router = APIRouter()
-    
+
     def add_custom_routes(self):
         @self.router.get("/api/v1/custom-endpoint")
         async def custom_endpoint():
             return {"message": "Custom endpoint response"}
-            
+
         self.app.include_router(self.router)
 ```

@@ -184,12 +184,13 @@ class Agent(BaseModel):
             result = await tool.run_json(arguments, cancellation_token)
             return FunctionExecutionResult(
                 call_id=call.id,
+                name=call.name,
                 content=tool.return_value_as_string(result),
                 is_error=False,
             )
         except Exception as e:
             return FunctionExecutionResult(
-                call_id=call.id, content=str(e), is_error=True
+                call_id=call.id, name=call.name, content=str(e), is_error=True
             )
 
 

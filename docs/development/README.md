@@ -143,11 +143,11 @@ Models:
    # your_pattern_name.py
    import autogen
    import logging
-   
+
    class ConversationPattern:
        def __init__(self, default_llm_config: dict, topics: list, memory_record_switch: bool, memory_path: str, thread_memory: str):
            # Initialize parameters
-           
+
        async def get_conversation_response(self, input_message: str) -> [str, str]:
            # Implement conversation logic
    ```
@@ -166,7 +166,7 @@ Models:
    import ingenious.config.config as config
    from ingenious.models.chat import ChatResponse
    from ingenious.services.chat_services.multi_agent.conversation_patterns.your_pattern_name.your_pattern_name import ConversationPattern
-   
+
    class ConversationFlow:
        @staticmethod
        async def get_conversation_response(message: str, topics: list = [], thread_memory: str='', memory_record_switch = True, thread_chat_history: list = []) -> ChatResponse:
@@ -181,13 +181,13 @@ Models:
    from fastapi import APIRouter, Depends, FastAPI
    from ingenious.models.api_routes import IApiRoutes
    from ingenious.models.config import Config
-   
+
    class Api_Routes(IApiRoutes):
        def __init__(self, config: Config, app: FastAPI):
            self.config = config
            self.app = app
            self.router = APIRouter()
-       
+
        def add_custom_routes(self):
            # Define your custom routes
    ```
