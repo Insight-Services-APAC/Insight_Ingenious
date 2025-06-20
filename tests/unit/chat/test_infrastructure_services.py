@@ -205,7 +205,8 @@ class TestDefaultConversationService:
     @pytest.fixture
     def conversation_service(self):
         """Create DefaultConversationService."""
-        return DefaultConversationService()
+        mock_chat_service = AsyncMock()
+        return DefaultConversationService(chat_service=mock_chat_service)
 
     async def test_start_conversation_success(self, conversation_service):
         """Test successful conversation start."""
@@ -308,7 +309,7 @@ class TestChatInfrastructureIntegration:
         }
 
         chat_service = ModernChatService(llm_service=mock_llm)
-        conversation_service = DefaultConversationService()
+        conversation_service = DefaultConversationService(chat_service=chat_service)
 
         return {
             "chat_service": chat_service,

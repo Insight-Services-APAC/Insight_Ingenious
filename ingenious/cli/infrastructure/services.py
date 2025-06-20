@@ -45,6 +45,19 @@ class FileSystemProjectService(IProjectService):
 
         console.print(f"[info]✅ Created project structure for '{config.name}'[/info]")
 
+    async def project_exists(self, project_path: Path) -> bool:
+        """Check if a project exists at the given path."""
+        return project_path.exists() and project_path.is_dir()
+
+    async def get_project_config(self, project_path: Path) -> ProjectConfig:
+        """Get project configuration from the given path."""
+        # For now, return a basic config based on path
+        project_name = project_path.name
+        return ProjectConfig(
+            name=project_name,
+            path=str(project_path),
+        )
+
     async def validate_project(self, project_path: Path) -> bool:
         """Validate if a project exists and is properly configured."""
         config_file = project_path / "config.yml"
@@ -109,6 +122,16 @@ class UvicornServerService(IServerService):
         except Exception as e:
             console.print(f"[error]❌ Server startup failed: {e}[/error]")
             raise
+
+    async def stop_server(self) -> bool:
+        """Stop the running server."""
+        # For now, just return True as we don't track server processes
+        return True
+
+    async def is_running(self) -> bool:
+        """Check if the server is currently running."""
+        # For now, just return False as we don't track server processes
+        return False
 
     async def validate_server_config(self, config: ServerConfig) -> bool:
         """Validate server configuration."""

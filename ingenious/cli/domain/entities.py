@@ -12,8 +12,10 @@ from pydantic import BaseModel, Field
 class ProjectConfig(BaseModel):
     """Domain entity representing a project configuration."""
 
-    name: str = Field(..., description="Project name")
-    path: str = Field(..., description="Project directory path")
+    name: str = Field(..., min_length=1, description="Project name cannot be empty")
+    path: str = Field(
+        ..., min_length=1, description="Project directory path cannot be empty"
+    )
     profile: str = Field(default="dev", description="Configuration profile")
 
     def __str__(self) -> str:
@@ -35,7 +37,9 @@ class ServerConfig(BaseModel):
 class CLICommand(BaseModel):
     """Domain entity representing a CLI command execution context."""
 
-    command_name: str = Field(..., description="Name of the command")
+    command_name: str = Field(
+        ..., min_length=1, description="Command name cannot be empty"
+    )
     arguments: dict = Field(default_factory=dict, description="Command arguments")
     options: dict = Field(default_factory=dict, description="Command options")
 

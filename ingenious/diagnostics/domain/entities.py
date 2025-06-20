@@ -47,6 +47,7 @@ class DiagnosticResult:
         details: Optional[Dict[str, Any]] = None,
         execution_time_ms: Optional[float] = None,
         checked_at: Optional[datetime] = None,
+        timestamp: Optional[datetime] = None,  # Legacy alias
         error: Optional[str] = None,
     ):
         self.check = check
@@ -54,13 +55,19 @@ class DiagnosticResult:
         self.message = message
         self.details = details or {}
         self.execution_time_ms = execution_time_ms
-        self.checked_at = checked_at or datetime.utcnow()
+        # Use timestamp if provided, otherwise checked_at, otherwise current time
+        self.checked_at = timestamp or checked_at or datetime.utcnow()
         self.error = error
 
     @property
     def is_healthy(self) -> bool:
         """Check if the result indicates healthy status."""
         return self.status == HealthStatus.HEALTHY
+
+    @property
+    def timestamp(self) -> datetime:
+        """Legacy alias for checked_at."""
+        return self.checked_at
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert result to dictionary."""
@@ -103,10 +110,18 @@ class SystemHealth:
 
         statuses = [result.status for result in self.results]
 
-        if all(status == HealthStatus.HEALTHY for status in statuses):
-            self.overall_status = HealthStatus.HEALTHY
-        elif any(status == HealthStatus.UNHEALTHY for status in statuses):
+        # Filter out UNKNOWN statuses for priority calculation
+        non_unknown_statuses = [s for s in statuses if s != HealthStatus.UNKNOWN]
+
+        if not non_unknown_statuses:
+            # All are UNKNOWN
+            self.overall_status = HealthStatus.UNKNOWN
+        elif any(status == HealthStatus.UNHEALTHY for status in non_unknown_statuses):
             self.overall_status = HealthStatus.UNHEALTHY
+        elif any(status == HealthStatus.DEGRADED for status in non_unknown_statuses):
+            self.overall_status = HealthStatus.DEGRADED
+        elif all(status == HealthStatus.HEALTHY for status in non_unknown_statuses):
+            self.overall_status = HealthStatus.HEALTHY
         else:
             self.overall_status = HealthStatus.DEGRADED
 
