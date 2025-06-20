@@ -58,33 +58,53 @@ class CLIApplicationService:
 
         await self._server_service.start_server(config)
 
-    def create_project(self, project_name: str, project_path: Path) -> bool:
+    def create_project(
+        self, project_name: str, project_path: Path, profile: str = "dev"
+    ) -> bool:
         """Synchronous wrapper for creating a project."""
         import asyncio
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            config = ProjectConfig(name=project_name, path=str(project_path))
+            # Check if project already exists
+            if loop.run_until_complete(
+                self._project_service.project_exists(project_path)
+            ):
+                raise ValueError(f"Project already exists at {project_path}")
+
+            config = ProjectConfig(
+                name=project_name, path=str(project_path), profile=profile
+            )
             loop.run_until_complete(self._project_service.create_project(config))
             loop.run_until_complete(
                 self._template_service.generate_template(project_name, project_path)
             )
             return True
+        except ValueError:
+            # Re-raise validation errors
+            raise
         except Exception:
             return False
         finally:
             loop.close()
 
-    def start_server(self, host: str = "127.0.0.1", port: int = 8000) -> bool:
+    def start_server(self, config: ServerConfig) -> bool:
         """Synchronous wrapper for starting the server."""
         import asyncio
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            loop.run_until_complete(self.start_rest_api_server(host=host, port=port))
+            # Check if server is already running
+            if loop.run_until_complete(self._server_service.is_running()):
+                raise RuntimeError("Server is already running")
+
+            loop.run_until_complete(self._server_service.start_server(config))
             return True
+        except RuntimeError:
+            # Re-raise runtime errors
+            raise
         except Exception:
             return False
         finally:
@@ -97,23 +117,34 @@ class CLIApplicationService:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
+            # Check if server is not running
+            if not loop.run_until_complete(self._server_service.is_running()):
+                raise RuntimeError("Server is not running")
+
             loop.run_until_complete(self._server_service.stop_server())
             return True
+        except RuntimeError:
+            # Re-raise runtime errors
+            raise
         except Exception:
             return False
         finally:
             loop.close()
 
-    def get_server_status(self) -> bool:
-        """Check if server is running."""
+    def get_server_status(self) -> dict:
+        """Check if server is running and return status."""
         import asyncio
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(self._server_service.is_running())
+            is_running = loop.run_until_complete(self._server_service.is_running())
+            return {
+                "is_running": is_running,
+                "status": "running" if is_running else "stopped",
+            }
         except Exception:
-            return False
+            return {"is_running": False, "status": "error"}
         finally:
             loop.close()
 
@@ -131,3 +162,70 @@ class CLIApplicationService:
             host="127.0.0.1",
             port=8000,
         )
+
+    def get_project_info(self, project_path: Path) -> ProjectConfig:
+        """Get information about a project."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(
+                self._project_service.get_project_config(project_path)
+            )
+        finally:
+            loop.close()
+
+    def generate_project_template(self, template_name: str, output_path: Path) -> bool:
+        """Generate a project template."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            # Check if template is valid
+            available_templates = loop.run_until_complete(
+                self._template_service.list_templates()
+            )
+            if template_name not in available_templates:
+                raise ValueError(f"Invalid template: {template_name}")
+
+            loop.run_until_complete(
+                self._template_service.generate_template(template_name, output_path)
+            )
+            return True
+        except ValueError:
+            # Re-raise validation errors
+            raise
+        except Exception:
+            return False
+        finally:
+            loop.close()
+
+    def list_available_templates(self) -> list[str]:
+        """List available project templates."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(self._template_service.list_templates())
+        finally:
+            loop.close()
+
+    def _validate_project_path(self, project_path: Optional[Path]) -> None:
+        """Validate project path."""
+        if project_path is None:
+            raise ValueError("Project path is required")
+
+    def _validate_project_name(self, project_name: str) -> None:
+        """Validate project name."""
+        if not project_name or not project_name.strip():
+            raise ValueError("Project name cannot be empty")
+
+        # Check for invalid characters
+        invalid_chars = {" ", "@"}
+        if any(char in project_name for char in invalid_chars):
+            raise ValueError(
+                f"Project name contains invalid characters: {project_name}"
+            )

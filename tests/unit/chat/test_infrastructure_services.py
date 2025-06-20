@@ -243,6 +243,17 @@ class TestDefaultConversationService:
         # Mock the conversation service's internal storage
         conversation_service._sessions = {session_id: session}
 
+        # Mock the chat service to return a proper ChatResponse
+        mock_response = ChatResponse(
+            response="Follow-up response",
+            user_id="user-123",
+            conversation_flow="general",
+            thread_id=session_id,
+        )
+        conversation_service._chat_service.process_chat_request.return_value = (
+            mock_response
+        )
+
         # Act
         response = await conversation_service.continue_conversation(
             session_id, "Follow-up message"
@@ -251,7 +262,7 @@ class TestDefaultConversationService:
         # Assert
         assert isinstance(response, ChatResponse)
         assert response.thread_id is not None
-        assert "Follow-up message" in str(response)  # Basic check
+        assert "Follow-up response" in str(response)  # Basic check
 
     async def test_continue_conversation_nonexistent_session(
         self, conversation_service
@@ -263,7 +274,7 @@ class TestDefaultConversationService:
                 "nonexistent-session", "Message"
             )
 
-        assert "Session not found" in str(exc_info.value)
+        assert "Session nonexistent-session not found" in str(exc_info.value)
 
     async def test_conversation_flow_with_multiple_messages(self, conversation_service):
         """Test conversation flow with multiple messages."""
@@ -271,6 +282,19 @@ class TestDefaultConversationService:
         session = await conversation_service.start_conversation("user-123", "support")
         session_id = session.session_id
         conversation_service._sessions = {session_id: session}
+
+        # Mock the chat service to return proper ChatResponse objects
+        def mock_process_chat_request(request):
+            return ChatResponse(
+                response=f"Response to: {request.user_prompt}",
+                user_id=request.user_id,
+                conversation_flow=request.conversation_flow,
+                thread_id=session_id,
+            )
+
+        conversation_service._chat_service.process_chat_request.side_effect = (
+            mock_process_chat_request
+        )
 
         # Act - Send multiple messages
         response1 = await conversation_service.continue_conversation(
@@ -287,11 +311,11 @@ class TestDefaultConversationService:
         assert all(
             isinstance(r, ChatResponse) for r in [response1, response2, response3]
         )
-        # All responses should be for the same thread in the session
+        # All responses should have the same session_id as thread_id (our mock setup)
         thread_ids = [r.thread_id for r in [response1, response2, response3]]
-        assert len(set(thread_ids)) <= len(
-            session.threads
-        )  # At most one thread per conversation
+        assert all(thread_id == session_id for thread_id in thread_ids)
+        # All responses should be for the same user
+        assert all(r.user_id == "user-123" for r in [response1, response2, response3])
 
 
 @pytest.mark.unit

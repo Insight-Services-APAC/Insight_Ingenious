@@ -16,7 +16,7 @@ This project uses uv for Python package and environment management.
   `uv sync`
 
 - **Run tests (run after implementing changes to ensure nothing broke):**
-  `uv run pytest`
+  `uv run pytest --asyncio-mode=auto --tb=short -q`
 
 - **List out packages in environment in a tree structure**
   `uv tree`

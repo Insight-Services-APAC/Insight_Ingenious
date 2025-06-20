@@ -27,8 +27,8 @@ class ModernChatService(IChatService):
             # Create a completion request
             completion_request = {
                 "prompt": request.user_prompt,
-                "max_tokens": getattr(request, "max_tokens", 1000),
-                "temperature": getattr(request, "temperature", 0.7),
+                "max_tokens": request.max_tokens,
+                "temperature": request.temperature,
             }
 
             # Get completion from LLM service

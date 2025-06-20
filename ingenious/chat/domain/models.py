@@ -16,6 +16,8 @@ class ChatRequest(BaseModel):
     conversation_flow: str
     thread_chat_history: Optional[dict[str, str]] = {}
     thread_memory: Optional[str] = None
+    max_tokens: Optional[int] = 1000  # Default max tokens
+    temperature: Optional[float] = 0.7  # Default temperature
 
 
 class ChatResponse(BaseModel):
@@ -24,12 +26,17 @@ class ChatResponse(BaseModel):
     thread_id: Optional[str] = None
     message_id: Optional[str] = None
     agent_response: Optional[str] = None
+    response: Optional[str] = (
+        None  # Alias for agent_response for backwards compatibility
+    )
+    conversation_flow: Optional[str] = None  # Add for backwards compatibility
     followup_questions: Optional[dict[str, str]] = {}
     token_count: Optional[int] = None
     max_token_count: Optional[int] = None
     topic: Optional[str] = None
     memory_summary: Optional[str] = None
     event_type: Optional[str] = None
+    user_id: Optional[str] = None  # Add user_id field to match implementation
 
 
 class MessageFeedbackRequest(BaseModel):

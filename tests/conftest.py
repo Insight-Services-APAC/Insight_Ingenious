@@ -248,15 +248,31 @@ def mock_user_repository():
 @pytest.fixture
 async def async_client():
     """Async HTTP client for API testing."""
+    import os
+    import tempfile
+
     from ingenious.configuration.domain.models import MinimalConfig
     from ingenious.main import FastAgentAPI
 
-    # Create test app with minimal config
-    config = MinimalConfig()
-    app_instance = FastAgentAPI(config)
+    # Set up a temporary working directory for tests
+    with tempfile.TemporaryDirectory() as temp_dir:
+        original_dir = os.getcwd()
+        os.environ["INGENIOUS_WORKING_DIR"] = temp_dir
 
-    async with AsyncClient(app=app_instance.app, base_url="http://test") as client:
-        yield client
+        try:
+            # Create test app with minimal config
+            config = MinimalConfig()
+            app_instance = FastAgentAPI(config)
+
+            async with AsyncClient(
+                app=app_instance.app, base_url="http://test"
+            ) as client:
+                yield client
+        finally:
+            # Clean up environment variable
+            if "INGENIOUS_WORKING_DIR" in os.environ:
+                del os.environ["INGENIOUS_WORKING_DIR"]
+            os.chdir(original_dir)
 
 
 @pytest.fixture

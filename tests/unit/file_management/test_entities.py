@@ -72,8 +72,21 @@ class TestFile:
     @patch("ingenious.file_management.domain.entities.datetime")
     def test_update_content(self, mock_datetime):
         """Test updating file content."""
-        mock_now = datetime(2023, 1, 1, 12, 0, 0)
-        mock_datetime.utcnow.return_value = mock_now
+        initial_time = datetime(2023, 1, 1, 10, 0, 0)
+        updated_time = datetime(2023, 1, 1, 12, 0, 0)
+
+        # Make the mock return initial time first, then updated time for subsequent calls
+        def time_side_effect():
+            call_count = getattr(time_side_effect, "call_count", 0)
+            time_side_effect.call_count = call_count + 1
+            if (
+                call_count < 2
+            ):  # First two calls return initial_time (created_at and updated_at)
+                return initial_time
+            else:  # Subsequent calls return updated_time
+                return updated_time
+
+        mock_datetime.utcnow.side_effect = time_side_effect
 
         file = File(name="test.txt", path="/home")
         original_updated_at = file.updated_at
@@ -83,7 +96,7 @@ class TestFile:
 
         assert file.content == new_content
         assert file.size == len(new_content.encode("utf-8"))
-        assert file.updated_at == mock_now
+        assert file.updated_at == updated_time
         assert file.updated_at != original_updated_at
 
     def test_file_equality(self):

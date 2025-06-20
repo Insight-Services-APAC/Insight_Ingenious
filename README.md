@@ -248,7 +248,13 @@ bounded_context/
 Run tests using pytest:
 
 ```bash
-uv run pytest
+uv run pytest --asyncio-mode=auto --tb=short -q
+```
+
+For more detailed output, you can use:
+
+```bash
+uv run pytest --asyncio-mode=auto --tb=short -v
 ```
 
 ### Code Quality
