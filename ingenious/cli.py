@@ -187,10 +187,17 @@ def run_rest_api_server(
 @app.command()
 def run_project():
     """
-    Quick start command - starts the server with default settings.
+    🚀 Quick start command - starts your Insight Ingenious project with default settings.
 
     This is equivalent to 'run-rest-api-server' but with simpler syntax.
     Perfect for getting started after running 'initialize-new-project'.
+
+    Example:
+        uv run ingen run-project
+
+    This will start your server on http://localhost:8000 with:
+    - Chat UI at: http://localhost:8000/chainlit
+    - API docs at: http://localhost:8000/docs
     """
     console.print("[info]🚀 Quick starting your Insight Ingenious project![/info]")
     console.print(
@@ -273,19 +280,15 @@ def initialize_new_project():
             )
             continue
 
-        # Check if a template path exists (if applicable)
-        if template_path and not template_path.exists():
-            console.print(
-                f"[warning]Template directory '{template_path}' not found. Skipping...[/warning]"
-            )
-            continue
-
         try:
             # Create the destination folder
             destination.mkdir(parents=True, exist_ok=True)
 
-            if template_path:
-                # Copy template contents if a template path is provided
+            if folder_name == "ingenious_extensions":
+                # Create the ingenious_extensions structure manually instead of relying on templates
+                _create_ingenious_extensions_structure(destination, project_name)
+            elif folder_name == "docker" and template_path and template_path.exists():
+                # Copy docker template if it exists
                 for item in template_path.iterdir():
                     src_path = template_path / item
                     dst_path = destination / item.name
@@ -298,23 +301,6 @@ def initialize_new_project():
                                 ignore=shutil.ignore_patterns("__pycache__"),
                                 dirs_exist_ok=True,
                             )
-                        # replace all instances of 'ingenious_extensions_template' with the project name:
-                        for root, dirs, files in os.walk(dst_path):
-                            for file in files:
-                                try:
-                                    file_path = os.path.join(root, file)
-                                    with open(file_path, "r") as f:
-                                        file_contents = f.read()
-                                    file_contents = file_contents.replace(
-                                        "ingenious.ingenious_extensions_template",
-                                        destination.name,
-                                    )
-                                    with open(file_path, "w") as f:
-                                        f.write(file_contents)
-                                except Exception as e:
-                                    console.print(
-                                        f"[error]Error processing file '{file_path}': {e}[/error]"
-                                    )
                     else:
                         try:
                             shutil.copy2(src_path, dst_path)
@@ -459,9 +445,6 @@ web_configuration:
   type: fastapi          # Web framework (currently only FastAPI supported)
   ip_address: "127.0.0.1"  # IP address to bind to (127.0.0.1 for local only)
   port: 8000            # Port to run the web server on
-  authentication:
-    enable: true        # Require authentication to access the API
-    type: basic         # Authentication method
 
 # ================================
 # CHAINLIT UI (Optional)
@@ -542,19 +525,23 @@ file_storage:
   models:
     - model: gpt-4o
       # 🔑 Your Azure OpenAI API key - REQUIRED
-      api_key: "YOUR_AZURE_OPENAI_API_KEY_HERE"
+      # Get this from Azure Portal > Your OpenAI Resource > Keys and Endpoint
+      api_key: "REPLACE_WITH_YOUR_AZURE_OPENAI_API_KEY"
+
       # 🌐 Your Azure OpenAI endpoint - REQUIRED
-      base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
+      # Format: https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
+      # Replace YOUR_RESOURCE_NAME with your actual Azure OpenAI resource name
+      base_url: "https://REPLACE_WITH_YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
 
   # ================================
   # CHAT HISTORY DATABASE
   # ================================
   chat_history:
-    # For Cosmos DB, provide connection string
+    # For Cosmos DB (optional), provide connection string
     database_connection_string: ""
 
   # ================================
-  # AZURE SEARCH CREDENTIALS
+  # AZURE SEARCH CREDENTIALS (Optional)
   # ================================
   azure_search_services:
     - service: knowledge-base
@@ -562,7 +549,7 @@ file_storage:
       key: "YOUR_AZURE_SEARCH_ADMIN_KEY_HERE"
 
   # ================================
-  # AZURE SQL CREDENTIALS
+  # AZURE SQL CREDENTIALS (Optional)
   # ================================
   azure_sql_services:
     # SQL Server connection string - OPTIONAL
@@ -574,12 +561,14 @@ file_storage:
   web_configuration:
     authentication:
       enable: true
+      type: basic
       # 🔑 Basic auth credentials for API access
+      # Change these default credentials!
       username: "admin"
-      password: "CHANGE_THIS_PASSWORD"
+      password: "CHANGE_THIS_PASSWORD_FOR_SECURITY"
 
   # ================================
-  # CHAINLIT AUTHENTICATION
+  # CHAINLIT AUTHENTICATION (Optional)
   # ================================
   chainlit_configuration:
     enable: true
@@ -636,217 +625,246 @@ file_storage:
 def _create_setup_readme(current_dir: Path, project_name: str):
     """Create a comprehensive setup README."""
     readme_path = current_dir / "SETUP.md"
-    readme_content = f"""# {project_name} - Insight Ingenious Setup Guide
+    readme_content = f"""# {project_name} - Quick Start Guide
 
-Welcome to your new Insight Ingenious project! This guide will help you get a "Hello World" example running.
+Welcome to your new Insight Ingenious project! This guide will get you up and running with a "Hello World: Bicycle Expert" example in just a few minutes.
 
-## 🚀 Quick Start
+## 🚀 Quick Start (5 minutes to Hello World!)
 
 ### Step 1: Set Environment Variables
 
-Set these environment variables to point to your configuration files:
-
 ```bash
-# In your terminal or add to your ~/.bashrc or ~/.zshrc
+# Copy and paste these commands in your terminal:
 export INGENIOUS_PROJECT_PATH="$(pwd)/config.yml"
 export INGENIOUS_PROFILE_PATH="$(pwd)/profiles.yml"
+
+# To make these permanent, add them to your ~/.bashrc or ~/.zshrc:
+echo 'export INGENIOUS_PROJECT_PATH="$(pwd)/config.yml"' >> ~/.zshrc
+echo 'export INGENIOUS_PROFILE_PATH="$(pwd)/profiles.yml"' >> ~/.zshrc
 ```
 
-### Step 2: Configure Your AI Model
+### Step 2: Get Your Azure OpenAI Credentials
 
 1. **Get Azure OpenAI Access:**
    - Go to [Azure Portal](https://portal.azure.com)
-   - Create an Azure OpenAI resource
-   - Deploy a GPT-4 model
-   - Copy the API key and endpoint
+   - Create an Azure OpenAI resource (if you don't have one)
+   - Deploy a GPT-4 model (name it "gpt-4o")
+   - Go to "Keys and Endpoint" section and copy:
+     - Your API key
+     - Your endpoint URL
 
 2. **Update profiles.yml:**
    ```yaml
    - name: dev
      models:
        - model: gpt-4o
-         api_key: "YOUR_ACTUAL_API_KEY_HERE"
+         # Replace YOUR_API_KEY_HERE with your actual API key:
+         api_key: "YOUR_API_KEY_HERE"
+         # Replace YOUR_RESOURCE_NAME with your actual resource name:
          base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
    ```
 
 ### Step 3: Test Your Setup
 
-Run the application:
-
 ```bash
+# Start the server:
 uv run ingen run-rest-api-server
+
+# You should see:
+# "🚀 Starting Insight Ingenious on http://127.0.0.1:8000"
 ```
 
-### Step 4: Try Your First Chat
+### Step 4: Try Your First Chat!
 
-Open your browser and go to:
-- Main API: http://localhost:8000
-- Chat Interface: http://localhost:8000/chainlit
-- API Docs: http://localhost:8000/docs
+1. **Open your browser and go to:** http://localhost:8000/chainlit
+
+2. **Try this hello world message:**
+   ```
+   Hello! Can you help me learn about bicycles?
+   ```
+
+3. **You should get a friendly response from your bicycle expert agent!**
+
+## 🎯 What You Just Built
+
+Your project includes:
+- **Bicycle Expert Agent**: A friendly AI that knows everything about bicycles
+- **Web Chat Interface**: Clean, modern chat UI powered by Chainlit
+- **REST API**: Full API access at http://localhost:8000/docs
+- **Sample Data**: Bicycle data in `ingenious_extensions/sample_data/bicycles.csv`
+
+## 🌐 Access Points
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **Chat UI** | http://localhost:8000/chainlit | Interactive chat interface |
+| **API Docs** | http://localhost:8000/docs | REST API documentation |
+| **Main API** | http://localhost:8000 | API endpoint |
 
 ## 🔧 Configuration Files
 
 ### config.yml
-Non-sensitive settings like:
-- Which AI models to use
-- Database settings
-- Web server configuration
+Non-sensitive settings:
+- AI models and versions
+- Database configuration
+- Web server settings
 - Logging levels
 
 ### profiles.yml
-Sensitive credentials like:
+Sensitive credentials:
 - API keys
 - Passwords
 - Connection strings
 
 ⚠️ **Never commit profiles.yml to version control!**
 
-## 🤖 Available Agent Flows
+## 🤖 Your Bicycle Expert Agent
 
-Your project comes with these pre-built agent flows:
+Located in: `ingenious_extensions/models/agent.py`
 
-1. **classification_agent** - Routes questions to specialized agents
-2. **knowledge_base_agent** - Answers from uploaded documents
-3. **pandas_agent** - Analyzes data and creates visualizations
-4. **sql_manipulation_agent** - Generates and runs SQL queries
-5. **web_critic_agent** - Searches web and fact-checks information
+This agent can help with:
+- Bicycle maintenance and repair
+- Choosing the right bicycle
+- Safety tips and best practices
+- Troubleshooting common problems
 
-## 📁 Project Structure
+## 📝 Example Conversations
+
+Try these prompts with your bicycle expert:
 
 ```
-{project_name}/
-├── config.yml              # Non-sensitive configuration
-├── profiles.yml             # Sensitive credentials (keep secret!)
-├── SETUP.md                 # This file
-├── .gitignore              # Excludes sensitive files
-├── ingenious_extensions/    # Your custom agents and extensions
-├── docker/                 # Docker configuration
-└── tmp/                    # Temporary files
+"What should I look for when buying my first road bike?"
+
+"My bicycle chain keeps slipping. What could be wrong?"
+
+"How do I properly maintain my bicycle brakes?"
+
+"What's the difference between mountain bikes and hybrid bikes?"
 ```
 
-## 🛠️ Next Steps
+## 🛠️ Next Steps: Customize Your Agent
 
-### Create a Custom Agent
+### 1. Modify the Agent Personality
 
-1. **Add an agent definition:**
-   ```bash
-   mkdir -p ingenious_extensions/services/chat_services/multi_agent/agents/bicycle_agent
-   ```
+Edit: `ingenious_extensions/templates/prompts/bicycle_expert_prompt.jinja`
 
-2. **Create agent.md:**
-   ```markdown
-   # Bicycle Expert Agent
-
-   ## Name and Persona
-   * Name: You are Ingenious, a Bicycle Expert
-   * Description: You are a bicycle maintenance and repair expert.
-
-   ## System Message
-   You help people with bicycle-related questions, from basic maintenance
-   to advanced repairs. Always provide safe, practical advice.
-   ```
-
-3. **Create tasks/task.md:**
-   ```markdown
-   # Bicycle Agent Tasks
-
-   You help users with:
-   - Bicycle maintenance and repair
-   - Choosing the right bicycle
-   - Safety tips and best practices
-   - Troubleshooting common problems
-   ```
-
-### Test Your Agent
-
-```bash
-uv run ingen run-test-batch
+```jinja
+### PERSONALITY
+- Change from "friendly and knowledgeable" to your preferred style
+- Add specific expertise areas
+- Adjust the greeting message
 ```
 
-## 🔍 Debugging
+### 2. Add New Agents
 
-### Check Configuration
-```bash
-# Verify environment variables
-echo $INGENIOUS_PROJECT_PATH
-echo $INGENIOUS_PROFILE_PATH
+In `ingenious_extensions/models/agent.py`, add new agents:
 
-# Test configuration loading
-uv run python -c "import ingenious.config.config as config; print(config.get_config())"
+```python
+local_agents.append(
+    Agent(
+        agent_name="cooking_expert",
+        agent_model_name="gpt-4o",
+        agent_display_name="Cooking Expert",
+        agent_description="A culinary expert that helps with recipes and cooking.",
+        agent_type="expert",
+        model=None,
+        system_prompt=None,
+        log_to_prompt_tuner=True,
+        return_in_response=True,
+    )
+)
 ```
 
-### View Logs
-```bash
-# Check logs in the tmp directory
-tail -f tmp/*.log
-```
+### 3. Create New Prompt Templates
 
-### Common Issues
+Create: `ingenious_extensions/templates/prompts/cooking_expert_prompt.jinja`
 
-1. **"API key not found"**
-   - Check your profiles.yml has the correct API key
-   - Verify environment variables are set
+## 🔍 Troubleshooting
 
-2. **"Template not found"**
-   - Make sure you're running commands from the project root
-   - Check that ingenious_extensions folder exists
+### "API key not found"
+- Check that profiles.yml has your actual API key (not "YOUR_API_KEY_HERE")
+- Verify environment variables: `echo $INGENIOUS_PROFILE_PATH`
 
-3. **"Connection refused"**
-   - Check if another service is using port 8000
-   - Try a different port: `uv run ingen run-rest-api-server --port 8080`
+### "Template not found"
+- Make sure you're in the project root directory
+- Check that ingenious_extensions folder exists
+
+### "Connection refused on port 8000"
+- Another service might be using port 8000
+- Try: `uv run ingen run-rest-api-server --port 8080`
+
+### "Model 'gpt-4o' not found"
+- Check your Azure OpenAI deployment name matches "gpt-4o"
+- Verify the base_url points to the correct deployment
 
 ## 📚 Learn More
 
 - [Insight Ingenious Documentation](https://github.com/Insight-Services-APAC/Insight_Ingenious/tree/main/docs)
 - [Contributing Guide](https://github.com/Insight-Services-APAC/Insight_Ingenious/blob/main/CONTRIBUTING.md)
 
-## 🎉 Hello World Test
+## 🎉 Success Indicators
 
-Try this simple test:
+✅ You've successfully set up Insight Ingenious when:
+1. The server starts without errors
+2. You can access the chat UI
+3. The bicycle expert responds to your questions
+4. You see logs in the tmp directory
 
-1. Start the server: `uv run ingen run-rest-api-server`
-2. Go to: http://localhost:8000/chainlit
-3. Type: "Hello! Can you help me learn about bicycles?"
-4. The classification agent should route you to the appropriate expert!
-
-Happy coding! 🚀
+**Congratulations! You're ready to build amazing AI agents! �‍♀️🎉**
 """
 
     with open(readme_path, "w") as f:
         f.write(readme_content)
-    console.print(f"[info]✅ Created SETUP.md with comprehensive instructions.[/info]")
+    console.print(
+        f"[info]✅ Created comprehensive SETUP.md with bicycle expert guide.[/info]"
+    )
 
 
 def _print_completion_message(current_dir: Path, project_name: str):
     """Print a comprehensive completion message with next steps."""
-    console.print("\n" + "=" * 60)
-    console.print(f"[info]🎉 Project '{project_name}' initialized successfully![/info]")
-    console.print("=" * 60 + "\n")
+    console.print("\n" + "=" * 70)
+    console.print(
+        f"[info]🎉 '{project_name}' initialized with Bicycle Expert example![/info]"
+    )
+    console.print("=" * 70 + "\n")
 
-    console.print("[info]📋 Next Steps:[/info]")
-    console.print("   1. 🔧 Set environment variables:")
-    console.print(f'      export INGENIOUS_PROJECT_PATH="{current_dir}/config.yml"')
-    console.print(f'      export INGENIOUS_PROFILE_PATH="{current_dir}/profiles.yml"')
+    console.print("[info]� Quick Start (2 minutes to Hello World):[/info]")
     console.print("")
-    console.print("   2. 🔑 Update profiles.yml with your Azure OpenAI credentials")
-    console.print("      (Get these from https://portal.azure.com)")
-    console.print("")
-    console.print("   3. 🚀 Start the application:")
-    console.print("      uv run ingen run-rest-api-server")
-    console.print("")
-    console.print("   4. 🌐 Open your browser:")
-    console.print("      Main API:      http://localhost:8000")
-    console.print("      Chat UI:       http://localhost:8000/chainlit")
-    console.print("      API Docs:      http://localhost:8000/docs")
-    console.print("")
-    console.print("[info]📖 For detailed instructions, see: SETUP.md[/info]")
-    console.print(
-        "[warning]⚠️  Remember: Never commit profiles.yml (contains API keys)![/warning]"
-    )
+    console.print("[info]1. 🔧 Set environment variables:[/info]")
+    console.print(f'   export INGENIOUS_PROJECT_PATH="{current_dir}/config.yml"')
+    console.print(f'   export INGENIOUS_PROFILE_PATH="{current_dir}/profiles.yml"')
     console.print("")
     console.print(
-        "[info]🎯 Test with: 'Hello! Can you help me learn about bicycles?'[/info]"
+        "[info]2. 🔑 Update profiles.yml with your Azure OpenAI credentials:[/info]"
     )
+    console.print("   - Replace YOUR_API_KEY_HERE with your actual API key")
+    console.print("   - Replace YOUR_RESOURCE_NAME with your Azure resource name")
+    console.print("   - Get these from: https://portal.azure.com")
+    console.print("")
+    console.print("[info]3. 🚀 Start the application:[/info]")
+    console.print("   uv run ingen run-rest-api-server")
+    console.print("")
+    console.print("[info]4. 🌐 Test your Bicycle Expert:[/info]")
+    console.print("   • Open: http://localhost:8000/chainlit")
+    console.print("   • Type: 'Hello! Can you help me learn about bicycles?'")
+    console.print("   • API Docs: http://localhost:8000/docs")
+    console.print("")
+    console.print("[info]📋 What you get out of the box:[/info]")
+    console.print("   ✅ Bicycle Expert Agent (ready to chat!)")
+    console.print("   ✅ Web Chat Interface (Chainlit UI)")
+    console.print("   ✅ REST API with documentation")
+    console.print("   ✅ Sample bicycle data")
+    console.print("   ✅ Comprehensive setup guide")
+    console.print("")
+    console.print("[info]📖 For detailed instructions: SETUP.md[/info]")
+    console.print(
+        "[warning]⚠️  Security: Never commit profiles.yml (contains API keys)![/warning]"
+    )
+    console.print("")
+    console.print("[info]🎯 Hello World Test:[/info]")
+    console.print("   Ask: 'What should I look for when buying my first bike?'")
+    console.print("")
+    console.print("[info]Happy building! 🚴‍♀️✨[/info]")
 
 
 @app.command()
@@ -915,3 +933,174 @@ class CliFunctions:
                     src_path
                 ) > os.path.getmtime(dst_path):
                     shutil.copy2(src_path, dst_path)  # Copy file with metadata
+
+
+def _create_ingenious_extensions_structure(destination: Path, project_name: str):
+    """Create the ingenious_extensions directory structure with sample files."""
+
+    # Create main directories
+    (destination / "models").mkdir(exist_ok=True)
+    (destination / "services" / "chat_services").mkdir(parents=True, exist_ok=True)
+    (destination / "templates" / "prompts").mkdir(parents=True, exist_ok=True)
+    (destination / "api").mkdir(exist_ok=True)
+    (destination / "sample_data").mkdir(exist_ok=True)
+    (destination / "tests").mkdir(exist_ok=True)
+
+    # Create main __init__.py files
+    (destination / "__init__.py").touch()
+    (destination / "models" / "__init__.py").touch()
+    (destination / "services" / "__init__.py").touch()
+    (destination / "services" / "chat_services" / "__init__.py").touch()
+    (destination / "templates" / "__init__.py").touch()
+    (destination / "templates" / "prompts" / "__init__.py").touch()
+
+    # Create the main agent model file
+    agent_model_content = f"""from ingenious.models.agent import Agent, Agents, IProjectAgents
+from ingenious.models.config import Config
+
+
+class ProjectAgents(IProjectAgents):
+    def Get_Project_Agents(self, config: Config) -> Agents:
+        local_agents = []
+
+        # Hello World Bicycle Expert Agent
+        local_agents.append(
+            Agent(
+                agent_name="bicycle_expert",
+                agent_model_name="gpt-4o",
+                agent_display_name="Bicycle Expert",
+                agent_description="A friendly bicycle expert that helps with all bicycle-related questions.",
+                agent_type="expert",
+                model=None,
+                system_prompt=None,
+                log_to_prompt_tuner=True,
+                return_in_response=True,
+            )
+        )
+
+        # User proxy for multi-agent conversations
+        local_agents.append(
+            Agent(
+                agent_name="user_proxy",
+                agent_model_name="gpt-4o",
+                agent_display_name="User Proxy",
+                agent_description="Manages user interactions and routes conversations.",
+                agent_type="user_proxy",
+                model=None,
+                system_prompt=None,
+                log_to_prompt_tuner=False,
+                return_in_response=False,
+            )
+        )
+
+        return Agents(agents=local_agents, config=config)
+"""
+
+    with open(destination / "models" / "agent.py", "w") as f:
+        f.write(agent_model_content)
+
+    # Create bicycle expert prompt template
+    bicycle_prompt_content = """### ROLE
+You are a friendly and knowledgeable bicycle expert. Your name is Ingenious, and you specialize in helping people with all aspects of bicycles.
+
+### PERSONALITY
+- Enthusiastic about cycling and bicycles
+- Patient and encouraging, especially with beginners
+- Safety-conscious and always prioritize rider safety
+- Practical and solution-oriented
+
+### EXPERTISE AREAS
+- Bicycle maintenance and repair
+- Choosing the right bicycle for different needs
+- Safety tips and best practices
+- Cycling techniques and training
+- Bicycle components and upgrades
+- Troubleshooting common problems
+
+### INSTRUCTIONS
+1. Always greet users warmly and ask how you can help with their bicycle needs
+2. Provide clear, step-by-step instructions when explaining repairs or maintenance
+3. Emphasize safety in all recommendations
+4. Ask clarifying questions when needed to give the best advice
+5. Encourage users and make cycling accessible to everyone
+
+### EXAMPLE GREETING
+"Hello! I'm Ingenious, your bicycle expert. Whether you need help with repairs, choosing a new bike, or just want to learn more about cycling, I'm here to help! What bicycle question can I assist you with today?"
+
+### RESPONSE FORMAT
+- Start with a friendly greeting if it's the first interaction
+- Provide clear, actionable advice
+- Include safety reminders when relevant
+- End with an encouraging message or offer to help further
+"""
+
+    with open(
+        destination / "templates" / "prompts" / "bicycle_expert_prompt.jinja", "w"
+    ) as f:
+        f.write(bicycle_prompt_content)
+
+    # Create a README for the extensions folder
+    readme_content = f"""# {project_name} Extensions
+
+This folder contains your custom agents, services, and templates for the Insight Ingenious framework.
+
+## Folder Structure
+
+- **models/**: Contains your agent definitions and data models
+- **services/**: Custom business logic and multi-agent conversation flows
+- **templates/**: Prompt templates and other text-based templates
+- **api/**: Custom API endpoints
+- **sample_data/**: Sample data for testing
+- **tests/**: Test files (future use)
+
+## Quick Start
+
+Your project comes with a "Hello World" bicycle expert agent ready to use:
+
+1. **Bicycle Expert Agent**: A friendly expert that helps with bicycle-related questions
+2. **Prompt Template**: Located in `templates/prompts/bicycle_expert_prompt.jinja`
+
+## Next Steps
+
+1. Update your API credentials in `profiles.yml`
+2. Start the server: `uv run ingen run-rest-api-server`
+3. Test with: "Hello! Can you help me learn about bicycles?"
+
+## Customization
+
+To add new agents:
+1. Add agent definitions to `models/agent.py`
+2. Create prompt templates in `templates/prompts/`
+3. Add custom conversation flows in `services/chat_services/`
+
+Happy coding! 🚴‍♀️
+"""
+
+    with open(destination / "readme.md", "w") as f:
+        f.write(readme_content)
+
+    # Create sample CSV data for testing
+    sample_data_content = """bike_model,brand,type,price,features
+Trek Domane,Trek,Road,2499,"Carbon frame, disc brakes, endurance geometry"
+Specialized Stumpjumper,Specialized,Mountain,3299,"Full suspension, 29er wheels, trail geometry"
+Giant Escape,Giant,Hybrid,599,"Aluminum frame, upright position, city ready"
+Cannondale SuperSix,Cannondale,Road,4999,"Racing geometry, lightweight, aerodynamic"
+Surly Long Haul Trucker,Surly,Touring,1499,"Steel frame, rack mounts, adventure ready"
+"""
+
+    with open(destination / "sample_data" / "bicycles.csv", "w") as f:
+        f.write(sample_data_content)
+
+    console.print(
+        f"[info]✅ Created ingenious_extensions structure with bicycle expert example.[/info]"
+    )
+
+
+@app.command()
+def init():
+    """
+    🚀 Short alias for 'initialize-new-project'.
+
+    Creates a new Insight Ingenious project with a bicycle expert example.
+    """
+    initialize_new_project()
