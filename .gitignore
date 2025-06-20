@@ -1,3 +1,4 @@
+# Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -33,10 +34,32 @@ MANIFEST
 *.manifest
 *.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Package Managers
+# pipenv
+Pipfile.lock
 
+# poetry
+poetry.lock
+
+# PDM
+pdm.lock
+__pypackages__/
+
+# Environment Management
+# Environments
+.env
+.env.*
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# pyenv
+.python-version
+
+# Testing & Coverage
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -51,10 +74,40 @@ coverage.xml
 .pytest_cache/
 pytestdebug.log
 
-# Translations
-*.mo
-*.pot
+# Test output
+test-output/
 
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Type Checking & Linting
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# pyright
+pyrightconfig.json
+
+# ruff
+.ruff_cache/
+
+# IDEs & Editors
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Documentation
+# Sphinx documentation
+docs/_build/
+
+# mkdocs
+/site/
+
+# Web Frameworks
 # Django stuff:
 *.log
 local_settings.py
@@ -68,15 +121,7 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
-docs/_build/
-build/
-tmp/
-*.tmp
-
-# PyBuilder
-target/
-
+# Jupyter & IPython
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -84,33 +129,12 @@ target/
 profile_default/
 ipython_config.py
 
-# pyenv
-.python-version
+# Internationalization
+# Translations
+*.mo
+*.pot
 
-# pipenv
-Pipfile.lock
-
-# poetry
-poetry.lock
-
-# PDM
-pdm.lock
-__pypackages__/
-
-# pyright
-pyrightconfig.json
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# VS Code
-.vscode/
-
-# PyCharm
-.idea/
-
+# Operating Systems
 # macOS
 .DS_Store
 
@@ -120,23 +144,20 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# Environments
-.env
-.env.*
-.venv/
-venv/
-ENV/
-env/
-env.bak/
-venv.bak/
-
-# mkdocs
-/site/
-
+# Other Tools & Frameworks
 # Node
 node_modules/
 
-# Others
+# PyBuilder
+target/
+
+# Chainlit
+.chainlit/
+
+# Build & Temporary Files
+build/
+tmp/
+*.tmp
 *.bak
 *.swp
 *.swo
@@ -144,11 +165,3 @@ node_modules/
 
 # Local files
 *.local
-
-# Test output
-test-output/
-
-#ruff
-.ruff_cache/
-
-.chainlit/
