@@ -77,8 +77,9 @@ class TestCLIApplicationService:
 
         # Verify project creation was called with correct arguments
         call_args = mock_project_service.create_project.call_args
-        assert call_args[0][0] == project_name  # project name
-        assert call_args[0][1] == project_path  # project path
+        config = call_args[0][0]  # ProjectConfig object
+        assert config.name == project_name
+        assert config.path == str(project_path)
 
     def test_create_project_already_exists(self, cli_service, mock_project_service):
         """Test project creation when project already exists."""

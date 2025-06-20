@@ -22,7 +22,11 @@ class ConfigurationItem(BaseModel):
 class AppConfiguration(BaseModel):
     """Main application configuration."""
 
-    name: str = "Insight Ingenious"
+    name: str = Field(
+        "Insight Ingenious",
+        min_length=1,
+        description="Application name cannot be empty",
+    )
     version: str = "1.0.0"
     environment: str = "development"
     debug: bool = False

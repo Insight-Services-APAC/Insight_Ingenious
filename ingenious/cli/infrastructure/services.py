@@ -7,6 +7,7 @@ for the CLI bounded context.
 
 import os
 from pathlib import Path
+from typing import List
 
 import uvicorn
 from rich.console import Console
@@ -339,6 +340,19 @@ Happy coding! 🎉
         with open(readme_path, "w") as f:
             f.write(readme_content)
         console.print("[info]✅ Created SETUP.md with project documentation.[/info]")
+
+    async def generate_template(self, template_name: str, output_path: Path) -> bool:
+        """Generate a project template."""
+        try:
+            # For now, just call the config template method
+            await self.generate_config_template(template_name, output_path)
+            return True
+        except Exception:
+            return False
+
+    async def list_templates(self) -> List[str]:
+        """List available project templates."""
+        return ["basic", "react", "vue", "angular"]
 
     async def _create_config_yml(self, project_name: str, output_path: Path) -> None:
         """Create config.yml file."""

@@ -58,6 +58,65 @@ class CLIApplicationService:
 
         await self._server_service.start_server(config)
 
+    def create_project(self, project_name: str, project_path: Path) -> bool:
+        """Synchronous wrapper for creating a project."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            config = ProjectConfig(name=project_name, path=str(project_path))
+            loop.run_until_complete(self._project_service.create_project(config))
+            loop.run_until_complete(
+                self._template_service.generate_template(project_name, project_path)
+            )
+            return True
+        except Exception:
+            return False
+        finally:
+            loop.close()
+
+    def start_server(self, host: str = "127.0.0.1", port: int = 8000) -> bool:
+        """Synchronous wrapper for starting the server."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(self.start_rest_api_server(host=host, port=port))
+            return True
+        except Exception:
+            return False
+        finally:
+            loop.close()
+
+    def stop_server(self) -> bool:
+        """Synchronous wrapper for stopping the server."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(self._server_service.stop_server())
+            return True
+        except Exception:
+            return False
+        finally:
+            loop.close()
+
+    def get_server_status(self) -> bool:
+        """Check if server is running."""
+        import asyncio
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(self._server_service.is_running())
+        except Exception:
+            return False
+        finally:
+            loop.close()
+
     async def run_project(self) -> None:
         """Run the current project."""
         current_dir = Path.cwd()
