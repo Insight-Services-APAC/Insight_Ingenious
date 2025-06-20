@@ -1,37 +1,15 @@
-import logging
+"""
+Legacy message feedback routes module.
 
-from fastapi import APIRouter, HTTPException
+This module maintains backward compatibility by re-exporting the chat router
+from the new chat bounded context (message feedback functionality is now part of chat).
 
-from ingenious.models.http_error import HTTPError
-from ingenious.models.message_feedback import (
-    MessageFeedbackRequest,
-    MessageFeedbackResponse,
-)
+Note: This is part of the migration strategy. After migration is complete,
+imports should use ingenious.chat.interfaces.rest_controllers directly.
+"""
 
-logger = logging.getLogger(__name__)
-router = APIRouter()
+# Import the new chat router from the bounded context (contains message feedback routes)
+from ...chat.interfaces.rest_controllers import router
 
-
-@router.put(
-    "/messages/{message_id}/feedback",
-    responses={400: {"model": HTTPError, "description": "Bad Request"}},
-)
-async def submit_message_feedback(
-    message_id: str,
-    message_feedback_request: MessageFeedbackRequest,
-) -> MessageFeedbackResponse:
-    """
-    Submit message feedback.
-    Note: MessageFeedbackService was removed, so this returns a simple response.
-    """
-    try:
-        # Since MessageFeedbackService was removed, return simple success response
-        return MessageFeedbackResponse(
-            message_id=message_id,
-            feedback_type=message_feedback_request.feedback_type,
-            success=True,
-            message="Feedback received (not persisted - feedback service removed)",
-        )
-    except ValueError as e:
-        logger.exception(e)
-        raise HTTPException(status_code=400, detail=str(e))
+# Maintain backward compatibility
+__all__ = ["router"]

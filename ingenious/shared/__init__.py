@@ -13,10 +13,12 @@ all bounded contexts:
 
 from .exceptions import DomainException, ValidationException
 from .events import DomainEvent, DomainEventHandler
+from .interfaces.rest_controllers import EventsController
 
 __all__ = [
     "DomainException",
     "ValidationException",
     "DomainEvent",
     "DomainEventHandler",
+    "EventsController",
 ]

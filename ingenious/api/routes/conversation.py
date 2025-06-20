@@ -1,28 +1,15 @@
-import logging
+"""
+Legacy conversation routes module.
 
-from fastapi import APIRouter, HTTPException
+This module maintains backward compatibility by re-exporting the chat router
+from the new chat bounded context (conversation functionality is now part of chat).
 
-from ingenious.models.http_error import HTTPError
-from ingenious.models.message import Message
+Note: This is part of the migration strategy. After migration is complete,
+imports should use ingenious.chat.interfaces.rest_controllers directly.
+"""
 
-logger = logging.getLogger(__name__)
-router = APIRouter()
+# Import the new chat router from the bounded context (contains conversation routes)
+from ...chat.interfaces.rest_controllers import router
 
-
-@router.get(
-    "/conversations/{thread_id}",
-    responses={400: {"model": HTTPError, "description": "Bad Request"}},
-)
-async def get_conversation(
-    thread_id: str,
-) -> list[Message]:
-    """
-    Get conversation history for a thread.
-    Note: Chat history repository was removed, so this returns an empty list.
-    """
-    try:
-        # Since chat history repository was removed, return empty list
-        return []
-    except Exception as e:
-        logger.exception(e)
-        raise HTTPException(status_code=400, detail=str(e))
+# Maintain backward compatibility
+__all__ = ["router"]

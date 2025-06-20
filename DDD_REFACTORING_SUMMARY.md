@@ -99,23 +99,34 @@ ingenious/
 - ✅ **Configuration**: Repository pattern for config management
 - ✅ **External Integrations**: Migrated OpenAI service with proper interfaces
 - ✅ **File Management**: Domain entities and service interfaces
-- ✅ **Prompt Management**: Template management with Jinja2 rendering
-- ✅ **Diagnostics**: Health check and monitoring infrastructure
+- ✅ **Prompt Management**: Template management with Jinja2 rendering and REST controllers
+- ✅ **Diagnostics**: Health check and monitoring infrastructure with REST controllers
 - ✅ **Security**: User management and authentication entities
 
-### 3. Shared Kernel
+### 3. API Routes Migration
+- ✅ **Migrated all API routes from `api/routes/` to bounded context `interfaces/` layers**
+- ✅ **Chat routes**: Migrated to `chat/interfaces/rest_controllers.py`
+- ✅ **Conversation routes**: Merged into chat bounded context
+- ✅ **Message feedback routes**: Merged into chat bounded context
+- ✅ **Diagnostic routes**: Migrated to `diagnostics/interfaces/rest_controllers.py`
+- ✅ **Prompt routes**: Migrated to `prompt_management/interfaces/rest_controllers.py`
+- ✅ **Events routes**: Migrated to `shared/interfaces/rest_controllers.py`
+- ✅ **Legacy compatibility**: All old route imports still work via aliases
+
+### 4. Shared Kernel
 - ✅ Common domain exceptions
 - ✅ Domain events infrastructure
 - ✅ Cross-cutting utilities
 - ✅ Validation helpers
 
-### 4. Backward Compatibility
+### 5. Backward Compatibility
 - ✅ Legacy module aliases maintained
 - ✅ Existing imports continue to work
 - ✅ Migration guide created
 - ✅ Gradual migration strategy
+- ✅ Legacy API routes re-export from new bounded contexts
 
-### 5. Code Organization Improvements
+### 6. Code Organization Improvements
 - ✅ Split large modules into smaller, focused files
 - ✅ Clear separation of concerns
 - ✅ Proper dependency direction (domain → application → infrastructure)
@@ -137,7 +148,7 @@ ingenious/
 3. **Fix Import Issues**: Address any remaining import path issues
 
 ### Short Term (Phase 2)
-1. **Migrate API Routes**: Move from `api/routes/` to bounded context `interfaces/`
+1. ✅ ~~**Migrate API Routes**: Move from `api/routes/` to bounded context `interfaces/`~~ **COMPLETED**
 2. **Implement Infrastructure**: Complete repository and service implementations
 3. **Add Application Services**: Implement use cases and orchestration logic
 4. **Update Tests**: Migrate to test bounded contexts independently

@@ -12,6 +12,8 @@ dependencies = [
     "autogen-agentchat==0.5.7",
     "autogen-ext[openai]==0.5.7",
     "azure-core==1.34.0",
+    "azure-identity>=1.23.0",
+    "azure-keyvault-secrets>=4.10.0",
     "azure-search-documents==11.5.2",
     "certifi==2025.4.26",
     "fastapi==0.115.9",
