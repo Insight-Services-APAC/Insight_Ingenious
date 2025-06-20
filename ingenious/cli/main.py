@@ -48,10 +48,10 @@ def create_cli_app() -> typer.Typer:
     # Create controller
     controller = CLIController(cli_service)
 
-    # Wrap async commands
-    controller.app.command()(async_command(controller.run_rest_api_server))
-    controller.app.command()(async_command(controller.run_project))
-    controller.app.command()(async_command(controller.initialize_new_project))
+    # Wrap async commands with new sleek names
+    controller.app.command()(async_command(controller.run))
+    controller.app.command()(async_command(controller.dev))
+    controller.app.command()(async_command(controller.init))
 
     return controller.app
 

@@ -43,7 +43,7 @@ class CLIController:
         # Commands are registered in main.py with async wrapper
         pass
 
-    async def run_rest_api_server(
+    async def run(
         self,
         project_dir: Annotated[
             Optional[str],
@@ -71,7 +71,7 @@ class CLIController:
         ] = 8000,
     ) -> None:
         """
-        Start the Insight Ingenious FastAPI server.
+        Start the Insight Ingenious server.
 
         This command starts the REST API server that provides the core functionality
         for AI agent interactions and file management.
@@ -87,9 +87,9 @@ class CLIController:
             console.print(f"[error]❌ Failed to start server: {e}[/error]")
             raise typer.Exit(1)
 
-    async def run_project(self) -> None:
+    async def dev(self) -> None:
         """
-        Run the project in the current directory.
+        Quick development mode - run the project in the current directory.
 
         This is a simplified command that starts the server with default settings
         for the current project directory.
@@ -100,12 +100,12 @@ class CLIController:
             console.print(f"[error]❌ Failed to run project: {e}[/error]")
             raise typer.Exit(1)
 
-    async def initialize_new_project(self) -> None:
+    async def init(self) -> None:
         """
-        Initialize a new Insight Ingenious project in the current directory.
+        Initialize a new Insight Ingenious project.
 
         This command creates the necessary configuration files and directory
-        structure for a new project.
+        structure for a new project in the current directory.
         """
         try:
             await self._cli_service.initialize_new_project()
@@ -137,7 +137,7 @@ class CLIController:
         console.print(
             "   1️⃣ Edit [bold]profiles.yml[/bold] and add your Azure OpenAI API key"
         )
-        console.print("   2️⃣ Run: [bold]ingen run-rest-api-server[/bold]")
+        console.print("   2️⃣ Run: [bold]ingen run[/bold]")
         console.print("   3️⃣ Visit: [link]http://127.0.0.1:8000/docs[/link]")
         console.print()
         console.print("📖 For detailed setup instructions, see [bold]SETUP.md[/bold]")

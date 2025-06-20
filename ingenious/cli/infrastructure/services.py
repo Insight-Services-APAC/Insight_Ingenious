@@ -76,17 +76,13 @@ class UvicornServerService(IServerService):
             if not config_file.exists():
                 console.print("[error]❌ config.yml not found![/error]")
                 console.print(f"[info]Looking in: {config_file}[/info]")
-                console.print(
-                    "[info]Run 'ingen initialize-new-project' to create config files.[/info]"
-                )
+                console.print("[info]Run 'ingen init' to create config files.[/info]")
                 raise FileNotFoundError("config.yml not found")
 
             if not profiles_file.exists():
                 console.print("[error]❌ profiles.yml not found![/error]")
                 console.print(f"[info]Looking in: {profiles_file}[/info]")
-                console.print(
-                    "[info]Run 'ingen initialize-new-project' to create config files.[/info]"
-                )
+                console.print("[info]Run 'ingen init' to create config files.[/info]")
                 raise FileNotFoundError("profiles.yml not found")
 
             console.print(
@@ -241,7 +237,7 @@ Welcome to your new Insight Ingenious project! This guide will help you get star
 
 2. **Start the server**:
    ```bash
-   ingen run-rest-api-server
+   ingen run
    ```
 
 3. **Access the API**:
@@ -267,16 +263,16 @@ Contains sensitive information (API keys, passwords):
 
 ```bash
 # Start the REST API server
-ingen run-rest-api-server
+ingen run
 
 # Start with custom host/port
-ingen run-rest-api-server --host 0.0.0.0 --port 9000
+ingen run --host 0.0.0.0 --port 9000
 
-# Run project (same as run-rest-api-server but simpler)
-ingen run-project
+# Quick development mode (same as run but simpler)
+ingen dev
 
 # Initialize a new project (if needed)
-ingen initialize-new-project
+ingen init
 ```
 
 ## 📁 Project Structure
