@@ -173,7 +173,7 @@ class TestDiagnosticsModels:
         assert result.status == HealthStatus.HEALTHY
         assert result.message == "All good"
         assert result.execution_time_ms == 15.5
-        assert result.is_healthy() is True
+        assert result.is_healthy is True
 
     def test_system_health_aggregation(self):
         """Test system health aggregation functionality."""

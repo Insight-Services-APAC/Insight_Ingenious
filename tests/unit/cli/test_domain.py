@@ -249,7 +249,7 @@ class TestHostAddress:
     def test_host_address_creation_ipv4(self):
         """Test creating HostAddress with IPv4 address."""
         # Act
-        host = HostAddress("192.168.1.1")
+        host = HostAddress(value="192.168.1.1")
 
         # Assert
         assert str(host) == "192.168.1.1"
@@ -257,7 +257,7 @@ class TestHostAddress:
     def test_host_address_creation_hostname(self):
         """Test creating HostAddress with hostname."""
         # Act
-        host = HostAddress("localhost")
+        host = HostAddress(value="localhost")
 
         # Assert
         assert str(host) == "localhost"
@@ -265,7 +265,7 @@ class TestHostAddress:
     def test_host_address_creation_fqdn(self):
         """Test creating HostAddress with FQDN."""
         # Act
-        host = HostAddress("api.example.com")
+        host = HostAddress(value="api.example.com")
 
         # Assert
         assert str(host) == "api.example.com"
@@ -274,16 +274,16 @@ class TestHostAddress:
         """Test HostAddress validation with empty string."""
         # Act & Assert
         with pytest.raises(ValueError) as exc_info:
-            HostAddress("")
+            HostAddress(value="")
 
         assert "empty" in str(exc_info.value).lower()
 
     def test_host_address_equality(self):
         """Test HostAddress equality comparison."""
         # Arrange
-        host1 = HostAddress("127.0.0.1")
-        host2 = HostAddress("127.0.0.1")
-        host3 = HostAddress("localhost")
+        host1 = HostAddress(value="127.0.0.1")
+        host2 = HostAddress(value="127.0.0.1")
+        host3 = HostAddress(value="localhost")
 
         # Act & Assert
         assert host1 == host2
@@ -300,7 +300,7 @@ class TestPort:
 
         for port_num in valid_ports:
             # Act
-            port = Port(port_num)
+            port = Port(value=port_num)
 
             # Assert
             assert port.value == port_num
@@ -310,7 +310,7 @@ class TestPort:
         """Test Port validation with port number too low."""
         # Act & Assert
         with pytest.raises(ValueError) as exc_info:
-            Port(0)
+            Port(value=0)
 
         assert "range" in str(exc_info.value).lower()
 
@@ -318,16 +318,16 @@ class TestPort:
         """Test Port validation with port number too high."""
         # Act & Assert
         with pytest.raises(ValueError) as exc_info:
-            Port(65536)
+            Port(value=65536)
 
         assert "range" in str(exc_info.value).lower()
 
     def test_port_equality(self):
         """Test Port equality comparison."""
         # Arrange
-        port1 = Port(8000)
-        port2 = Port(8000)
-        port3 = Port(9000)
+        port1 = Port(value=8000)
+        port2 = Port(value=8000)
+        port3 = Port(value=9000)
 
         # Act & Assert
         assert port1 == port2
@@ -340,7 +340,7 @@ class TestPort:
 
         for port_num in common_ports:
             # Act
-            port = Port(port_num)
+            port = Port(value=port_num)
 
             # Assert
             assert port.value == port_num
@@ -362,7 +362,7 @@ class TestProjectName:
 
         for name in valid_names:
             # Act
-            project_name = ProjectName(name)
+            project_name = ProjectName(value=name)
 
             # Assert
             assert str(project_name) == name
@@ -371,7 +371,7 @@ class TestProjectName:
         """Test ProjectName validation with empty string."""
         # Act & Assert
         with pytest.raises(ValueError) as exc_info:
-            ProjectName("")
+            ProjectName(value="")
 
         assert "empty" in str(exc_info.value).lower()
 
@@ -379,7 +379,7 @@ class TestProjectName:
         """Test ProjectName validation with whitespace-only string."""
         # Act & Assert
         with pytest.raises(ValueError) as exc_info:
-            ProjectName("   ")
+            ProjectName(value="   ")
 
         assert "empty" in str(exc_info.value).lower()
 
@@ -396,16 +396,16 @@ class TestProjectName:
         for name in invalid_names:
             # Act & Assert
             with pytest.raises(ValueError) as exc_info:
-                ProjectName(name)
+                ProjectName(value=name)
 
             assert "characters" in str(exc_info.value).lower()
 
     def test_project_name_equality(self):
         """Test ProjectName equality comparison."""
         # Arrange
-        name1 = ProjectName("my-project")
-        name2 = ProjectName("my-project")
-        name3 = ProjectName("other-project")
+        name1 = ProjectName(value="my-project")
+        name2 = ProjectName(value="my-project")
+        name3 = ProjectName(value="other-project")
 
         # Act & Assert
         assert name1 == name2
@@ -414,8 +414,8 @@ class TestProjectName:
     def test_project_name_case_sensitivity(self):
         """Test ProjectName case sensitivity."""
         # Arrange
-        name1 = ProjectName("MyProject")
-        name2 = ProjectName("myproject")
+        name1 = ProjectName(value="MyProject")
+        name2 = ProjectName(value="myproject")
 
         # Act & Assert
         assert name1 != name2  # Should be case-sensitive
@@ -428,7 +428,7 @@ class TestCLIDomainIntegration:
     def test_project_config_with_value_objects(self):
         """Test ProjectConfig using value objects."""
         # Arrange
-        project_name = ProjectName("awesome-project")
+        project_name = ProjectName(value="awesome-project")
 
         # Act
         config = ProjectConfig(
@@ -444,7 +444,7 @@ class TestCLIDomainIntegration:
         """Test ServerConfig using value objects."""
         # Arrange
         host = HostAddress("api.example.com")
-        port = Port(8080)
+        port = Port(value=8080)
 
         # Act
         config = ServerConfig(
@@ -459,9 +459,9 @@ class TestCLIDomainIntegration:
     def test_complete_cli_command_scenario(self):
         """Test a complete CLI command scenario."""
         # Arrange
-        project_name = ProjectName("new-web-app")
+        project_name = ProjectName(value="new-web-app")
         host = HostAddress("localhost")
-        port = Port(3000)
+        port = Port(value=3000)
 
         # Act
         # Create project command

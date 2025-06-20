@@ -165,16 +165,16 @@ class TestDiagnosticResult:
             check=check,
             status=HealthStatus.HEALTHY,
             message="Check passed successfully",
-            execution_time=0.25,
+            execution_time_ms=0.25,
         )
 
         # Assert
         assert result.check == check
         assert result.status == HealthStatus.HEALTHY
         assert result.message == "Check passed successfully"
-        assert result.execution_time == 0.25
-        assert result.timestamp is not None
-        assert isinstance(result.timestamp, datetime)
+        assert result.execution_time_ms == 0.25
+        assert result.checked_at is not None
+        assert isinstance(result.checked_at, datetime)
         assert result.details == {}  # Default value
 
     def test_diagnostic_result_creation_failure(self):
@@ -192,7 +192,7 @@ class TestDiagnosticResult:
             check=check,
             status=HealthStatus.UNHEALTHY,
             message="Database connection failed",
-            execution_time=5.0,
+            execution_time_ms=5.0,
             details=error_details,
         )
 
@@ -200,7 +200,7 @@ class TestDiagnosticResult:
         assert result.check == check
         assert result.status == HealthStatus.UNHEALTHY
         assert result.message == "Database connection failed"
-        assert result.execution_time == 5.0
+        assert result.execution_time_ms == 5.0
         assert result.details == error_details
 
     def test_diagnostic_result_with_custom_timestamp(self):
@@ -254,7 +254,7 @@ class TestDiagnosticResult:
             check=check,
             status=HealthStatus.HEALTHY,
             message="Success",
-            execution_time=1.5,
+            execution_time_ms=1.5,
             details={"custom": "data"},
         )
 
@@ -516,7 +516,7 @@ class TestDiagnosticsEntitiesIntegration:
                 name=name, description=f"Check for {name}", category=category
             )
             result = DiagnosticResult(
-                check=check, status=status, message=message, execution_time=0.5
+                check=check, status=status, message=message, execution_time_ms=0.5
             )
             system_health.add_result(result)
 
@@ -596,7 +596,7 @@ class TestDiagnosticsEntitiesIntegration:
             check=check,
             status=HealthStatus.DEGRADED,
             message="Some endpoints are experiencing issues",
-            execution_time=3.2,
+            execution_time_ms=3.2,
             details=detailed_info,
         )
 
