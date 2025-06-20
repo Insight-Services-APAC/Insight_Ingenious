@@ -10,7 +10,6 @@ import os
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import AsyncGenerator, Dict, Generator
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -51,7 +50,7 @@ def temp_dir():
 @pytest.fixture
 def temp_file():
     """Create a temporary file for testing."""
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp_file:
         yield Path(tmp_file.name)
     # Cleanup
     try:
@@ -76,11 +75,9 @@ def mock_env():
 def mock_config():
     """Mock application configuration."""
     from ingenious.configuration.domain.models import MinimalConfig
-    
+
     return MinimalConfig(
-        project_name="test-project",
-        environment="test",
-        log_level="DEBUG"
+        project_name="test-project", environment="test", log_level="DEBUG"
     )
 
 
@@ -92,11 +89,10 @@ def mock_llm_service():
     mock.create_completion.return_value = {
         "text": "Mock LLM response",
         "model": "gpt-4",
-        "usage": {"total_tokens": 50}
+        "usage": {"total_tokens": 50},
     }
     mock.generate_response.return_value = Mock(
-        content="Mock response content",
-        model="gpt-4"
+        content="Mock response content", model="gpt-4"
     )
     mock.is_healthy.return_value = True
     return mock
@@ -109,7 +105,7 @@ def mock_chat_service():
     mock.process_chat_request.return_value = Mock(
         thread_id="test-thread-123",
         agent_response="Mock chat response",
-        event_type="response"
+        event_type="response",
     )
     return mock
 
@@ -133,9 +129,7 @@ def mock_project_service():
     mock = Mock()
     mock.create_project.return_value = True
     mock.get_project_config.return_value = Mock(
-        name="test-project",
-        path="/tmp/test-project",
-        profile="dev"
+        name="test-project", path="/tmp/test-project", profile="dev"
     )
     return mock
 
@@ -165,7 +159,7 @@ def mock_configuration_repository():
     mock = AsyncMock()
     mock.get_configuration.return_value = {
         "application": {"name": "test-app"},
-        "server": {"host": "localhost", "port": 8000}
+        "server": {"host": "localhost", "port": 8000},
     }
     mock.save_configuration.return_value = True
     return mock
@@ -186,9 +180,7 @@ def mock_diagnostic_service():
     """Mock diagnostic service."""
     mock = AsyncMock()
     mock.run_health_check.return_value = Mock(
-        status="healthy",
-        checks=[],
-        overall_status="healthy"
+        status="healthy", checks=[], overall_status="healthy"
     )
     return mock
 
@@ -200,7 +192,7 @@ def mock_system_metrics_service():
     mock.get_system_metrics.return_value = {
         "cpu_usage": 25.5,
         "memory_usage": 60.0,
-        "disk_usage": 45.0
+        "disk_usage": 45.0,
     }
     return mock
 
@@ -213,7 +205,7 @@ def mock_content_moderation_service():
     mock.moderate_content.return_value = {
         "flagged": False,
         "categories": {},
-        "category_scores": {}
+        "category_scores": {},
     }
     return mock
 
@@ -235,9 +227,7 @@ def mock_auth_service():
     """Mock authentication service."""
     mock = AsyncMock()
     mock.authenticate.return_value = Mock(
-        user_id="test-user-123",
-        username="testuser",
-        is_authenticated=True
+        user_id="test-user-123", username="testuser", is_authenticated=True
     )
     mock.is_authorized.return_value = True
     return mock
@@ -248,9 +238,7 @@ def mock_user_repository():
     """Mock user repository."""
     mock = AsyncMock()
     mock.get_user.return_value = Mock(
-        user_id="test-user-123",
-        username="testuser",
-        email="test@example.com"
+        user_id="test-user-123", username="testuser", email="test@example.com"
     )
     mock.create_user.return_value = Mock(user_id="new-user-123")
     return mock
@@ -260,13 +248,13 @@ def mock_user_repository():
 @pytest.fixture
 async def async_client():
     """Async HTTP client for API testing."""
-    from ingenious.main import FastAgentAPI
     from ingenious.configuration.domain.models import MinimalConfig
-    
+    from ingenious.main import FastAgentAPI
+
     # Create test app with minimal config
     config = MinimalConfig()
     app_instance = FastAgentAPI(config)
-    
+
     async with AsyncClient(app=app_instance.app, base_url="http://test") as client:
         yield client
 
@@ -274,12 +262,12 @@ async def async_client():
 @pytest.fixture
 def test_client():
     """Synchronous test client for FastAPI testing."""
-    from ingenious.main import FastAgentAPI
     from ingenious.configuration.domain.models import MinimalConfig
-    
+    from ingenious.main import FastAgentAPI
+
     config = MinimalConfig()
     app_instance = FastAgentAPI(config)
-    
+
     with TestClient(app_instance.app) as client:
         yield client
 
@@ -307,11 +295,11 @@ def integration_test_env(mock_env, temp_dir):
     # Set up test environment variables
     for key, value in mock_env.items():
         os.environ[key] = value
-    
+
     # Create test directories and files
     test_config_dir = temp_dir / "config"
     test_config_dir.mkdir(exist_ok=True)
-    
+
     config_file = test_config_dir / "config.yml"
     config_file.write_text("""
 application:
@@ -321,7 +309,7 @@ server:
   host: 127.0.0.1
   port: 8000
 """)
-    
+
     profiles_file = test_config_dir / "profiles.yml"
     profiles_file.write_text("""
 - name: test
@@ -330,18 +318,18 @@ server:
       api_key: test_key
       base_url: https://test.openai.azure.com
 """)
-    
+
     os.environ["INGENIOUS_PROJECT_PATH"] = str(config_file)
     os.environ["INGENIOUS_PROFILE_PATH"] = str(profiles_file)
     os.environ["INGENIOUS_WORKING_DIR"] = str(temp_dir)
-    
+
     yield {
         "config_dir": test_config_dir,
         "config_file": config_file,
         "profiles_file": profiles_file,
-        "working_dir": temp_dir
+        "working_dir": temp_dir,
     }
-    
+
     # Cleanup environment
     for key in mock_env.keys():
         if key in os.environ:
@@ -362,22 +350,22 @@ def mock_error_service():
 def performance_timer():
     """Timer for performance testing."""
     import time
-    
+
     class Timer:
         def __init__(self):
             self.start_time = None
             self.end_time = None
-        
+
         def start(self):
             self.start_time = time.time()
-        
+
         def stop(self):
             self.end_time = time.time()
-        
+
         @property
         def elapsed(self):
             if self.start_time and self.end_time:
                 return self.end_time - self.start_time
             return None
-    
+
     return Timer()

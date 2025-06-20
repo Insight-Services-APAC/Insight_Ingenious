@@ -60,7 +60,7 @@ This project uses **uv** for dependency management. Key commands:
 # Add a new dependency
 uv add package-name
 
-# Add a development dependency  
+# Add a development dependency
 uv add package-name --dev
 
 # Remove a dependency
@@ -79,7 +79,7 @@ Create a local `.env` file for development:
 
 ```bash
 INGENIOUS_WORKING_DIR="$(pwd)"
-INGENIOUS_PROJECT_PATH="$(pwd)/config.yml"  
+INGENIOUS_PROJECT_PATH="$(pwd)/config.yml"
 INGENIOUS_PROFILE_PATH="$(pwd)/profiles.yml"
 AZURE_OPENAI_API_KEY="your-development-key"
 AZURE_OPENAI_ENDPOINT="your-development-endpoint"
@@ -167,7 +167,7 @@ We follow **PEP 8** with additional project-specific conventions:
 class UserService:
     pass
 
-# Functions and variables: snake_case  
+# Functions and variables: snake_case
 def create_user_account():
     user_name = "example"
 
@@ -227,7 +227,7 @@ DEFAULT_PAGE_SIZE = 20
 # Implementation
 class UserController:
     """Controller for user management operations."""
-    
+
     def __init__(self, user_service: UserService):
         """Initialize the controller with required services."""
         self._user_service = user_service
@@ -323,27 +323,27 @@ from ingenious.chat.application.services import ChatApplicationService
 
 class TestChatApplicationService:
     """Test suite for ChatApplicationService."""
-    
+
     @pytest.fixture
     def mock_chat_repository(self):
         """Mock chat repository for testing."""
         return AsyncMock()
-    
+
     @pytest.fixture
     def chat_service(self, mock_chat_repository):
         """Create ChatApplicationService with mocked dependencies."""
         return ChatApplicationService(chat_repository=mock_chat_repository)
-    
+
     async def test_create_conversation_success(self, chat_service, mock_chat_repository):
         """Test successful conversation creation."""
         # Arrange
         user_id = "user-123"
         expected_thread = ConversationThread(id="thread-456", user_id=user_id)
         mock_chat_repository.create_conversation.return_value = expected_thread
-        
+
         # Act
         result = await chat_service.create_conversation(user_id)
-        
+
         # Assert
         assert result.id == "thread-456"
         assert result.user_id == user_id
@@ -361,13 +361,13 @@ from ingenious.main import app
 
 class TestChatAPI:
     """Integration tests for Chat API endpoints."""
-    
+
     @pytest.fixture
     async def client(self):
         """Create test client."""
         async with AsyncClient(app=app, base_url="http://test") as client:
             yield client
-    
+
     async def test_chat_endpoint_success(self, client):
         """Test successful chat request."""
         # Arrange
@@ -376,10 +376,10 @@ class TestChatAPI:
             "conversation_flow": "general",
             "thread_id": "test-thread"
         }
-        
+
         # Act
         response = await client.post("/api/v1/chat", json=chat_request)
-        
+
         # Assert
         assert response.status_code == 200
         data = response.json()

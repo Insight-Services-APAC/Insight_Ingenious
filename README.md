@@ -24,7 +24,7 @@
 Built using **Domain-Driven Design (DDD)** principles with clear separation of concerns:
 
 - **Bounded Contexts**: Modular design with independent domains
-- **Clean Architecture**: Separation between domain, application, infrastructure, and interface layers  
+- **Clean Architecture**: Separation between domain, application, infrastructure, and interface layers
 - **REST API**: Comprehensive FastAPI-based API with automatic documentation
 - **CLI Interface**: Rich command-line interface for project management
 
@@ -65,7 +65,7 @@ Built using **Domain-Driven Design (DDD)** principles with clear separation of c
    ```
 
 4. **Configure your environment:**
-   
+
    Edit the generated `profiles.yml` file and add your Azure OpenAI API credentials:
    ```yaml
    - name: dev
@@ -107,7 +107,7 @@ uv run ingen dev
 **`ingen run`** - Start the Insight Ingenious server
 
 - `--project-dir TEXT`: Path to config.yml file (default: ./config.yml)
-- `--profile-dir TEXT`: Path to profiles.yml file (default: ./profiles.yml)  
+- `--profile-dir TEXT`: Path to profiles.yml file (default: ./profiles.yml)
 - `--host TEXT`: Host to bind to (default: 127.0.0.1)
 - `--port INTEGER`: Port to run the server on (default: 8000)
 
@@ -171,11 +171,11 @@ The REST API provides comprehensive functionality across all bounded contexts:
 application:
   name: "my-project"
   environment: "dev"
-  
+
 server:
   host: "127.0.0.1"
   port: 8000
-  
+
 llm:
   default_model: "gpt-4o"
   max_tokens: 4000
@@ -231,7 +231,7 @@ Each bounded context follows clean architecture principles:
 bounded_context/
 ├── domain/             # Business logic and rules
 │   ├── entities.py     # Domain entities
-│   ├── services.py     # Domain services  
+│   ├── services.py     # Domain services
 │   └── models.py       # Domain models
 ├── application/        # Use cases and application services
 │   ├── services.py     # Application services
@@ -265,7 +265,7 @@ Run code quality checks:
 # Format code
 uv run ruff format
 
-# Lint code  
+# Lint code
 uv run ruff check
 
 # Run pre-commit hooks
