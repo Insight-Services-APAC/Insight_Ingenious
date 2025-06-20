@@ -17,7 +17,7 @@ from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
 # Test data and mocks
-from tests.fixtures.test_data import TestData
+from tests.fixtures.test_data import TestDataProvider
 
 
 @pytest.fixture(scope="session")
@@ -31,7 +31,7 @@ def event_loop():
 @pytest.fixture
 def test_data():
     """Provide test data for use across tests."""
-    return TestData()
+    return TestDataProvider()
 
 
 @pytest.fixture

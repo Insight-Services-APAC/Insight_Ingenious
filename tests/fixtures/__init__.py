@@ -1,5 +1,5 @@
 """Test fixtures package initialization."""
 
-from .test_data import TestData
+from .test_data import TestDataProvider
 
-__all__ = ["TestData"]
+__all__ = ["TestDataProvider"]

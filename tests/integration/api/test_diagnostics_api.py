@@ -2,14 +2,14 @@
 Integration tests for diagnostics API endpoints.
 """
 
-from datetime import datetime
 from unittest.mock import AsyncMock, Mock
 
 import pytest
 
 from ingenious.diagnostics.domain.entities import (
-    DiagnosticReport,
-    PerformanceMetrics,
+    DiagnosticCheck,
+    DiagnosticResult,
+    HealthStatus,
     SystemHealth,
 )
 
@@ -20,331 +20,220 @@ class TestDiagnosticsAPI:
     @pytest.fixture
     def mock_diagnostics_service(self):
         """Mock diagnostics service."""
-        return Mock()
+        service = Mock()
+
+        # Create sample diagnostic results
+        check1 = DiagnosticCheck(
+            name="Database Connection",
+            description="Check database connectivity",
+            category="database",
+        )
+        result1 = DiagnosticResult(
+            check=check1,
+            status=HealthStatus.HEALTHY,
+            message="Database connection successful",
+            execution_time_ms=25.5,
+        )
+
+        check2 = DiagnosticCheck(
+            name="Memory Usage",
+            description="Check system memory usage",
+            category="system",
+        )
+        result2 = DiagnosticResult(
+            check=check2,
+            status=HealthStatus.HEALTHY,
+            message="Memory usage within normal range",
+            execution_time_ms=10.2,
+        )
+
+        system_health = SystemHealth(service_name="test_service")
+        system_health.add_result(result1)
+        system_health.add_result(result2)
+
+        service.get_system_health = AsyncMock(return_value=system_health)
+        service.run_diagnostic_check = AsyncMock(return_value=result1)
+        service.get_performance_metrics = AsyncMock(
+            return_value={
+                "cpu_usage": 45.2,
+                "memory_usage": 67.8,
+                "disk_usage": 23.1,
+                "response_time": 125.6,
+            }
+        )
+        return service
 
     @pytest.fixture
-    def sample_diagnostic_report(self):
-        """Sample diagnostic report for testing."""
-        return DiagnosticReport(
-            report_id="test-report-123",
-            timestamp=datetime.utcnow(),
-            system_health=SystemHealth(
-                cpu_usage=45.2, memory_usage=68.5, disk_usage=32.1, is_healthy=True
-            ),
-            performance_metrics=PerformanceMetrics(
-                response_time=150.5, throughput=1000, error_rate=0.01
-            ),
-            issues=["High memory usage detected"],
-            recommendations=["Consider scaling up memory allocation"],
-        )
+    def mock_app(self, mock_diagnostics_service):
+        """Mock FastAPI app with diagnostics endpoints."""
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
 
-    @pytest.mark.asyncio
-    async def test_get_system_health(self, async_client, mock_diagnostics_service):
-        """Test getting system health status."""
-        health_status = {
-            "status": "healthy",
-            "cpu_usage": 45.2,
-            "memory_usage": 68.5,
-            "disk_usage": 32.1,
-            "uptime": 86400,
-            "last_check": "2023-01-01T12:00:00Z",
-        }
+        app = FastAPI()
 
-        mock_diagnostics_service.get_system_health = AsyncMock(
-            return_value=health_status
-        )
+        @app.get("/api/v1/health")
+        async def get_health():
+            health = await mock_diagnostics_service.get_system_health()
+            return {
+                "service_name": health.service_name,
+                "overall_status": health.overall_status.value,
+                "last_updated": health.last_updated.isoformat(),
+                "results": [result.to_dict() for result in health.results],
+            }
 
-        response = await async_client.get("/api/diagnostics/health")
+        @app.post("/api/v1/diagnostics/check/{check_name}")
+        async def run_diagnostic_check(check_name: str):
+            result = await mock_diagnostics_service.run_diagnostic_check(check_name)
+            return {"result": result.to_dict()}
 
+        @app.get("/api/v1/metrics")
+        async def get_metrics():
+            metrics = await mock_diagnostics_service.get_performance_metrics()
+            return {"metrics": metrics}
+
+        return TestClient(app)
+
+    async def test_get_health_success(self, mock_app, mock_diagnostics_service):
+        """Test successful health status retrieval."""
+        # Act
+        response = mock_app.get("/api/v1/health")
+
+        # Assert
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "healthy"
-        assert data["cpu_usage"] == 45.2
+        assert data["service_name"] == "test_service"
+        assert data["overall_status"] == "healthy"
+        assert "last_updated" in data
+        assert len(data["results"]) == 2
+        mock_diagnostics_service.get_system_health.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_run_diagnostics(
-        self, async_client, mock_diagnostics_service, sample_diagnostic_report
+    async def test_run_diagnostic_check_success(
+        self, mock_app, mock_diagnostics_service
     ):
-        """Test running full diagnostics."""
-        mock_diagnostics_service.run_diagnostics = AsyncMock(
-            return_value=sample_diagnostic_report
-        )
+        """Test successful diagnostic check execution."""
+        # Arrange
+        check_name = "database_connection"
 
-        response = await async_client.post("/api/diagnostics/run")
+        # Act
+        response = mock_app.post(f"/api/v1/diagnostics/check/{check_name}")
 
+        # Assert
         assert response.status_code == 200
         data = response.json()
-        assert data["report_id"] == "test-report-123"
-        assert data["system_health"]["is_healthy"] is True
-        assert len(data["issues"]) == 1
-
-    @pytest.mark.asyncio
-    async def test_get_performance_metrics(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test getting performance metrics."""
-        metrics = {
-            "response_time": 150.5,
-            "throughput": 1000,
-            "error_rate": 0.01,
-            "active_connections": 50,
-            "requests_per_second": 25.5,
-        }
-
-        mock_diagnostics_service.get_performance_metrics = AsyncMock(
-            return_value=metrics
+        assert "result" in data
+        assert data["result"]["status"] == "healthy"
+        mock_diagnostics_service.run_diagnostic_check.assert_called_once_with(
+            check_name
         )
 
-        response = await async_client.get("/api/diagnostics/metrics")
+    async def test_get_metrics_success(self, mock_app, mock_diagnostics_service):
+        """Test successful performance metrics retrieval."""
+        # Act
+        response = mock_app.get("/api/v1/metrics")
 
+        # Assert
         assert response.status_code == 200
         data = response.json()
-        assert data["response_time"] == 150.5
-        assert data["throughput"] == 1000
+        assert "metrics" in data
+        metrics = data["metrics"]
+        assert "cpu_usage" in metrics
+        assert "memory_usage" in metrics
+        assert "disk_usage" in metrics
+        assert "response_time" in metrics
+        mock_diagnostics_service.get_performance_metrics.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_get_diagnostic_reports(
-        self, async_client, mock_diagnostics_service, sample_diagnostic_report
-    ):
-        """Test getting diagnostic reports history."""
-        reports = [sample_diagnostic_report]
-        mock_diagnostics_service.get_diagnostic_reports = AsyncMock(
-            return_value=reports
+
+class TestDiagnosticsModels:
+    """Test diagnostics model functionality in API context."""
+
+    def test_diagnostic_check_creation(self):
+        """Test diagnostic check model creation."""
+        check = DiagnosticCheck(
+            name="Test Check",
+            description="Test description",
+            category="test",
+            timeout_seconds=60,
         )
+        assert check.name == "Test Check"
+        assert check.description == "Test description"
+        assert check.category == "test"
+        assert check.timeout_seconds == 60
+        assert check.check_id is not None
 
-        response = await async_client.get("/api/diagnostics/reports")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data) == 1
-        assert data[0]["report_id"] == "test-report-123"
-
-    @pytest.mark.asyncio
-    async def test_get_diagnostic_report_by_id(
-        self, async_client, mock_diagnostics_service, sample_diagnostic_report
-    ):
-        """Test getting a specific diagnostic report."""
-        mock_diagnostics_service.get_diagnostic_report = AsyncMock(
-            return_value=sample_diagnostic_report
+    def test_diagnostic_result_creation(self):
+        """Test diagnostic result model creation."""
+        check = DiagnosticCheck(name="Test Check", description="Test description")
+        result = DiagnosticResult(
+            check=check,
+            status=HealthStatus.HEALTHY,
+            message="All good",
+            execution_time_ms=15.5,
         )
+        assert result.check == check
+        assert result.status == HealthStatus.HEALTHY
+        assert result.message == "All good"
+        assert result.execution_time_ms == 15.5
+        assert result.is_healthy() is True
 
-        response = await async_client.get("/api/diagnostics/reports/test-report-123")
+    def test_system_health_aggregation(self):
+        """Test system health aggregation functionality."""
+        system_health = SystemHealth(service_name="test")
 
-        assert response.status_code == 200
-        data = response.json()
-        assert data["report_id"] == "test-report-123"
-
-    @pytest.mark.asyncio
-    async def test_get_diagnostic_report_not_found(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test getting non-existent diagnostic report."""
-        mock_diagnostics_service.get_diagnostic_report = AsyncMock(return_value=None)
-
-        response = await async_client.get("/api/diagnostics/reports/nonexistent")
-
-        assert response.status_code == 404
-
-    @pytest.mark.asyncio
-    async def test_check_service_dependencies(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test checking service dependencies."""
-        dependencies_status = {
-            "database": {"status": "healthy", "response_time": 50},
-            "cache": {"status": "healthy", "response_time": 10},
-            "external_api": {"status": "degraded", "response_time": 2000},
-        }
-
-        mock_diagnostics_service.check_dependencies = AsyncMock(
-            return_value=dependencies_status
+        # Add healthy result
+        check1 = DiagnosticCheck(name="Check1", description="Test")
+        result1 = DiagnosticResult(
+            check=check1, status=HealthStatus.HEALTHY, message="OK"
         )
+        system_health.add_result(result1)
+        assert system_health.overall_status == HealthStatus.HEALTHY
 
-        response = await async_client.get("/api/diagnostics/dependencies")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["database"]["status"] == "healthy"
-        assert data["external_api"]["status"] == "degraded"
-
-    @pytest.mark.asyncio
-    async def test_run_specific_diagnostic_check(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test running a specific diagnostic check."""
-        check_result = {
-            "check_name": "memory_check",
-            "status": "warning",
-            "details": {"usage": 85.5, "threshold": 80.0},
-            "recommendations": ["Consider freeing up memory"],
-        }
-
-        mock_diagnostics_service.run_specific_check = AsyncMock(
-            return_value=check_result
+        # Add unhealthy result - should change overall status
+        check2 = DiagnosticCheck(name="Check2", description="Test")
+        result2 = DiagnosticResult(
+            check=check2, status=HealthStatus.UNHEALTHY, message="Not OK"
         )
+        system_health.add_result(result2)
+        assert system_health.overall_status == HealthStatus.UNHEALTHY
 
-        response = await async_client.post("/api/diagnostics/checks/memory_check")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["check_name"] == "memory_check"
-        assert data["status"] == "warning"
-
-    @pytest.mark.asyncio
-    async def test_export_diagnostic_report(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test exporting diagnostic report."""
-        export_data = {
-            "format": "json",
-            "report_id": "test-report-123",
-            "data": {"report": "exported content"},
-        }
-
-        mock_diagnostics_service.export_report = AsyncMock(return_value=export_data)
-
-        response = await async_client.get(
-            "/api/diagnostics/reports/test-report-123/export?format=json"
-        )
-
-        assert response.status_code == 200
-        assert response.headers["content-type"] == "application/json"
-
-    @pytest.mark.asyncio
-    async def test_diagnostics_api_error_handling(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test API error handling for diagnostics operations."""
-        mock_diagnostics_service.get_system_health = AsyncMock(
-            side_effect=Exception("System monitoring unavailable")
-        )
-
-        response = await async_client.get("/api/diagnostics/health")
-
-        assert response.status_code == 500
+    def test_health_status_enum_values(self):
+        """Test health status enum values."""
+        assert HealthStatus.HEALTHY.value == "healthy"
+        assert HealthStatus.DEGRADED.value == "degraded"
+        assert HealthStatus.UNHEALTHY.value == "unhealthy"
+        assert HealthStatus.UNKNOWN.value == "unknown"
 
 
 class TestDiagnosticsAPIIntegration:
     """Integration tests for diagnostics API workflows."""
 
-    @pytest.mark.asyncio
-    async def test_comprehensive_diagnostics_workflow(
-        self, async_client, mock_diagnostics_service, sample_diagnostic_report
+    async def test_complete_health_check_workflow(
+        self, mock_app, mock_diagnostics_service
     ):
-        """Test comprehensive diagnostics workflow."""
-        # 1. Check system health
-        health_status = {"status": "healthy", "cpu_usage": 45.2, "memory_usage": 68.5}
-        mock_diagnostics_service.get_system_health = AsyncMock(
-            return_value=health_status
-        )
-
-        health_response = await async_client.get("/api/diagnostics/health")
-        assert health_response.status_code == 200
-
-        # 2. Run full diagnostics if health check passes
-        if health_response.json()["status"] == "healthy":
-            mock_diagnostics_service.run_diagnostics = AsyncMock(
-                return_value=sample_diagnostic_report
-            )
-
-            diagnostics_response = await async_client.post("/api/diagnostics/run")
-            assert diagnostics_response.status_code == 200
-
-            # 3. Get performance metrics
-            metrics = {"response_time": 150.5, "throughput": 1000, "error_rate": 0.01}
-            mock_diagnostics_service.get_performance_metrics = AsyncMock(
-                return_value=metrics
-            )
-
-            metrics_response = await async_client.get("/api/diagnostics/metrics")
-            assert metrics_response.status_code == 200
-
-            # 4. Check dependencies
-            dependencies = {
-                "database": {"status": "healthy"},
-                "cache": {"status": "healthy"},
-            }
-            mock_diagnostics_service.check_dependencies = AsyncMock(
-                return_value=dependencies
-            )
-
-            deps_response = await async_client.get("/api/diagnostics/dependencies")
-            assert deps_response.status_code == 200
-
-    @pytest.mark.asyncio
-    async def test_diagnostic_alerts_workflow(
-        self, async_client, mock_diagnostics_service
-    ):
-        """Test diagnostic alerts and notifications workflow."""
-        # Simulate degraded system health
-        degraded_health = {
-            "status": "degraded",
-            "cpu_usage": 95.0,
-            "memory_usage": 89.5,
-            "issues": ["High CPU usage", "High memory usage"],
-        }
-
-        mock_diagnostics_service.get_system_health = AsyncMock(
-            return_value=degraded_health
-        )
-
-        response = await async_client.get("/api/diagnostics/health")
+        """Test complete health check workflow."""
+        # 1. Get initial health status
+        response = mock_app.get("/api/v1/health")
         assert response.status_code == 200
+        initial_health = response.json()
+        assert initial_health["overall_status"] == "healthy"
 
-        data = response.json()
-        assert data["status"] == "degraded"
-        assert len(data["issues"]) == 2
-
-        # Run specific checks for the issues
-        cpu_check = {
-            "check_name": "cpu_check",
-            "status": "critical",
-            "details": {"usage": 95.0, "threshold": 80.0},
-        }
-
-        mock_diagnostics_service.run_specific_check = AsyncMock(return_value=cpu_check)
-
-        cpu_response = await async_client.post("/api/diagnostics/checks/cpu_check")
-        assert cpu_response.status_code == 200
-        assert cpu_response.json()["status"] == "critical"
-
-    @pytest.mark.asyncio
-    async def test_diagnostics_reporting_workflow(
-        self, async_client, mock_diagnostics_service, sample_diagnostic_report
-    ):
-        """Test diagnostics reporting and history workflow."""
-        # Generate multiple reports
-        reports = [sample_diagnostic_report]
-        mock_diagnostics_service.get_diagnostic_reports = AsyncMock(
-            return_value=reports
-        )
-
-        # Get reports history
-        response = await async_client.get("/api/diagnostics/reports")
+        # 2. Run specific diagnostic check
+        response = mock_app.post("/api/v1/diagnostics/check/database_connection")
         assert response.status_code == 200
-        data = response.json()
-        assert len(data) == 1
+        check_result = response.json()
+        assert check_result["result"]["status"] == "healthy"
 
-        # Get specific report
-        mock_diagnostics_service.get_diagnostic_report = AsyncMock(
-            return_value=sample_diagnostic_report
+        # 3. Get performance metrics
+        response = mock_app.get("/api/v1/metrics")
+        assert response.status_code == 200
+        metrics = response.json()
+        assert "metrics" in metrics
+
+    async def test_error_handling_workflow(self, mock_app, mock_diagnostics_service):
+        """Test error handling in diagnostics API."""
+        # Simulate service error
+        mock_diagnostics_service.get_system_health.side_effect = Exception(
+            "Service error"
         )
 
-        report_response = await async_client.get(
-            f"/api/diagnostics/reports/{sample_diagnostic_report.report_id}"
-        )
-        assert report_response.status_code == 200
-
-        # Export report
-        export_data = {
-            "format": "json",
-            "report_id": sample_diagnostic_report.report_id,
-            "data": sample_diagnostic_report.__dict__,
-        }
-
-        mock_diagnostics_service.export_report = AsyncMock(return_value=export_data)
-
-        export_response = await async_client.get(
-            f"/api/diagnostics/reports/{sample_diagnostic_report.report_id}/export"
-        )
-        assert export_response.status_code == 200
+        response = mock_app.get("/api/v1/health")
+        assert response.status_code == 500

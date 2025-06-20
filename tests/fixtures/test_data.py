@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from uuid import uuid4
 
 
-class TestData:
+class TestDataProvider:
     """Centralized test data provider."""
 
     def __init__(self):
