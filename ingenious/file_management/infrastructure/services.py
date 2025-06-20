@@ -2,8 +2,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import ingenious.models.config as config_models
-
 from ..domain.entities import Directory, File, FileSystemObject
 from ..domain.services import (
     IDirectoryService,
@@ -225,36 +223,3 @@ class FileSystemMetadataService(IFileMetadataService):
         # File system has limited metadata support
         # Could implement extended attributes or separate metadata files
         pass
-
-
-class LegacyFileStorageAdapter(IFileStorageService):
-    """Adapter for legacy file storage implementation."""
-
-    def __init__(self, config: config_models.Config, category: str = "revisions"):
-        from ingenious.files.files_repository import FileStorage
-
-        self._legacy_storage = FileStorage(config, category)
-
-    async def write_file(self, contents: str, file_name: str, file_path: str) -> str:
-        """Write file using legacy storage."""
-        return await self._legacy_storage.write_file(contents, file_name, file_path)
-
-    async def read_file(self, file_name: str, file_path: str) -> str:
-        """Read file using legacy storage."""
-        return await self._legacy_storage.read_file(file_name, file_path)
-
-    async def delete_file(self, file_name: str, file_path: str) -> bool:
-        """Delete file using legacy storage."""
-        result = await self._legacy_storage.delete_file(file_name, file_path)
-        return bool(result)  # Convert result to boolean
-
-    async def list_files(self, file_path: str) -> List[FileSystemObject]:
-        """List files using legacy storage."""
-        await self._legacy_storage.list_files(file_path)
-        # Legacy returns string, need to parse into FileSystemObject list
-        # This would need adaptation based on legacy return format
-        return []
-
-    async def file_exists(self, file_name: str, file_path: str) -> bool:
-        """Check if file exists using legacy storage."""
-        return await self._legacy_storage.check_if_file_exists(file_path, file_name)

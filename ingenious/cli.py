@@ -107,7 +107,7 @@ def run_rest_api_server(
     import ingenious.config.config as ingen_config
 
     try:
-        config = ingen_config.get_config()
+        config = ingen_config.get_minimal_config()
     except Exception as e:
         console.print(f"[error]Failed to load configuration: {e}[/error]")
         console.print("[info]💡 Make sure your API keys are set in profiles.yml[/info]")
@@ -151,9 +151,7 @@ def run_rest_api_server(
             )
 
     os.environ["INGENIOUS_WORKING_DIR"] = str(Path(os.getcwd()))
-    print_namespace_modules(
-        "ingenious.services.chat_services.multi_agent.conversation_flows"
-    )
+    # Legacy conversation flow discovery disabled - use DDD chat services instead
 
     # Initialize and run the FastAPI app
     fast_agent_api = FastAgentAPI(config)
@@ -858,12 +856,16 @@ def _create_ingenious_extensions_structure(destination: Path, project_name: str)
     (destination / "templates" / "prompts" / "__init__.py").touch()
 
     # Create the main agent model file
-    agent_model_content = """from ingenious.models.agent import Agent, Agents, IProjectAgents
-from ingenious.models.config import Config
+    agent_model_content = """# NOTE: Legacy model imports have been removed for DDD migration
+# Please update your agent definitions to use the new DDD structure
+# See documentation for migration guide
+
+# from ingenious.chat.domain.models import Agent, ChatRequest
+# from ingenious.configuration.application.services import ConfigurationRetrievalUseCase
 
 
-class ProjectAgents(IProjectAgents):
-    def Get_Project_Agents(self, config: Config) -> Agents:
+class ProjectAgents:
+    def get_project_agents(self, config_service) -> list:
         local_agents = []
 
         # Hello World Bicycle Expert Agent

@@ -244,11 +244,16 @@ from ..infrastructure.services import (
 user_repo = InMemoryUserRepository()
 password_service = BCryptPasswordService()
 token_service = JWTTokenService()
-auth_service = DefaultAuthenticationService(user_repo, password_service, token_service)
-authz_service = DefaultAuthorizationService(user_repo)
 security_event_service = InMemorySecurityEventService()
+auth_service = DefaultAuthenticationService(
+    user_repo, password_service, token_service, security_event_service
+)
+authz_service = DefaultAuthorizationService()
+# security_event_service already defined above
 
-user_mgmt_use_case = UserManagementUseCase(user_repo, password_service)
+user_mgmt_use_case = UserManagementUseCase(
+    user_repo, password_service, security_event_service
+)
 auth_use_case = AuthenticationUseCase(auth_service, security_event_service)
 authz_use_case = AuthorizationUseCase(authz_service, security_event_service)
 audit_use_case = SecurityAuditUseCase(security_event_service)

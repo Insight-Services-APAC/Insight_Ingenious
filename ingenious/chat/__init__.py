@@ -15,7 +15,7 @@ from .domain.entities import ChatSession, Message, Thread
 from .domain.models import ChatRequest, ChatResponse
 from .infrastructure.services import (
     DefaultConversationService,
-    LegacyChatServiceAdapter,
+    ModernChatService,
 )
 from .interfaces.rest_controllers import ChatController
 
@@ -26,7 +26,7 @@ __all__ = [
     "Thread",
     "ChatSession",
     "ChatApplicationService",
-    "LegacyChatServiceAdapter",
+    "ModernChatService",
     "DefaultConversationService",
     "ChatController",
 ]

@@ -405,8 +405,10 @@ file_repo = FileSystemFileRepository(storage_service)
 directory_service = FileSystemDirectoryService()
 metadata_service = FileSystemMetadataService()
 
-file_use_case = FileManagementUseCase(file_repo, storage_service, metadata_service)
-directory_use_case = DirectoryManagementUseCase(directory_service, file_repo)
+file_use_case = FileManagementUseCase(
+    file_repo, storage_service, directory_service, metadata_service
+)
+directory_use_case = DirectoryManagementUseCase(directory_service)
 
 file_app_service = FileManagementApplicationService(file_use_case, directory_use_case)
 

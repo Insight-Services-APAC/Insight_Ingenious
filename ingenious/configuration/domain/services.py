@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from ingenious.models import config as config_models
+from .models import MinimalConfig
 
 
 class IConfigurationRepository(ABC):
@@ -10,14 +10,12 @@ class IConfigurationRepository(ABC):
     @abstractmethod
     async def get_configuration(
         self, config_path: Optional[str] = None
-    ) -> config_models.Config:
+    ) -> MinimalConfig:
         """Load configuration from storage."""
         pass
 
     @abstractmethod
-    async def save_configuration(
-        self, config: config_models.Config, config_path: str
-    ) -> None:
+    async def save_configuration(self, config: MinimalConfig, config_path: str) -> None:
         """Save configuration to storage."""
         pass
 

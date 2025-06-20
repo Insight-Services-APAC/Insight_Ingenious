@@ -1,5 +1,10 @@
+"""
+Conversation builder utilities
+
+This module contains utilities for building OpenAI chat completion messages.
+"""
+
 import logging
-from pathlib import Path
 
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -7,9 +12,6 @@ from openai.types.chat import (
     ChatCompletionSystemMessageParam,
     ChatCompletionUserMessageParam,
 )
-
-from ingenious.config.config import Config
-from ingenious.files.files_repository import FileStorage
 
 logger = logging.getLogger(__name__)
 
@@ -63,35 +65,3 @@ def build_message(
         return build_assistant_message(content=content)
     else:
         raise ValueError("Invalid message role.")
-
-
-async def Sync_Prompt_Templates(_config: Config, revision: str):
-    fs = FileStorage(_config, Category="revisions")
-    # Check the storage type and handle Jinja files accordingly
-    azure_template_dir = "prompts/" + revision
-    if _config.file_storage.revisions.storage_type != "local":
-        # Define the file path in Azure storage
-        jinja_files = sorted(
-            [
-                f
-                for f in await fs.list_files(file_path=azure_template_dir)
-                if f.endswith(".jinja")
-            ]
-        )
-
-        # Local directory to save the Jinja files
-        local_template_dir = Path("ingenious_extensions/templates/prompts")
-        local_template_dir.mkdir(parents=True, exist_ok=True)
-
-        for file in jinja_files:
-            file_name = file.split("/")[-1]  # Extract the actual file name
-            logger.debug(f"Downloading template: {file_name}")
-            temp_file_content = await fs.read_file(
-                file_name=file_name, file_path=azure_template_dir
-            )
-            local_file_path = local_template_dir / file_name
-            with open(local_file_path, "w", encoding="utf-8") as f:
-                f.write(temp_file_content)
-            logger.debug(f"Template saved (overwritten if existing): {local_file_path}")
-    else:
-        logger.debug("Local storage type detected")

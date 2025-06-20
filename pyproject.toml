@@ -25,7 +25,9 @@ dependencies = [
     "markdownify==1.0.0",
     "markpickle==1.6.1",
     "openai==1.82.0",
+    "psutil>=7.0.0",
     "pydantic==2.11.5",
+    "python-multipart>=0.0.20",
     "typer>=0.15.4",
 ]
 

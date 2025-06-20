@@ -20,10 +20,8 @@ from ..application.services import (
     ConfigurationApplicationService,
     ConfigurationRetrievalUseCase,
     ConfigurationUpdateUseCase,
-    SecretManagementUseCase,
 )
 from ..infrastructure.repositories import (
-    AzureKeyVaultSecretService,
     FileSystemConfigurationRepository,
 )
 
@@ -218,17 +216,20 @@ class ConfigurationController:
 
 # Create router instance for backward compatibility
 # Note: In production, this should be managed by a DI container
+# For DDD migration, simplified configuration without Azure dependencies
 config_repo = FileSystemConfigurationRepository()
-secret_service = AzureKeyVaultSecretService()
+# secret_service = AzureKeyVaultSecretService()  # Commented out for DDD migration
 
 # Create use cases
 config_retrieval_use_case = ConfigurationRetrievalUseCase(config_repo)
 config_update_use_case = ConfigurationUpdateUseCase(config_repo)
-secret_mgmt_use_case = SecretManagementUseCase(secret_service)
+# secret_mgmt_use_case = SecretManagementUseCase(secret_service)  # Commented out for DDD migration
 
 # Create application service
 config_app_service = ConfigurationApplicationService(
-    config_retrieval_use_case, config_update_use_case, secret_mgmt_use_case
+    config_retrieval_use_case,
+    config_update_use_case,
+    None,  # None for secret_mgmt_use_case
 )
 
 controller = ConfigurationController(config_app_service)

@@ -9,31 +9,32 @@ organized according to Domain-Driven Design principles:
 - interfaces: REST API controllers for prompt operations
 """
 
-from .domain.entities import PromptLibrary, PromptTemplate, TemplateVersion
+from .domain.entities import PromptLibrary, PromptTemplate, PromptVersion
 from .domain.services import (
+    IPromptRenderingService,
     IPromptTemplateRepository,
     IPromptVersioningService,
-    ITemplateRenderingService,
 )
 from .infrastructure.services import (
     FileSystemPromptRepository,
-    GitPromptVersioningService,
+    InMemoryVersioningService,
     Jinja2RenderingService,
 )
 from .interfaces.rest_controllers import PromptManagementController, UpdatePromptRequest
 
 __all__ = [
-    # Domain
+    # Domain entities
     "PromptTemplate",
     "PromptLibrary",
-    "TemplateVersion",
+    "PromptVersion",
+    # Domain services
     "IPromptTemplateRepository",
-    "ITemplateRenderingService",
+    "IPromptRenderingService",
     "IPromptVersioningService",
-    # Infrastructure
-    "Jinja2RenderingService",
+    # Infrastructure services
     "FileSystemPromptRepository",
-    "GitPromptVersioningService",
+    "InMemoryVersioningService",
+    "Jinja2RenderingService",
     # Interfaces
     "PromptManagementController",
     "UpdatePromptRequest",

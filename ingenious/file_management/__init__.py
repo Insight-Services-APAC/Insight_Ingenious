@@ -22,7 +22,6 @@ from .infrastructure.services import (
     FileSystemDirectoryService,
     FileSystemFileRepository,
     FileSystemMetadataService,
-    LegacyFileStorageAdapter,
     LocalFileStorageService,
 )
 

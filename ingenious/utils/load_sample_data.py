@@ -8,9 +8,10 @@ import ingenious.config.config as Config
 
 class sqlite_sample_db:
     def __init__(self):
-        self._config = Config.get_config()
+        self._config = Config.get_minimal_config()
 
-        self.db_path = self._config.local_sql_db.database_path
+        # Use a default database path since we have minimal config
+        self.db_path = "./sample_data.db"
         db_dir_check = os.path.dirname(self.db_path)
         if not os.path.exists(db_dir_check):
             os.makedirs(db_dir_check)

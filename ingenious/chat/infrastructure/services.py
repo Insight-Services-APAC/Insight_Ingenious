@@ -1,63 +1,53 @@
-from ingenious.config.config import Config
-from ingenious.utils.namespace_utils import import_class_with_fallback
+"""
+Modern chat infrastructure services using DDD patterns.
+
+This module provides chat service implementations that integrate with
+the external integrations bounded context for LLM services.
+"""
 
 from ..domain.entities import ChatSession
 from ..domain.models import ChatRequest, ChatResponse
 from ..domain.services import IChatService, IConversationService
 
 
-class LegacyChatServiceAdapter(IChatService):
-    """Adapter for legacy chat service implementation."""
+class ModernChatService(IChatService):
+    """Modern chat service using DDD patterns."""
 
-    def __init__(
-        self,
-        chat_service_type: str,
-        conversation_flow: str,
-        config: Config,
-        revision: str = "dfe19b62-07f1-4cb5-ae9a-561a253e4b04",
-    ):
-        self.config = config
-        self.revision = revision
-        self.conversation_flow = conversation_flow
-
-        # Import the legacy service class
-        class_name = f"{chat_service_type.lower()}_chat_service"
-
-        try:
-            module_name = f"services.chat_services.{chat_service_type.lower()}.service"
-            service_class = import_class_with_fallback(module_name, class_name)
-
-        except ImportError as e:
-            raise ImportError(
-                f"Failed to import module for chat service type '{chat_service_type}'. "
-                f"Attempted modules: '{module_name}', "
-                f"'ingenious.services.chat_services.{chat_service_type.lower()}.service'. "
-                f"Error: {str(e)}"
-            ) from e
-        except AttributeError as e:
-            raise AttributeError(
-                f"Module '{module_name}' does not have the expected class '{class_name}'. "
-                f"Ensure the class name matches the service type. Error: {str(e)}"
-            ) from e
-        except Exception as e:
-            raise Exception(
-                f"An unexpected error occurred while initializing the chat service. "
-                f"Service type: '{chat_service_type}', Module: '{module_name}', "
-                f"Class: '{class_name}'. Error: {str(e)}"
-            ) from e
-
-        self._service = service_class(
-            config=config,
-            conversation_flow=conversation_flow,
-        )
+    def __init__(self, llm_service):
+        """Initialize with an LLM service from external_integrations context."""
+        self._llm_service = llm_service
 
     async def process_chat_request(self, request: ChatRequest) -> ChatResponse:
-        """Process chat request through legacy service."""
-        if not request.conversation_flow:
-            raise ValueError(f"conversation_flow not set {request}")
+        """Process chat request using modern LLM service."""
+        if not request.user_prompt:
+            raise ValueError("User prompt is required")
 
-        # Use the legacy method name
-        return await self._service.get_chat_response(request)
+        # Use the LLM service to generate a response
+        try:
+            # Create a completion request
+            completion_request = {
+                "prompt": request.user_prompt,
+                "max_tokens": getattr(request, "max_tokens", 1000),
+                "temperature": getattr(request, "temperature", 0.7),
+            }
+
+            # Get completion from LLM service
+            completion_response = await self._llm_service.create_completion(
+                completion_request
+            )
+
+            return ChatResponse(
+                response=completion_response.get("text", "No response generated"),
+                user_id=request.user_id,
+                conversation_flow=request.conversation_flow,
+            )
+
+        except Exception as e:
+            return ChatResponse(
+                response=f"Error processing request: {str(e)}",
+                user_id=request.user_id,
+                conversation_flow=request.conversation_flow,
+            )
 
 
 class DefaultConversationService(IConversationService):

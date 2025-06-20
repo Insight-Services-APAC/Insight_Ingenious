@@ -133,5 +133,4 @@ class ChatController:
 
 # Create router instance for backward compatibility
 router = APIRouter()
-controller = ChatController()
-router.include_router(controller.router)
+# Note: Controller should be instantiated with dependencies when used

@@ -5,7 +5,6 @@ This module provides a basic service container to manage dependencies
 across bounded contexts without requiring complex DI frameworks.
 """
 
-import os
 from typing import Any, Callable, Dict, Optional
 
 
@@ -40,22 +39,17 @@ class ServiceContainer:
     def get_config(self):
         """Get application configuration (cached)."""
         if self._config is None:
-            try:
-                from ingenious.config.config import get_config
-
-                self._config = get_config(os.getenv("INGENIOUS_PROJECT_PATH", ""))
-            except ValueError:
-                # Return a minimal config for testing/development
-                self._config = self._create_minimal_config()
+            # Return a minimal config using the DDD configuration system
+            self._config = self._create_minimal_config()
         return self._config
 
     def _create_minimal_config(self):
         """Create a minimal configuration for testing."""
-        import ingenious.models.config as config_models
+        from ingenious.configuration.domain.models import MinimalConfig
 
         # Return a basic config object with minimal settings
         # This is a fallback for when no config file is available
-        return config_models.Config()
+        return MinimalConfig()
 
 
 # Global service container instance

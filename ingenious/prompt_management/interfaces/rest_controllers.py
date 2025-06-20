@@ -14,7 +14,9 @@ from pydantic import BaseModel
 from typing_extensions import Annotated
 
 import ingenious.dependencies as igen_deps
-from ingenious.files.files_repository import FileStorage
+from ingenious.file_management.application.services import (
+    FileManagementApplicationService,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +48,9 @@ class PromptManagementController:
         credentials: Annotated[
             HTTPBasicCredentials, Depends(igen_deps.get_security_service)
         ],
-        fs: FileStorage = Depends(igen_deps.get_file_storage_revisions),
+        fs: FileManagementApplicationService = Depends(
+            igen_deps.get_file_management_service
+        ),
     ):
         """View a specific prompt template."""
         prompt_template_folder = asyncio.run(
@@ -64,7 +68,9 @@ class PromptManagementController:
         credentials: Annotated[
             HTTPBasicCredentials, Depends(igen_deps.get_security_service)
         ],
-        fs: FileStorage = Depends(igen_deps.get_file_storage_revisions),
+        fs: FileManagementApplicationService = Depends(
+            igen_deps.get_file_management_service
+        ),
     ):
         """List all prompt templates for a revision."""
         prompt_template_folder = asyncio.run(
@@ -89,7 +95,9 @@ class PromptManagementController:
         credentials: Annotated[
             HTTPBasicCredentials, Depends(igen_deps.get_security_service)
         ],
-        fs: FileStorage = Depends(igen_deps.get_file_storage_revisions),
+        fs: FileManagementApplicationService = Depends(
+            igen_deps.get_file_management_service
+        ),
     ):
         """Update a prompt template."""
         prompt_template_folder = await fs.get_prompt_template_path(
