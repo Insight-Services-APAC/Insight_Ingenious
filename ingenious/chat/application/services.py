@@ -44,6 +44,9 @@ class ChatApplicationService:
         # Log error, apply fallback logic, etc.
         return ChatResponse(
             thread_id=request.thread_id,
+            message_id="error-msg",
             agent_response="I apologize, but I encountered an error processing your request.",
+            token_count=0,
+            max_token_count=0,
             event_type="error",
         )

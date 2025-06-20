@@ -21,12 +21,12 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     """Response model for chat operations."""
 
-    thread_id: Optional[str]
-    message_id: Optional[str]
-    agent_response: Optional[str]
+    thread_id: Optional[str] = None
+    message_id: Optional[str] = None
+    agent_response: Optional[str] = None
     followup_questions: Optional[dict[str, str]] = {}
-    token_count: Optional[int]
-    max_token_count: Optional[int]
+    token_count: Optional[int] = None
+    max_token_count: Optional[int] = None
     topic: Optional[str] = None
     memory_summary: Optional[str] = None
     event_type: Optional[str] = None
@@ -35,13 +35,21 @@ class ChatResponse(BaseModel):
 class MessageFeedbackRequest(BaseModel):
     """Request model for message feedback."""
 
-    thread_id: str
-    message_id: str
-    user_id: Optional[str]
-    positive_feedback: Optional[bool]
+    thread_id: Optional[str] = None
+    message_id: Optional[str] = None
+    user_id: Optional[str] = None
+    positive_feedback: Optional[bool] = None
+    feedback_type: str  # This should be required
+    feedback_text: Optional[str] = None
 
 
 class MessageFeedbackResponse(BaseModel):
     """Response model for message feedback."""
 
-    message: str
+    message: Optional[str] = None
+    message_id: Optional[str] = None
+    feedback_type: Optional[str] = None
+    success: Optional[bool] = None
+    status: Optional[str] = None
+    timestamp: Optional[str] = None
+    feedback_id: Optional[str] = None
