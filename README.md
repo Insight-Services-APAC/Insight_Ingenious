@@ -30,10 +30,31 @@ Insight Ingenious lets you orchestrate multiple AI agents and deploy them as an 
     uv run ingen initialize-new-project
     ```
 
-5. Run pre-commit hooks on all files:
+5. Set environment variables (copy from the output above):
     ```bash
-    uv run pre-commit run --all-files
+    export INGENIOUS_PROJECT_PATH="$(pwd)/config.yml"
+    export INGENIOUS_PROFILE_PATH="$(pwd)/profiles.yml"
     ```
+
+6. **IMPORTANT**: Edit `profiles.yml` and add your Azure OpenAI API key:
+    ```yaml
+    - name: dev
+      models:
+        - model: gpt-4o
+          api_key: "YOUR_ACTUAL_API_KEY_HERE"  # ← Replace this!
+          base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/..."  # ← And this!
+    ```
+
+7. Start the server:
+    ```bash
+    uv run ingen run-project
+    ```
+
+8. Open your browser and go to: http://localhost:8000/chainlit
+
+9. **Try your first chat**: "Hello! Can you help me learn about bicycles?"
+
+📖 **For detailed setup instructions, see the generated `SETUP.md` file in your project directory.**
 
 ## Project Structure
 

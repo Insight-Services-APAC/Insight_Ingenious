@@ -1,35 +1,91 @@
+# Insight Ingenious Profiles Configuration Template
+#
+# 🚨 IMPORTANT: This file contains sensitive information (API keys, passwords)
+# - Keep this file secure and do not commit it to version control
+# - The .gitignore file excludes this file by default
+# - Copy this to a secure location for production deployments
+
+# ================================
+# DEVELOPMENT PROFILE
+# ================================
 - name: dev
+  # ================================
+  # AI MODEL CREDENTIALS
+  # ================================
   models:
     - model: gpt-4o
-      api_key: "#############"
-      base_url: "https://############.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
+      # 🔑 Your Azure OpenAI API key - REQUIRED
+      api_key: "YOUR_AZURE_OPENAI_API_KEY_HERE"
+      # 🌐 Your Azure OpenAI endpoint - REQUIRED
+      base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
+  # ================================
+  # CHAT HISTORY DATABASE
+  # ================================
   chat_history:
-    database_connection_string: "AccountEndpoint"
-  azure_search_services:
-    - service: ""
-      key: ""
-  azure_sql_services:
+    # For Cosmos DB, provide connection string
     database_connection_string: ""
-  receiver_configuration:
-    enable: false
-    api_url: "https://#############.azurewebsites.net/api/ai-response/publish"
-    api_key: "DevApiKey"
-  chainlit_configuration:
-    enable: false
-    authentication:
-      enable: false
-      github_secret: ""
-      github_client_id: ""
+  # ================================
+  # AZURE SEARCH CREDENTIALS
+  # ================================
+  azure_search_services:
+    - service: knowledge-base
+      # 🔑 Azure Search admin key - OPTIONAL
+      key: "YOUR_AZURE_SEARCH_ADMIN_KEY_HERE"
+  # ================================
+  # AZURE SQL CREDENTIALS
+  # ================================
+  azure_sql_services:
+    # SQL Server connection string - OPTIONAL
+    database_connection_string: "Server=tcp:your-server.database.windows.net,1433;Database=your-db;User ID=your-user;Password=your-password;Encrypt=true;TrustServerCertificate=false;Connection Timeout=30;"
+  # ================================
+  # WEB AUTHENTICATION
+  # ================================
   web_configuration:
     authentication:
-      enable: false
-      username: "#############"
-      password: "#############"
-  # Data Lake Storage Configuration
+      enable: true
+      # 🔑 Basic auth credentials for API access
+      username: "admin"
+      password: "CHANGE_THIS_PASSWORD"
+  # ================================
+  # CHAINLIT AUTHENTICATION
+  # ================================
+  chainlit_configuration:
+    enable: true
+    authentication:
+      enable: false # Set to true to require GitHub OAuth
+      # For GitHub OAuth (optional):
+      github_client_id: "YOUR_GITHUB_CLIENT_ID"
+      github_secret: "YOUR_GITHUB_SECRET"
+  # ================================
+  # AZURE BLOB STORAGE (Optional)
+  # ================================
   file_storage:
     revisions:
-      url: https://#############.blob.core.windows.net/
-      authentication_method: default_credential # msi, default_credential
+      url: https://YOUR_STORAGE_ACCOUNT.blob.core.windows.net/
+      authentication_method: default_credential # Options: msi, default_credential
     data:
-      url: https://#############.blob.core.windows.net/
-      authentication_method: default_credential # msi, default_credential
+      url: https://YOUR_STORAGE_ACCOUNT.blob.core.windows.net/
+      authentication_method: default_credential
+  # ================================
+  # EXTERNAL INTEGRATIONS (Optional)
+  # ================================
+  receiver_configuration:
+    enable: false
+    api_url: "https://your-webhook-endpoint.com/api/ai-response/publish"
+    api_key: "YOUR_WEBHOOK_API_KEY"
+
+# ================================
+# PRODUCTION PROFILE TEMPLATE
+# ================================
+# Uncomment and configure for production:
+# - name: prod
+#   models:
+#     - model: gpt-4o
+#       api_key: "PRODUCTION_API_KEY"
+#       base_url: "https://prod-resource.openai.azure.com/..."
+#   web_configuration:
+#     authentication:
+#       enable: true
+#       username: "prod_admin"
+#       password: "STRONG_PRODUCTION_PASSWORD"
+#   # ... other production settings

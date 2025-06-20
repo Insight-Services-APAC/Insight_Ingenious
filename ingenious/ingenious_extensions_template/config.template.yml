@@ -1,64 +1,104 @@
-# Profile Configuration
-profile: dev # Defines the environment or profile for the deployment (e.g., dev, prod). NOTE this must match the profile in the profile.yml file
-# Models Configuration
+# Insight Ingenious Configuration Template
+#
+# This file contains non-sensitive configuration settings.
+# For sensitive data (API keys, passwords), see profiles.yml
+
+# ================================
+# PROFILE SELECTION
+# ================================
+# Specify which profile to use from profiles.yml
+# Common values: dev, staging, prod
+profile: dev
+# ================================
+# AI MODELS CONFIGURATION
+# ================================
+# Configure the AI models your agents will use
 models:
-  - model: gpt-4o # Specifies the model being used (e.g., GPT-4 in Azure deployment)
-    api_type: azure # API type indicates that the deployment is through Azure
-    api_version: "2024-08-01-preview" # API version being used in the deployment
-# Logging Configuration
+  - model: gpt-4o # Model name in your Azure OpenAI deployment
+    api_type: azure # Use 'azure' for Azure OpenAI, 'openai' for OpenAI directly
+    api_version: "2024-08-01-preview" # Azure OpenAI API version
+# ================================
+# LOGGING SETTINGS
+# ================================
 logging:
-  root_log_level: debug # Root logging level for overall logging output (can be debug, info, warning, error)
-  log_level: debug # Specific logging level for this application or service
-# Chat History Configuration
+  root_log_level: info # Global log level: debug, info, warning, error
+  log_level: debug # Application-specific log level
+# ================================
+# CHAT HISTORY STORAGE
+# ================================
+# Choose how to store conversation history
 chat_history:
-  database_type: sqlite # Defines the type of database for storing chat history (e.g., sqlite or cosmos)
-  database_path: ./.tmp/high_level_logs.db # Path to SQLite database file for storing chat logs (used only for SQLite)
-  database_name: ToDoList # Name of the database (used only for Cosmos DB, irrelevant for SQLite)
-  memory_path: ./.tmp # Location for temporary memory or cache files (used by chroma db)
-# Chat Service Configuration
+  database_type: sqlite # Options: sqlite, cosmos
+  database_path: ./.tmp/chat_history.db # Path for SQLite database
+  database_name: ingenious_chats # Database name (for Cosmos DB)
+  memory_path: ./.tmp # Temporary memory files location
+# ================================
+# CHAT SERVICE TYPE
+# ================================
+# Defines the conversation engine
 chat_service:
-  type: multi_agent # Defines the type of chat service. Multi-agent implies multiple models or systems handling tasks
-# Tool Service Configuration
+  type: multi_agent # Use multi-agent conversation system
+# ================================
+# TOOL SERVICES
+# ================================
+# Enable/disable additional agent tools
 tool_service:
-  enable: false # Tool service is disabled in this configuration (set to 'true' to enable)
-# Azure Search Services Configuration
-azure_search_services:
-  - service: default # Default Azure Search service configuration
-    endpoint: https://########.search.windows.net # Azure Search endpoint for queries
-# Azure SQL Services Configuration
-azure_sql_services:
-  database_name: dbo
-  table_name: sample_table
-# Web Server Configuration
+  enable: true # Set to false to disable tool usage
+# ================================
+# WEB INTERFACE SETTINGS
+# ================================
 web_configuration:
-  type: fastapi # Framework being used for web services (currently only FastAPI is supported)
-  ip_address: "0.0.0.0" # IP address where the web service will be hosted (0.0.0.0 allows all incoming connections)
-  port: 80 # Port on which the service is exposed
-  # Authentication Configuration
+  type: fastapi # Web framework (currently only FastAPI supported)
+  ip_address: "127.0.0.1" # IP address to bind to (127.0.0.1 for local only)
+  port: 8000 # Port to run the web server on
   authentication:
-    enable: true # Authentication method for securing the service (set to 'false' to disable)
-    type: basic # Basic authentication type (can be expanded to other methods as needed)
-# Chainlit Configuration
+    enable: true # Require authentication to access the API
+    type: basic # Authentication method
+# ================================
+# CHAINLIT UI (Optional)
+# ================================
+# Enable the Chainlit chat interface
 chainlit_configuration:
-  enable: false
+  enable: true # Set to true to enable the web chat UI
+# ================================
+# PROMPT TUNER (Optional)
+# ================================
+# Tool for developing and testing prompts
 prompt_tuner:
-  mode: "fast_api" # Mount in fast_api or stand alone flask (e.g., fast_api, flask)
-# Local SQL Database Configuration
+  mode: "fast_api" # Options: fast_api, flask
+# ================================
+# AZURE SEARCH (Optional)
+# ================================
+# Configure Azure Cognitive Search for knowledge bases
+azure_search_services:
+  - service: knowledge-base
+    endpoint: https://YOUR_SEARCH_SERVICE.search.windows.net
+# ================================
+# DATABASE CONNECTIONS (Optional)
+# ================================
+# Local SQLite database for SQL agents
 local_sql_db:
-  database_path: /tmp/sample_sql.db
-  sample_csv_path: ./ingenious/sample_dataset/cleaned_students_performance.csv
+  database_path: /tmp/sample.db
+  sample_csv_path: ./sample_data/data.csv
   sample_database_name: sample_data
-# file storage configuration
+# Azure SQL Database configuration
+azure_sql_services:
+  database_name: your_database
+  table_name: your_table
+# ================================
+# FILE STORAGE
+# ================================
+# Configure where files are stored
 file_storage:
   revisions:
     enable: true
-    storage_type: local
-    container_name: jrsrevisions
-    path: .files
+    storage_type: local # Options: local, azure
+    container_name: revisions # For Azure storage
+    path: ./files # Local storage path
     add_sub_folders: true
   data:
     enable: true
     storage_type: local
-    container_name: jrsdata
-    path: .files
+    container_name: data
+    path: ./files
     add_sub_folders: true

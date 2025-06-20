@@ -47,90 +47,160 @@ def log_levels():
 @app.command()
 def run_rest_api_server(
     project_dir: Annotated[
-        str,
-        typer.Argument(help="The path to the config file. "),
+        Optional[str],
+        typer.Option(
+            "--project-dir", help="Path to config.yml file. Defaults to ./config.yml"
+        ),
     ] = None,
     profile_dir: Annotated[
-        str,
-        typer.Argument(
-            help="The path to the profile file. If left blank it will use '$HOME/.ingenious/profiles.yml'"
+        Optional[str],
+        typer.Option(
+            "--profile-dir",
+            help="Path to profiles.yml file. Defaults to ./profiles.yml",
         ),
     ] = None,
     host: Annotated[
         str,
-        typer.Argument(
-            help="The host to run the server on. Default is 0.0.0.0. For local development outside of docker use 127.0.0.1"
+        typer.Option(
+            "--host", help="Host to bind to. Use 127.0.0.1 for local development"
         ),
-    ] = "0.0.0.0",
+    ] = "127.0.0.1",
     port: Annotated[
         int,
-        typer.Argument(help="The port to run the server on. Default is 80."),
-    ] = 80,
-    run_dir: Annotated[
-        str,
-        typer.Argument(help="The directory in which to launch the web server."),
-    ] = "",
+        typer.Option("--port", help="Port to run the server on"),
+    ] = 8000,
 ):
     """
-    This command will run a fastapi server and present your agent workflows via a rest endpoint.
+    Start the Insight Ingenious FastAPI server with Chainlit UI.
+
+    This command will automatically look for config.yml and profiles.yml in the current directory
+    unless you specify different paths with --project-dir and --profile-dir.
     """
-    if project_dir is not None:
-        os.environ["INGENIOUS_PROJECT_PATH"] = project_dir
+
+    # Set up default paths if not provided
+    current_dir = Path.cwd()
+
+    if project_dir is None:
+        # Look for config.yml in current directory
+        default_config = current_dir / "config.yml"
+        if default_config.exists():
+            project_dir = str(default_config)
+        else:
+            console.print(
+                "[error]No config.yml found in current directory. Please run 'uv run ingen initialize-new-project' first or specify --project-dir[/error]"
+            )
+            raise typer.Exit(1)
 
     if profile_dir is None:
-        # get home directory
-        home_dir = os.path.expanduser("~")
-        profile_dir = Path(home_dir) / Path(".ingenious") / Path("profiles.yml")
+        # Look for profiles.yml in current directory first, then home directory
+        local_profiles = current_dir / "profiles.yml"
+        home_profiles = Path.home() / ".ingenious" / "profiles.yml"
 
-    print(f"Profile path: {profile_dir}")
+        if local_profiles.exists():
+            profile_dir = str(local_profiles)
+        elif home_profiles.exists():
+            profile_dir = str(home_profiles)
+        else:
+            console.print(
+                "[error]No profiles.yml found. Please run 'uv run ingen initialize-new-project' first or specify --profile-dir[/error]"
+            )
+            raise typer.Exit(1)
+
+    console.print(f"[info]🚀 Starting Insight Ingenious server...[/info]")
+    console.print(f"[info]📁 Config: {project_dir}[/info]")
+    console.print(f"[info]🔐 Profiles: {profile_dir}[/info]")
+    console.print(f"[info]🌐 Server: http://{host}:{port}[/info]")
+
+    # Set environment variables
+    os.environ["INGENIOUS_PROJECT_PATH"] = str(project_dir).replace("\\", "/")
     os.environ["INGENIOUS_PROFILE_PATH"] = str(profile_dir).replace("\\", "/")
+
     import ingenious.config.config as ingen_config
 
-    config = ingen_config.get_config()
+    try:
+        config = ingen_config.get_config()
+    except Exception as e:
+        console.print(f"[error]Failed to load configuration: {e}[/error]")
+        console.print("[info]💡 Make sure your API keys are set in profiles.yml[/info]")
+        raise typer.Exit(1)
 
-    # We need to clean this up and probrably separate overall system config from fast api, eg. set the config here in cli and then pass it to FastAgentAPI
-    # As soon as we import FastAgentAPI, config will be loaded hence to ensure that the environment variables above are loaded first we need to import FastAgentAPI after setting the environment variables
+    # Import FastAPI app after setting environment variables
     from ingenious.main import FastAgentAPI
 
     os.environ["LOADENV"] = "False"
-    console.print(f"Running all elements of the project in {project_dir}", style="info")
-    # If the code has been pip installed then recursively copy the ingenious folder into the site-packages directory
-    if CliFunctions.PureLibIncludeDirExists():
-        src = Path(os.getcwd()) / Path("ingenious/")
-        if os.path.exists(src):
-            CliFunctions.copy_ingenious_folder(
-                src, Path(get_paths()["purelib"]) / Path("ingenious/")
-            )
+    console.print(f"[info]📂 Working directory: {os.getcwd()}[/info]")
 
-    print(f"Current working directory: {os.getcwd()}")
+    # Setup working directory
+    if CliFunctions.PureLibIncludeDirExists():
+        src_path = CliFunctions.GetIncludeDir()
+        dst_path = Path(os.getcwd()) / "ingenious"
+
+        # Copy ingenious folder if it doesn't exist or is outdated
+        if not dst_path.exists():
+            console.print("[info]📦 Setting up framework files...[/info]")
+            CliFunctions.copy_ingenious_folder(src_path, dst_path)
 
     def print_namespace_modules(namespace):
-        package = importlib.import_module(namespace)
-        if hasattr(package, "__path__"):
-            for module_info in pkgutil.iter_modules(package.__path__):
-                print(f"Found module: {module_info.name}")
-        else:
-            print(f"{namespace} is not a package")
+        try:
+            import importlib.util
+            import pkgutil
+
+            spec = importlib.util.find_spec(namespace)
+            if spec is None:
+                console.print(f"[warning]Namespace {namespace} not found[/warning]")
+                return
+
+            if spec.submodule_search_locations:
+                for importer, modname, ispkg in pkgutil.iter_modules(
+                    spec.submodule_search_locations
+                ):
+                    console.print(f"[debug]Found module: {namespace}.{modname}[/debug]")
+        except Exception as e:
+            console.print(
+                f"[debug]Could not enumerate modules in {namespace}: {e}[/debug]"
+            )
 
     os.environ["INGENIOUS_WORKING_DIR"] = str(Path(os.getcwd()))
-    os.chdir(str(Path(os.getcwd())))
     print_namespace_modules(
         "ingenious.services.chat_services.multi_agent.conversation_flows"
     )
 
+    # Initialize and run the FastAPI app
     fast_agent_api = FastAgentAPI(config)
-
-    # Access the FastAPI app instance
     app = fast_agent_api.app
 
-    # change directory to project dir
-    uvicorn.run(
-        app,
-        host=config.web_configuration.ip_address,
-        port=config.web_configuration.port,
+    console.print("")
+    console.print("[info]✨ Server starting successfully![/info]")
+    console.print(f"[info]🌐 Main API: http://{host}:{port}[/info]")
+    console.print(f"[info]💬 Chat UI: http://{host}:{port}/chainlit[/info]")
+    console.print(f"[info]📚 API Docs: http://{host}:{port}/docs[/info]")
+    console.print("")
+    console.print(
+        "[info]🎯 Try asking: 'Hello! Can you help me learn about bicycles?'[/info]"
     )
-    # import subprocess
-    # subprocess.run(["fastapi", "dev", "./ingenious/main.py"])
+    console.print("")
+
+    # Start the server
+    uvicorn.run(app, host=host, port=port)
+
+
+@app.command()
+def run_project():
+    """
+    Quick start command - starts the server with default settings.
+
+    This is equivalent to 'run-rest-api-server' but with simpler syntax.
+    Perfect for getting started after running 'initialize-new-project'.
+    """
+    console.print("[info]🚀 Quick starting your Insight Ingenious project![/info]")
+    console.print(
+        "[info]💡 This is equivalent to 'uv run ingen run-rest-api-server'[/info]"
+    )
+    console.print("")
+
+    # Call run_rest_api_server with default parameters
+    ctx = typer.Context(run_rest_api_server)
+    ctx.invoke(run_rest_api_server)
 
 
 @app.command()
@@ -178,8 +248,15 @@ def run_test_batch(
 
 @app.command()
 def initialize_new_project():
-    """Generate template folders for a new project using the Ingenious framework."""
+    """Generate template folders and configuration files for a new project using the Ingenious framework."""
     base_path = Path(__file__).parent
+    current_dir = Path.cwd()
+    project_name = current_dir.name
+
+    console.print(
+        f"[info]🚀 Initializing new Insight Ingenious project: '{project_name}'[/info]"
+    )
+
     templates_paths = {
         "docker": base_path / "docker_template",
         "ingenious_extensions": base_path / "ingenious_extensions_template",
@@ -187,7 +264,7 @@ def initialize_new_project():
     }
 
     for folder_name, template_path in templates_paths.items():
-        destination = Path.cwd() / folder_name
+        destination = current_dir / folder_name
 
         # Skip if the destination folder already exists
         if destination.exists():
@@ -199,7 +276,7 @@ def initialize_new_project():
         # Check if a template path exists (if applicable)
         if template_path and not template_path.exists():
             console.print(
-                f"[error]Template directory '{template_path}' not found. Skipping...[/error]"
+                f"[warning]Template directory '{template_path}' not found. Skipping...[/warning]"
             )
             continue
 
@@ -219,6 +296,7 @@ def initialize_new_project():
                                 src_path,
                                 dst_path,
                                 ignore=shutil.ignore_patterns("__pycache__"),
+                                dirs_exist_ok=True,
                             )
                         # replace all instances of 'ingenious_extensions_template' with the project name:
                         for root, dirs, files in os.walk(dst_path):
@@ -248,62 +326,527 @@ def initialize_new_project():
                 # Create an empty context.md file in the 'tmp' folder
                 (destination / "context.md").touch()
 
-            console.print(f"[info]Folder '{folder_name}' created successfully.[/info]")
+            console.print(
+                f"[info]✅ Folder '{folder_name}' created successfully.[/info]"
+            )
 
         except Exception as e:
             console.print(
                 f"[error]Error processing folder '{folder_name}': {e}[/error]"
             )
 
-    # create a gitignore file
-    gitignore_path = Path.cwd() / ".gitignore"
+    # Create .gitignore file
+    _create_gitignore_file(current_dir)
+
+    # Create config files in project directory (not home directory)
+    _create_config_files(current_dir, project_name)
+
+    # Create README with setup instructions
+    _create_setup_readme(current_dir, project_name)
+
+    # Print completion message with next steps
+    _print_completion_message(current_dir, project_name)
+
+
+def _create_gitignore_file(current_dir: Path):
+    """Create a comprehensive .gitignore file for the project."""
+    gitignore_path = current_dir / ".gitignore"
     if not gitignore_path.exists():
+        gitignore_content = [
+            "# Python",
+            "*.pyc",
+            "__pycache__/",
+            "*.pyo",
+            "*.pyd",
+            ".Python",
+            "env/",
+            "venv/",
+            ".venv/",
+            "pip-log.txt",
+            "pip-delete-this-directory.txt",
+            "",
+            "# Project specific",
+            "*.log",
+            "/files/",
+            "/tmp/",
+            "/.tmp/",
+            "",
+            "# Environment files",
+            ".env",
+            ".env.local",
+            ".env.production",
+            "",
+            "# IDE",
+            ".vscode/",
+            ".idea/",
+            "",
+            "# OS",
+            ".DS_Store",
+            "Thumbs.db",
+            "",
+            "# Credentials (IMPORTANT: Keep these secret!)",
+            "profiles.yml",
+            "config_local.yml",
+            "",
+        ]
         with open(gitignore_path, "w") as f:
-            git_ignore_content = ["*.pyc", "__pycache__", "*.log", "/files/", "/tmp/"]
-            f.write("\n".join(git_ignore_content))
+            f.write("\n".join(gitignore_content))
+        console.print(f"[info]✅ Created .gitignore file.[/info]")
 
-    # create a config file
-    template_config_path = (
-        templates_paths["ingenious_extensions"] / "config.template.yml"
-    )
-    if template_config_path.exists():
-        config_path = Path.cwd() / "config.yml"
-        shutil.copy2(template_config_path, config_path)
-        console.print(
-            f"[info]Config file created successfully at {config_path}.[/info]"
-        )
-    else:
-        console.print(
-            f"[warning]Config file template not found at {template_config_path}. Skipping...[/warning]"
-        )
 
-    # create profile file
-    template_profile_path = (
-        templates_paths["ingenious_extensions"] / "profiles.template.yml"
-    )
-    if template_profile_path.exists():
-        # Get user home directory
-        home_dir = os.path.expanduser("~")
-        profile_dir_path = Path(home_dir) / Path(".ingenious")
-        os.makedirs(profile_dir_path, exist_ok=True)
-        profile_path = profile_dir_path / Path("profiles.yml")
-        shutil.copy2(template_profile_path, profile_path)
-        console.print(
-            f"[info]Profile file created successfully created at {profile_path}[/info]"
-        )
-    else:
-        console.print(
-            f"[warning]Profile file template not found at {template_profile_path}. Skipping...[/warning]"
-        )
+def _create_config_files(current_dir: Path, project_name: str):
+    """Create config.yml and profiles.yml files with helpful documentation."""
 
-    console.print("[info]Folder generation process completed.[/info]")
+    # Create config.yml in project directory
+    config_path = current_dir / "config.yml"
+    config_content = f"""# Insight Ingenious Configuration File
+# Project: {project_name}
+#
+# This file contains non-sensitive configuration settings.
+# For sensitive data (API keys, passwords), see profiles.yml
+
+# ================================
+# PROFILE SELECTION
+# ================================
+# Specify which profile to use from profiles.yml
+# Common values: dev, staging, prod
+profile: dev
+
+# ================================
+# AI MODELS CONFIGURATION
+# ================================
+# Configure the AI models your agents will use
+models:
+  - model: gpt-4o  # Model name in your Azure OpenAI deployment
+    api_type: azure  # Use 'azure' for Azure OpenAI, 'openai' for OpenAI directly
+    api_version: "2024-08-01-preview"  # Azure OpenAI API version
+
+# ================================
+# LOGGING SETTINGS
+# ================================
+logging:
+  root_log_level: info     # Global log level: debug, info, warning, error
+  log_level: debug         # Application-specific log level
+
+# ================================
+# CHAT HISTORY STORAGE
+# ================================
+# Choose how to store conversation history
+chat_history:
+  database_type: sqlite               # Options: sqlite, cosmos
+  database_path: ./.tmp/chat_history.db  # Path for SQLite database
+  database_name: {project_name}_chats    # Database name (for Cosmos DB)
+  memory_path: ./.tmp                 # Temporary memory files location
+
+# ================================
+# CHAT SERVICE TYPE
+# ================================
+# Defines the conversation engine
+chat_service:
+  type: multi_agent  # Use multi-agent conversation system
+
+# ================================
+# TOOL SERVICES
+# ================================
+# Enable/disable additional agent tools
+tool_service:
+  enable: true  # Set to false to disable tool usage
+
+# ================================
+# WEB INTERFACE SETTINGS
+# ================================
+web_configuration:
+  type: fastapi          # Web framework (currently only FastAPI supported)
+  ip_address: "127.0.0.1"  # IP address to bind to (127.0.0.1 for local only)
+  port: 8000            # Port to run the web server on
+  authentication:
+    enable: true        # Require authentication to access the API
+    type: basic         # Authentication method
+
+# ================================
+# CHAINLIT UI (Optional)
+# ================================
+# Enable the Chainlit chat interface
+chainlit_configuration:
+  enable: true  # Set to true to enable the web chat UI
+
+# ================================
+# PROMPT TUNER (Optional)
+# ================================
+# Tool for developing and testing prompts
+prompt_tuner:
+  mode: "fast_api"  # Options: fast_api, flask
+
+# ================================
+# AZURE SEARCH (Optional)
+# ================================
+# Configure Azure Cognitive Search for knowledge bases
+azure_search_services:
+  - service: knowledge-base
+    endpoint: https://YOUR_SEARCH_SERVICE.search.windows.net
+
+# ================================
+# DATABASE CONNECTIONS (Optional)
+# ================================
+# Local SQLite database for SQL agents
+local_sql_db:
+  database_path: /tmp/sample.db
+  sample_csv_path: ./sample_data/data.csv
+  sample_database_name: sample_data
+
+# Azure SQL Database configuration
+azure_sql_services:
+  database_name: your_database
+  table_name: your_table
+
+# ================================
+# FILE STORAGE
+# ================================
+# Configure where files are stored
+file_storage:
+  revisions:
+    enable: true
+    storage_type: local        # Options: local, azure
+    container_name: revisions  # For Azure storage
+    path: ./files             # Local storage path
+    add_sub_folders: true
+  data:
+    enable: true
+    storage_type: local
+    container_name: data
+    path: ./files
+    add_sub_folders: true
+"""
+
+    with open(config_path, "w") as f:
+        f.write(config_content)
+    console.print(f"[info]✅ Created config.yml with helpful documentation.[/info]")
+
+    # Create profiles.yml in project directory (not home directory)
+    profiles_path = current_dir / "profiles.yml"
+    profiles_content = f"""# Insight Ingenious Profiles Configuration
+# Project: {project_name}
+#
+# 🚨 IMPORTANT: This file contains sensitive information (API keys, passwords)
+# - Keep this file secure and do not commit it to version control
+# - The .gitignore file excludes this file by default
+# - Copy this to a secure location for production deployments
+
+# ================================
+# DEVELOPMENT PROFILE
+# ================================
+- name: dev
+  # ================================
+  # AI MODEL CREDENTIALS
+  # ================================
+  models:
+    - model: gpt-4o
+      # 🔑 Your Azure OpenAI API key - REQUIRED
+      api_key: "YOUR_AZURE_OPENAI_API_KEY_HERE"
+      # 🌐 Your Azure OpenAI endpoint - REQUIRED
+      base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
+
+  # ================================
+  # CHAT HISTORY DATABASE
+  # ================================
+  chat_history:
+    # For Cosmos DB, provide connection string
+    database_connection_string: ""
+
+  # ================================
+  # AZURE SEARCH CREDENTIALS
+  # ================================
+  azure_search_services:
+    - service: knowledge-base
+      # 🔑 Azure Search admin key - OPTIONAL
+      key: "YOUR_AZURE_SEARCH_ADMIN_KEY_HERE"
+
+  # ================================
+  # AZURE SQL CREDENTIALS
+  # ================================
+  azure_sql_services:
+    # SQL Server connection string - OPTIONAL
+    database_connection_string: "Server=tcp:your-server.database.windows.net,1433;Database=your-db;User ID=your-user;Password=your-password;Encrypt=true;TrustServerCertificate=false;Connection Timeout=30;"
+
+  # ================================
+  # WEB AUTHENTICATION
+  # ================================
+  web_configuration:
+    authentication:
+      enable: true
+      # 🔑 Basic auth credentials for API access
+      username: "admin"
+      password: "CHANGE_THIS_PASSWORD"
+
+  # ================================
+  # CHAINLIT AUTHENTICATION
+  # ================================
+  chainlit_configuration:
+    enable: true
+    authentication:
+      enable: false  # Set to true to require GitHub OAuth
+      # For GitHub OAuth (optional):
+      github_client_id: "YOUR_GITHUB_CLIENT_ID"
+      github_secret: "YOUR_GITHUB_SECRET"
+
+  # ================================
+  # AZURE BLOB STORAGE (Optional)
+  # ================================
+  file_storage:
+    revisions:
+      url: https://YOUR_STORAGE_ACCOUNT.blob.core.windows.net/
+      authentication_method: default_credential  # Options: msi, default_credential
+    data:
+      url: https://YOUR_STORAGE_ACCOUNT.blob.core.windows.net/
+      authentication_method: default_credential
+
+  # ================================
+  # EXTERNAL INTEGRATIONS (Optional)
+  # ================================
+  receiver_configuration:
+    enable: false
+    api_url: "https://your-webhook-endpoint.com/api/ai-response/publish"
+    api_key: "YOUR_WEBHOOK_API_KEY"
+
+# ================================
+# PRODUCTION PROFILE TEMPLATE
+# ================================
+# Uncomment and configure for production:
+# - name: prod
+#   models:
+#     - model: gpt-4o
+#       api_key: "PRODUCTION_API_KEY"
+#       base_url: "https://prod-resource.openai.azure.com/..."
+#   web_configuration:
+#     authentication:
+#       enable: true
+#       username: "prod_admin"
+#       password: "STRONG_PRODUCTION_PASSWORD"
+#   # ... other production settings
+"""
+
+    with open(profiles_path, "w") as f:
+        f.write(profiles_content)
+    console.print(f"[info]✅ Created profiles.yml with example configuration.[/info]")
     console.print(
-        "[warning]Before executing set the environment variables INGENIOUS_PROJECT_PATH and INGENIOUS_PROFILE_PATH [/warning]"
+        f"[warning]⚠️  Remember to update API keys and passwords in profiles.yml![/warning]"
     )
+
+
+def _create_setup_readme(current_dir: Path, project_name: str):
+    """Create a comprehensive setup README."""
+    readme_path = current_dir / "SETUP.md"
+    readme_content = f"""# {project_name} - Insight Ingenious Setup Guide
+
+Welcome to your new Insight Ingenious project! This guide will help you get a "Hello World" example running.
+
+## 🚀 Quick Start
+
+### Step 1: Set Environment Variables
+
+Set these environment variables to point to your configuration files:
+
+```bash
+# In your terminal or add to your ~/.bashrc or ~/.zshrc
+export INGENIOUS_PROJECT_PATH="$(pwd)/config.yml"
+export INGENIOUS_PROFILE_PATH="$(pwd)/profiles.yml"
+```
+
+### Step 2: Configure Your AI Model
+
+1. **Get Azure OpenAI Access:**
+   - Go to [Azure Portal](https://portal.azure.com)
+   - Create an Azure OpenAI resource
+   - Deploy a GPT-4 model
+   - Copy the API key and endpoint
+
+2. **Update profiles.yml:**
+   ```yaml
+   - name: dev
+     models:
+       - model: gpt-4o
+         api_key: "YOUR_ACTUAL_API_KEY_HERE"
+         base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview"
+   ```
+
+### Step 3: Test Your Setup
+
+Run the application:
+
+```bash
+uv run ingen run-rest-api-server
+```
+
+### Step 4: Try Your First Chat
+
+Open your browser and go to:
+- Main API: http://localhost:8000
+- Chat Interface: http://localhost:8000/chainlit
+- API Docs: http://localhost:8000/docs
+
+## 🔧 Configuration Files
+
+### config.yml
+Non-sensitive settings like:
+- Which AI models to use
+- Database settings
+- Web server configuration
+- Logging levels
+
+### profiles.yml
+Sensitive credentials like:
+- API keys
+- Passwords
+- Connection strings
+
+⚠️ **Never commit profiles.yml to version control!**
+
+## 🤖 Available Agent Flows
+
+Your project comes with these pre-built agent flows:
+
+1. **classification_agent** - Routes questions to specialized agents
+2. **knowledge_base_agent** - Answers from uploaded documents
+3. **pandas_agent** - Analyzes data and creates visualizations
+4. **sql_manipulation_agent** - Generates and runs SQL queries
+5. **web_critic_agent** - Searches web and fact-checks information
+
+## 📁 Project Structure
+
+```
+{project_name}/
+├── config.yml              # Non-sensitive configuration
+├── profiles.yml             # Sensitive credentials (keep secret!)
+├── SETUP.md                 # This file
+├── .gitignore              # Excludes sensitive files
+├── ingenious_extensions/    # Your custom agents and extensions
+├── docker/                 # Docker configuration
+└── tmp/                    # Temporary files
+```
+
+## 🛠️ Next Steps
+
+### Create a Custom Agent
+
+1. **Add an agent definition:**
+   ```bash
+   mkdir -p ingenious_extensions/services/chat_services/multi_agent/agents/bicycle_agent
+   ```
+
+2. **Create agent.md:**
+   ```markdown
+   # Bicycle Expert Agent
+
+   ## Name and Persona
+   * Name: You are Ingenious, a Bicycle Expert
+   * Description: You are a bicycle maintenance and repair expert.
+
+   ## System Message
+   You help people with bicycle-related questions, from basic maintenance
+   to advanced repairs. Always provide safe, practical advice.
+   ```
+
+3. **Create tasks/task.md:**
+   ```markdown
+   # Bicycle Agent Tasks
+
+   You help users with:
+   - Bicycle maintenance and repair
+   - Choosing the right bicycle
+   - Safety tips and best practices
+   - Troubleshooting common problems
+   ```
+
+### Test Your Agent
+
+```bash
+uv run ingen run-test-batch
+```
+
+## 🔍 Debugging
+
+### Check Configuration
+```bash
+# Verify environment variables
+echo $INGENIOUS_PROJECT_PATH
+echo $INGENIOUS_PROFILE_PATH
+
+# Test configuration loading
+uv run python -c "import ingenious.config.config as config; print(config.get_config())"
+```
+
+### View Logs
+```bash
+# Check logs in the tmp directory
+tail -f tmp/*.log
+```
+
+### Common Issues
+
+1. **"API key not found"**
+   - Check your profiles.yml has the correct API key
+   - Verify environment variables are set
+
+2. **"Template not found"**
+   - Make sure you're running commands from the project root
+   - Check that ingenious_extensions folder exists
+
+3. **"Connection refused"**
+   - Check if another service is using port 8000
+   - Try a different port: `uv run ingen run-rest-api-server --port 8080`
+
+## 📚 Learn More
+
+- [Insight Ingenious Documentation](https://github.com/Insight-Services-APAC/Insight_Ingenious/tree/main/docs)
+- [Contributing Guide](https://github.com/Insight-Services-APAC/Insight_Ingenious/blob/main/CONTRIBUTING.md)
+
+## 🎉 Hello World Test
+
+Try this simple test:
+
+1. Start the server: `uv run ingen run-rest-api-server`
+2. Go to: http://localhost:8000/chainlit
+3. Type: "Hello! Can you help me learn about bicycles?"
+4. The classification agent should route you to the appropriate expert!
+
+Happy coding! 🚀
+"""
+
+    with open(readme_path, "w") as f:
+        f.write(readme_content)
+    console.print(f"[info]✅ Created SETUP.md with comprehensive instructions.[/info]")
+
+
+def _print_completion_message(current_dir: Path, project_name: str):
+    """Print a comprehensive completion message with next steps."""
+    console.print("\n" + "=" * 60)
+    console.print(f"[info]🎉 Project '{project_name}' initialized successfully![/info]")
+    console.print("=" * 60 + "\n")
+
+    console.print("[info]📋 Next Steps:[/info]")
+    console.print("   1. 🔧 Set environment variables:")
+    console.print(f'      export INGENIOUS_PROJECT_PATH="{current_dir}/config.yml"')
+    console.print(f'      export INGENIOUS_PROFILE_PATH="{current_dir}/profiles.yml"')
+    console.print("")
+    console.print("   2. 🔑 Update profiles.yml with your Azure OpenAI credentials")
+    console.print("      (Get these from https://portal.azure.com)")
+    console.print("")
+    console.print("   3. 🚀 Start the application:")
+    console.print("      uv run ingen run-rest-api-server")
+    console.print("")
+    console.print("   4. 🌐 Open your browser:")
+    console.print("      Main API:      http://localhost:8000")
+    console.print("      Chat UI:       http://localhost:8000/chainlit")
+    console.print("      API Docs:      http://localhost:8000/docs")
+    console.print("")
+    console.print("[info]📖 For detailed instructions, see: SETUP.md[/info]")
     console.print(
-        "[warning]Before executing update config.yml and profiles.yml [/warning]"
+        "[warning]⚠️  Remember: Never commit profiles.yml (contains API keys)![/warning]"
     )
-    console.print("[info]To execute use ingen_cli[/info]")
+    console.print("")
+    console.print(
+        "[info]🎯 Test with: 'Hello! Can you help me learn about bicycles?'[/info]"
+    )
 
 
 @app.command()
