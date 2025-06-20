@@ -17,7 +17,6 @@ from .infrastructure.services import (
     DefaultConversationService,
     ModernChatService,
 )
-from .interfaces.rest_controllers import ChatController
 
 __all__ = [
     "ChatRequest",
@@ -28,5 +27,4 @@ __all__ = [
     "ChatApplicationService",
     "ModernChatService",
     "DefaultConversationService",
-    "ChatController",
 ]

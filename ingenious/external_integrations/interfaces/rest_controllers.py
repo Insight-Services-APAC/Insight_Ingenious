@@ -300,7 +300,7 @@ class ExternalIntegrationsController:
             )
 
 
-# Create router instance for backward compatibility
+# Create router instance for FastAPI integration
 # Note: In production, this should be managed by a DI container
 
 

@@ -115,7 +115,7 @@ class PromptManagementController:
             raise HTTPException(status_code=500, detail="Failed to update file")
 
 
-# Create router instance for backward compatibility
+# Create router instance for FastAPI integration
 router = APIRouter()
 controller = PromptManagementController()
 router.include_router(controller.router)

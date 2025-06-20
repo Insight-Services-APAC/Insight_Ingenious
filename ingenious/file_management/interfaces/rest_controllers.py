@@ -389,7 +389,7 @@ class FileManagementController:
             raise HTTPException(status_code=500, detail="Failed to delete directory")
 
 
-# Create router instance for backward compatibility
+# Create router instance for FastAPI integration
 # Note: In production, this should be managed by a DI container
 from ..application.use_cases import DirectoryManagementUseCase, FileManagementUseCase
 from ..infrastructure.services import (

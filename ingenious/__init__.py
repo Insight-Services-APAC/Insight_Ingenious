@@ -12,27 +12,30 @@ Bounded Contexts:
 - file_management: File operations and storage
 - prompt_management: Prompt templates and management
 - security: Authentication and authorization
+- shared: Cross-cutting concerns and shared kernel
 
-Legacy modules (to be migrated):
-- api: REST API routes (will be moved to interfaces layers)
-- services: Application services (will be moved to application layers)
-- models: Data models (will be moved to domain layers)
-- utils: Utility functions (will be moved to shared kernel)
+Core Components:
+- core: Core infrastructure (dependency injection, logging)
+- cli: Command-line interface
+- main: FastAPI application entry point
+- dependencies: Dependency injection configuration
 """
 
 __version__ = "1.0.0"
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
-# Export main bounded context modules for easy importing
-from . import (
-    chat,
-    configuration,
-    diagnostics,
-    external_integrations,
-    file_management,
-    prompt_management,
-    security,
-)
+__version__ = "1.0.0"
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
+
+# Note: Bounded context modules are available as:
+# - ingenious.chat
+# - ingenious.configuration
+# - ingenious.diagnostics
+# - ingenious.external_integrations
+# - ingenious.file_management
+# - ingenious.prompt_management
+# - ingenious.security
+# - ingenious.shared
 
 __all__ = [
     "chat",
@@ -42,4 +45,5 @@ __all__ = [
     "file_management",
     "prompt_management",
     "security",
+    "shared",
 ]

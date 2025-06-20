@@ -9,8 +9,10 @@ from openai.types.chat import (
     ChatCompletionToolParam,
 )
 
-from ingenious.errors.content_filter_error import ContentFilterError
-from ingenious.errors.token_limit_exceeded_error import TokenLimitExceededError
+from ingenious.external_integrations.domain.errors import (
+    ContentFilterError,
+    TokenLimitExceededError,
+)
 
 from ..domain.services import IContentModerationService, ILLMService
 
@@ -121,7 +123,3 @@ class OpenAIContentModerationService(IContentModerationService):
         except Exception as e:
             logger.exception(e)
             return {"flagged": False, "error": str(e)}
-
-
-# Legacy alias for backward compatibility
-OpenAIService = AzureOpenAIService

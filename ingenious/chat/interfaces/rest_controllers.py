@@ -5,8 +5,10 @@ from fastapi.security import HTTPBasicCredentials
 from typing_extensions import Annotated
 
 import ingenious.dependencies as igen_deps
-from ingenious.errors.content_filter_error import ContentFilterError
-from ingenious.errors.token_limit_exceeded_error import TokenLimitExceededError
+from ingenious.external_integrations.domain.errors import (
+    ContentFilterError,
+    TokenLimitExceededError,
+)
 from ingenious.shared.domain.models import HTTPError
 
 from ..application.services import ChatApplicationService
@@ -131,6 +133,6 @@ class ChatController:
             raise HTTPException(status_code=400, detail=str(e))
 
 
-# Create router instance for backward compatibility
+# Create router instance for FastAPI integration
 router = APIRouter()
 # Note: Controller should be instantiated with dependencies when used

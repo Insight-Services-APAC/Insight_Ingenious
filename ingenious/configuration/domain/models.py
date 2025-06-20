@@ -57,7 +57,7 @@ class FileStorageConfig(BaseModel):
 
 
 class MinimalConfig(BaseModel):
-    """Minimal configuration for breaking backward compatibility."""
+    """Minimal configuration for the DDD-based application."""
 
     authentication: AuthenticationConfig = AuthenticationConfig()
     llm: LLMConfig = LLMConfig()

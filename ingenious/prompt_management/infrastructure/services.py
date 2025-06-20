@@ -14,7 +14,9 @@ from ..domain.services import (
 class FileSystemPromptRepository(IPromptTemplateRepository):
     """File system implementation of prompt template repository."""
 
-    def __init__(self, templates_path: str = "templates/prompts"):
+    def __init__(
+        self, templates_path: str = "ingenious/prompt_management/templates/prompts"
+    ):
         self.templates_path = Path(templates_path)
         self.templates_path.mkdir(parents=True, exist_ok=True)
 
@@ -66,7 +68,9 @@ class FileSystemPromptRepository(IPromptTemplateRepository):
 class Jinja2RenderingService(IPromptRenderingService):
     """Jinja2 implementation of prompt rendering service."""
 
-    def __init__(self, templates_path: str = "templates/prompts"):
+    def __init__(
+        self, templates_path: str = "ingenious/prompt_management/templates/prompts"
+    ):
         self.templates_path = templates_path
         self.env = Environment(
             loader=FileSystemLoader(templates_path),

@@ -4,8 +4,6 @@ from .entities import ChatSession, Message, Thread
 from .models import (
     ChatRequest,
     ChatResponse,
-    IChatRequest,
-    IChatResponse,
     MessageFeedbackRequest,
     MessageFeedbackResponse,
 )
@@ -19,8 +17,6 @@ __all__ = [
     # Models
     "ChatRequest",
     "ChatResponse",
-    "IChatRequest",
-    "IChatResponse",
     "MessageFeedbackRequest",
     "MessageFeedbackResponse",
     # Services

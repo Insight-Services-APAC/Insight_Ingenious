@@ -45,8 +45,3 @@ class MessageFeedbackResponse(BaseModel):
     """Response model for message feedback."""
 
     message: str
-
-
-# Legacy aliases for backward compatibility
-IChatRequest = ChatRequest
-IChatResponse = ChatResponse

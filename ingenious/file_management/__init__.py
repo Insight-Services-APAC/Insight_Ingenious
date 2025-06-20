@@ -43,5 +43,4 @@ __all__ = [
     "FileSystemFileRepository",
     "FileSystemDirectoryService",
     "FileSystemMetadataService",
-    "LegacyFileStorageAdapter",
 ]

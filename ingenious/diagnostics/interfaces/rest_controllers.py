@@ -81,7 +81,7 @@ class DiagnosticsController:
             raise HTTPException(status_code=500, detail=str(e))
 
 
-# Create router instance for backward compatibility
+# Create router instance for FastAPI integration
 router = APIRouter()
 controller = DiagnosticsController()
 router.include_router(controller.router)

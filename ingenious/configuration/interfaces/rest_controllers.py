@@ -214,7 +214,7 @@ class ConfigurationController:
             )
 
 
-# Create router instance for backward compatibility
+# Create router instance for FastAPI integration
 # Note: In production, this should be managed by a DI container
 # For DDD migration, simplified configuration without Azure dependencies
 config_repo = FileSystemConfigurationRepository()

@@ -104,10 +104,10 @@ def run_rest_api_server(
     os.environ["INGENIOUS_PROJECT_PATH"] = str(project_dir).replace("\\", "/")
     os.environ["INGENIOUS_PROFILE_PATH"] = str(profile_dir).replace("\\", "/")
 
-    import ingenious.config.config as ingen_config
+    from ingenious.configuration.domain.models import MinimalConfig
 
     try:
-        config = ingen_config.get_minimal_config()
+        config = MinimalConfig()
     except Exception as e:
         console.print(f"[error]Failed to load configuration: {e}[/error]")
         console.print("[info]💡 Make sure your API keys are set in profiles.yml[/info]")

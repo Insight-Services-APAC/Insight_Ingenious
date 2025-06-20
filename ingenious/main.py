@@ -7,10 +7,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
-import ingenious.config.config as ingen_config
-
 # Import controllers directly from bounded contexts
 from ingenious.chat.interfaces.rest_controllers import router as chat_router
+from ingenious.configuration.domain.models import MinimalConfig
 from ingenious.configuration.interfaces.rest_controllers import (
     router as configuration_router,
 )
@@ -29,7 +28,7 @@ from ingenious.prompt_management.interfaces.rest_controllers import (
 from ingenious.security.interfaces.rest_controllers import router as security_router
 from ingenious.shared.interfaces.rest_controllers import router as events_router
 
-config = ingen_config.get_minimal_config()
+config = MinimalConfig()
 
 
 # Configure logging
@@ -38,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 class FastAgentAPI:
-    def __init__(self, config: ingen_config.MinimalConfig):
+    def __init__(self, config: MinimalConfig):
         # Set the working directory
         os.chdir(os.environ["INGENIOUS_WORKING_DIR"])
 
