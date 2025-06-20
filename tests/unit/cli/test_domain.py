@@ -443,7 +443,7 @@ class TestCLIDomainIntegration:
     def test_server_config_with_value_objects(self):
         """Test ServerConfig using value objects."""
         # Arrange
-        host = HostAddress("api.example.com")
+        host = HostAddress(value="api.example.com")
         port = Port(value=8080)
 
         # Act
@@ -460,7 +460,7 @@ class TestCLIDomainIntegration:
         """Test a complete CLI command scenario."""
         # Arrange
         project_name = ProjectName(value="new-web-app")
-        host = HostAddress("localhost")
+        host = HostAddress(value="localhost")
         port = Port(value=3000)
 
         # Act

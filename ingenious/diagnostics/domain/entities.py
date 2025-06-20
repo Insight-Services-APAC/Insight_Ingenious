@@ -70,7 +70,11 @@ class DiagnosticResult:
             "status": self.status.value,
             "message": self.message,
             "details": self.details,
+            "execution_time": self.execution_time_ms,  # Keep legacy field name for tests
             "execution_time_ms": self.execution_time_ms,
+            "timestamp": self.checked_at.isoformat()
+            if self.checked_at
+            else None,  # Legacy field
             "checked_at": self.checked_at.isoformat() if self.checked_at else None,
             "error": self.error,
         }
@@ -116,7 +120,10 @@ class SystemHealth:
             "service_name": self.service_name,
             "overall_status": self.overall_status.value,
             "last_updated": self.last_updated.isoformat(),
-            "checks": [result.to_dict() for result in self.results],
+            "results": [result.to_dict() for result in self.results],
+            "checks": [
+                result.to_dict() for result in self.results
+            ],  # Keep both for compatibility
             "summary": {
                 "total_checks": len(self.results),
                 "healthy_checks": len([r for r in self.results if r.is_healthy]),

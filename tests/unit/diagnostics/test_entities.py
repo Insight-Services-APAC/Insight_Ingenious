@@ -214,7 +214,7 @@ class TestDiagnosticResult:
             check=check,
             status=HealthStatus.HEALTHY,
             message="Test passed",
-            execution_time=1.0,
+            execution_time_ms=1.0,
             timestamp=custom_timestamp,
         )
 

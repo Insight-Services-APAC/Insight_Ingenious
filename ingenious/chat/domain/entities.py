@@ -27,6 +27,9 @@ class Message:
             return False
         return self.message_id == other.message_id
 
+    def __str__(self):
+        return f"Message(id={self.message_id}, user={self.user_id}, content='{self.content[:50]}...')"
+
 
 class Thread:
     """Domain entity representing a conversation thread."""
@@ -53,6 +56,14 @@ class Thread:
     def get_recent_messages(self, limit: int = 10) -> list[Message]:
         """Get the most recent messages from the thread."""
         return sorted(self.messages, key=lambda m: m.timestamp)[-limit:]
+
+    def __eq__(self, other):
+        if not isinstance(other, Thread):
+            return False
+        return self.thread_id == other.thread_id
+
+    def __str__(self):
+        return f"Thread(id={self.thread_id}, messages={len(self.messages)})"
 
 
 class ChatSession:
