@@ -8,9 +8,7 @@ from jinja2 import Environment
 from openai.types.chat import ChatCompletionMessageParam
 
 import ingenious.config.config as ig_config
-from ingenious.db.chat_history_repository import ChatHistoryRepository
 from ingenious.dependencies import get_openai_service
-from ingenious.errors.content_filter_error import ContentFilterError
 from ingenious.files.files_repository import FileStorage
 from ingenious.models.chat import IChatRequest, IChatResponse
 from ingenious.utils.namespace_utils import import_class_with_fallback
@@ -20,18 +18,15 @@ logger = logging.getLogger(__name__)
 
 class multi_agent_chat_service:
     config: ig_config.Config
-    chat_history_repository: ChatHistoryRepository
     conversation_flow: str
     openai_service: Optional[ChatCompletionMessageParam]
 
     def __init__(
         self,
         config: ig_config.Config,
-        chat_history_repository: ChatHistoryRepository,
         conversation_flow: str,
     ):
         self.config = config
-        self.chat_history_repository = chat_history_repository
         self.conversation_flow = conversation_flow
         self.openai_service = get_openai_service()
 
@@ -46,36 +41,16 @@ class multi_agent_chat_service:
 
         # Initialize additional response fields - to be populated later
         chat_request.thread_chat_history = [{"role": "user", "content": ""}]
-        thread_memory = ""
 
         # Check if thread exists
         if not chat_request.thread_id:
             chat_request.thread_id = str(uuid.uuid4())
 
-        # Get thread messages & add to messages list
-        thread_messages = await self.chat_history_repository.get_thread_messages(
-            chat_request.thread_id
-        )
+        # Set default memory since we don't have chat history
         chat_request.thread_memory = "no existing context."
 
         msg = f"current_memory: {chat_request.thread_memory}"
         logger.log(level=logging.INFO, msg=msg)
-        # print(msg)
-
-        for thread_message in thread_messages:
-            # Validate user_id
-            # if thread_message.user_id != chat_request.user_id:
-            #     raise ValueError("User ID does not match thread messages.")
-
-            # Validate content_filter_results not present
-            if thread_message.content_filter_results:
-                raise ContentFilterError(
-                    content_filter_results=thread_message.content_filter_results
-                )
-
-            chat_request.thread_chat_history.append(
-                {"role": thread_message.role, "content": thread_message.content}
-            )
 
         try:
             # call specific agent flow here and get final response

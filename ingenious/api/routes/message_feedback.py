@@ -1,15 +1,12 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
-from typing_extensions import Annotated
+from fastapi import APIRouter, HTTPException
 
-from ingenious.dependencies import get_message_feedback_service
 from ingenious.models.http_error import HTTPError
 from ingenious.models.message_feedback import (
     MessageFeedbackRequest,
     MessageFeedbackResponse,
 )
-from ingenious.services.message_feedback_service import MessageFeedbackService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -22,13 +19,18 @@ router = APIRouter()
 async def submit_message_feedback(
     message_id: str,
     message_feedback_request: MessageFeedbackRequest,
-    feedback_service: Annotated[
-        MessageFeedbackService, Depends(get_message_feedback_service)
-    ],
 ) -> MessageFeedbackResponse:
+    """
+    Submit message feedback.
+    Note: MessageFeedbackService was removed, so this returns a simple response.
+    """
     try:
-        return await feedback_service.update_message_feedback(
-            message_id, message_feedback_request
+        # Since MessageFeedbackService was removed, return simple success response
+        return MessageFeedbackResponse(
+            message_id=message_id,
+            feedback_type=message_feedback_request.feedback_type,
+            success=True,
+            message="Feedback received (not persisted - feedback service removed)",
         )
     except ValueError as e:
         logger.exception(e)

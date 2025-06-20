@@ -8,14 +8,9 @@ from typing_extensions import Annotated
 
 import ingenious.config.config as Config
 import ingenious.models.config as config_models
-from ingenious.db.chat_history_repository import (
-    ChatHistoryRepository,
-    DatabaseClientType,
-)
 from ingenious.external_services.openai_service import OpenAIService
 from ingenious.files.files_repository import FileStorage
 from ingenious.services.chat_service import ChatService
-from ingenious.services.message_feedback_service import MessageFeedbackService
 
 logger = logging.getLogger(__name__)
 security = HTTPBasic()
@@ -34,17 +29,8 @@ def get_openai_service():
     )
 
 
-def get_chat_history_repository():
-    db_type_val = config.chat_history.database_type.lower()
-    try:
-        db_type = DatabaseClientType(db_type_val)
-
-    except ValueError:
-        raise ValueError(f"Unknown database type: {db_type_val}")
-
-    chr = ChatHistoryRepository(db_type=db_type, config=config)
-
-    return chr
+def get_file_storage():
+    return FileStorage(config)
 
 
 def get_security_service(
@@ -79,27 +65,13 @@ def get_security_service(
         )
 
 
-def get_chat_service(
-    chat_history_repository: Annotated[
-        ChatHistoryRepository, Depends(get_chat_history_repository)
-    ],
-    conversation_flow: str = "",
-):
+def get_chat_service(conversation_flow: str = ""):
     cs_type = config.chat_service.type
     return ChatService(
         chat_service_type=cs_type,
-        chat_history_repository=chat_history_repository,
         conversation_flow=conversation_flow,
         config=config,
     )
-
-
-def get_message_feedback_service(
-    chat_history_repository: Annotated[
-        ChatHistoryRepository, Depends(get_chat_history_repository)
-    ],
-):
-    return MessageFeedbackService(chat_history_repository)
 
 
 def sync_templates():

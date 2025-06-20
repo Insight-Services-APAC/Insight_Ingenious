@@ -14,14 +14,10 @@ from rich.console import Console
 from rich.theme import Theme
 from typing_extensions import Annotated
 
-import ingenious.utils.stage_executor as stage_executor_module
 from ingenious.utils.log_levels import LogLevel
 from ingenious.utils.namespace_utils import import_class_with_fallback
-from ingenious.dataprep.cli import dataprep as _dataprep
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_show_locals=False)
-
-app.add_typer(_dataprep, name="dataprep")
 
 custom_theme = Theme(
     {
@@ -131,14 +127,15 @@ def run_rest_api_server(
     console.print(f"[info]📂 Working directory: {os.getcwd()}[/info]")
 
     # Setup working directory
-    if CliFunctions.PureLibIncludeDirExists():
-        src_path = CliFunctions.GetIncludeDir()
+    ingenious_path = Path(get_paths()["purelib"]) / "ingenious"
+    if ingenious_path.exists():
+        src_path = ingenious_path
         dst_path = Path(os.getcwd()) / "ingenious"
 
         # Copy ingenious folder if it doesn't exist or is outdated
         if not dst_path.exists():
             console.print("[info]📦 Setting up framework files...[/info]")
-            CliFunctions.copy_ingenious_folder(src_path, dst_path)
+            _copy_ingenious_folder(src_path, dst_path)
 
     def print_namespace_modules(namespace):
         try:
@@ -208,49 +205,6 @@ def run_project():
     # Call run_rest_api_server with default parameters
     ctx = typer.Context(run_rest_api_server)
     ctx.invoke(run_rest_api_server)
-
-
-@app.command()
-def run_test_batch(
-    log_level: Annotated[
-        Optional[str],
-        typer.Option(
-            help="The option to set the log level. This controls the verbosity of the output. Allowed values are `DEBUG`, `INFO`, `WARNING`, `ERROR`. Default is `WARNING`.",
-        ),
-    ] = "WARNING",
-    run_args: Annotated[
-        Optional[str],
-        typer.Option(
-            help="Key value pairs to pass to the test runner. For example, `--run_args='--test_name=TestName --test_type=TestType'`",
-        ),
-    ] = "",
-):
-    """
-    This command will run all the tests in the project
-    """
-    _log_level: LogLevel = LogLevel.from_string(log_level)
-
-    se: stage_executor_module.stage_executor = stage_executor_module.stage_executor(
-        log_level=_log_level, console=console
-    )
-
-    # Parse the run_args string into a dictionary
-    kwargs = {}
-    if run_args:
-        for arg in run_args.split("--"):
-            if not arg:
-                continue
-            key, value = arg.split("=")
-            kwargs[key] = value
-
-    asyncio.run(
-        se.perform_stage(
-            option=True,
-            action_callables=[CliFunctions.RunTestBatch()],
-            stage_name="Batch Tests",
-            **kwargs,
-        )
-    )
 
 
 @app.command()
@@ -867,72 +821,28 @@ def _print_completion_message(current_dir: Path, project_name: str):
     console.print("[info]Happy building! 🚴‍♀️✨[/info]")
 
 
-@app.command()
-def run_prompt_tuner():
-    """Run the prompt tuner web application."""
-    from ingenious_prompt_tuner import create_app as prompt_tuner
-
-    app = prompt_tuner()
-    app.run(debug=True, host="0.0.0.0", port=80)
-
-
 if __name__ == "__cli__":
     app()
 
 
-class CliFunctions:
-    class RunTestBatch(stage_executor_module.IActionCallable):
-        async def __call__(self, progress, task_id, **kwargs):
-            module_name = "tests.run_tests"
-            class_name = "RunBatches"
-            try:
-                repository_class_import = import_class_with_fallback(
-                    module_name, class_name
-                )
-                repository_class = repository_class_import(
-                    progress=progress, task_id=task_id
-                )
+def _copy_ingenious_folder(src, dst):
+    """Copy ingenious folder with all subdirectories and files."""
+    if not os.path.exists(dst):
+        os.makedirs(dst)  # Create the destination directory if it doesn't exist
 
-                await repository_class.run(progress, task_id, **kwargs)
+    for item in os.listdir(src):
+        src_path = os.path.join(src, item)
+        dst_path = os.path.join(dst, item)
 
-            except (ImportError, AttributeError) as e:
-                raise ValueError(f"Batch Run Failed: {module_name}") from e
-
-    @staticmethod
-    def PureLibIncludeDirExists():
-        ChkPath = Path(get_paths()["purelib"]) / Path("ingenious/")
-        return os.path.exists(ChkPath)
-
-    @staticmethod
-    def GetIncludeDir():
-        ChkPath = Path(get_paths()["purelib"]) / Path("ingenious/")
-        # print(ChkPath)
-        # Does Check for the path
-        if os.path.exists(ChkPath):
-            return ChkPath
+        if os.path.isdir(src_path):
+            # Recursively copy subdirectories
+            _copy_ingenious_folder(src_path, dst_path)
         else:
-            path = Path(os.getcwd()) / Path("ingenious/")
-            # print(str(path))
-            return path
-
-    @staticmethod
-    def copy_ingenious_folder(src, dst):
-        if not os.path.exists(dst):
-            os.makedirs(dst)  # Create the destination directory if it doesn't exist
-
-        for item in os.listdir(src):
-            src_path = os.path.join(src, item)
-            dst_path = os.path.join(dst, item)
-
-            if os.path.isdir(src_path):
-                # Recursively copy subdirectories
-                CliFunctions.copy_ingenious_folder(src_path, dst_path)
-            else:
-                # Copy files
-                if not os.path.exists(dst_path) or os.path.getmtime(
-                    src_path
-                ) > os.path.getmtime(dst_path):
-                    shutil.copy2(src_path, dst_path)  # Copy file with metadata
+            # Copy files
+            if not os.path.exists(dst_path) or os.path.getmtime(
+                src_path
+            ) > os.path.getmtime(dst_path):
+                shutil.copy2(src_path, dst_path)  # Copy file with metadata
 
 
 def _create_ingenious_extensions_structure(destination: Path, project_name: str):

@@ -2,12 +2,10 @@ import importlib.resources as pkg_resources
 import logging
 import os
 
-from chainlit.utils import mount_chainlit
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.wsgi import WSGIMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 import ingenious.config.config as ingen_config
 from ingenious.api.routes import chat as chat_route

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from ingenious.config.config import Config
-from ingenious.db.chat_history_repository import ChatHistoryRepository
 from ingenious.models.chat import ChatRequest, ChatResponse
 from ingenious.utils.namespace_utils import import_class_with_fallback
 
@@ -18,7 +17,6 @@ class ChatService(IChatService):
     def __init__(
         self,
         chat_service_type: str,
-        chat_history_repository: ChatHistoryRepository,
         conversation_flow: str,
         config: Config,
         revision: str = "dfe19b62-07f1-4cb5-ae9a-561a253e4b04",
@@ -52,7 +50,6 @@ class ChatService(IChatService):
 
         self.service_class = service_class(
             config=config,
-            chat_history_repository=chat_history_repository,
             conversation_flow=conversation_flow,
         )
 
