@@ -5,30 +5,17 @@ description = "GenAI Accelerator"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aiosqlite>=0.21.0",
-    "annotated-types==0.7.0",
-    "anyio>=4.9.0",
-    "autogen>=0.5.3",
-    "autogen-agentchat==0.5.7",
-    "autogen-ext[openai]==0.5.7",
-    "azure-core==1.34.0",
     "azure-identity>=1.23.0",
     "azure-keyvault-secrets>=4.10.0",
-    "azure-search-documents==11.5.2",
-    "certifi==2025.4.26",
     "fastapi==0.115.9",
-    "fastapi-cli==0.0.7",
     "jinja2==3.1.6",
-    "jsonpickle==4.1.0",
-    "markdown==3.8",
-    "markdown-it-py==3.0.0",
-    "markdownify==1.0.0",
-    "markpickle==1.6.1",
     "openai==1.82.0",
     "psutil>=7.0.0",
     "pydantic==2.11.5",
+    "python-dotenv>=1.1.0",
     "python-multipart>=0.0.20",
     "typer>=0.15.4",
+    "uvicorn>=0.34.3",
 ]
 
 [dependency-groups]
