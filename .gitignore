@@ -165,3 +165,6 @@ tmp/
 
 # Local files
 *.local
+
+#test_dir
+test_dir/
