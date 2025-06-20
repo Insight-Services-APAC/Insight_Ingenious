@@ -1,24 +1,25 @@
 import hashlib
 import secrets
 import string
-import jwt
 from datetime import datetime, timedelta
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
+import jwt
 
 from ..domain.entities import (
-    User,
     AuthenticationToken,
-    SecurityEvent,
     Permission,
+    SecurityEvent,
+    User,
     UserRole,
 )
 from ..domain.services import (
-    IUserRepository,
     IAuthenticationService,
     IAuthorizationService,
-    ISecurityEventService,
     IPasswordService,
+    ISecurityEventService,
     ITokenService,
+    IUserRepository,
 )
 
 

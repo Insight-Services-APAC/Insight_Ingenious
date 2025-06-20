@@ -24,13 +24,15 @@ __version__ = "1.0.0"
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
 # Export main bounded context modules for easy importing
-from . import chat
-from . import configuration
-from . import diagnostics
-from . import external_integrations
-from . import file_management
-from . import prompt_management
-from . import security
+from . import (
+    chat,
+    configuration,
+    diagnostics,
+    external_integrations,
+    file_management,
+    prompt_management,
+    security,
+)
 
 __all__ = [
     "chat",

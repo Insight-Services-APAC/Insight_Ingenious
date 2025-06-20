@@ -1,10 +1,11 @@
-from typing import Dict, Any, List
-from ..domain.entities import DiagnosticCheck, SystemHealth, HealthStatus
+from typing import Any, Dict
+
+from ..domain.entities import DiagnosticCheck, SystemHealth
 from ..domain.services import (
+    IAlertingService,
     IDiagnosticService,
     IHealthCheckRepository,
     ISystemMetricsService,
-    IAlertingService,
 )
 
 

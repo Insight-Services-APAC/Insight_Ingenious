@@ -10,12 +10,12 @@ Domain-Driven Design principles:
 - interfaces: REST API controllers and web interfaces
 """
 
-from .domain.models import ChatRequest, ChatResponse
-from .domain.entities import Message, Thread, ChatSession
 from .application.services import ChatApplicationService
+from .domain.entities import ChatSession, Message, Thread
+from .domain.models import ChatRequest, ChatResponse
 from .infrastructure.services import (
-    LegacyChatServiceAdapter,
     DefaultConversationService,
+    LegacyChatServiceAdapter,
 )
 from .interfaces.rest_controllers import ChatController
 

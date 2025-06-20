@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List, Dict, Any
-from .entities import PromptTemplate, PromptLibrary
+from typing import Any, Dict, List, Optional
+
+from .entities import PromptTemplate
 
 
 class IPromptTemplateRepository(ABC):

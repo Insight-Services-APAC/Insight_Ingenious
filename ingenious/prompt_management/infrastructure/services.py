@@ -1,12 +1,12 @@
-import os
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from jinja2 import Environment, FileSystemLoader, Template, TemplateSyntaxError
 
 from ..domain.entities import PromptTemplate
 from ..domain.services import (
-    IPromptTemplateRepository,
     IPromptRenderingService,
+    IPromptTemplateRepository,
     IPromptVersioningService,
 )
 

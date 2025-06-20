@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
+
 from openai.types.chat import (
     ChatCompletionMessage,
     ChatCompletionMessageParam,

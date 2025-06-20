@@ -9,25 +9,25 @@ organized according to Domain-Driven Design principles:
 - infrastructure: External adapters for metrics collection and alerting
 """
 
+from .application.services import DiagnosticsApplicationService
+from .application.use_cases import HealthMonitoringUseCase, SystemMetricsUseCase
 from .domain.entities import (
     DiagnosticCheck,
     DiagnosticResult,
-    SystemHealth,
     HealthStatus,
+    SystemHealth,
 )
 from .domain.services import (
+    IAlertingService,
     IDiagnosticService,
     IHealthCheckRepository,
     ISystemMetricsService,
-    IAlertingService,
 )
-from .application.use_cases import HealthMonitoringUseCase, SystemMetricsUseCase
-from .application.services import DiagnosticsApplicationService
 from .infrastructure.services import (
     DefaultDiagnosticService,
     InMemoryHealthCheckRepository,
-    SystemMetricsService,
     LoggingAlertingService,
+    SystemMetricsService,
 )
 from .interfaces.rest_controllers import DiagnosticsController
 

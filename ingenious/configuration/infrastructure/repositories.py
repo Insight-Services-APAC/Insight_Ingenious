@@ -8,11 +8,11 @@ import yaml
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-from ..domain.services import IConfigurationRepository, ISecretService
 from ingenious.config.profile import Profiles
 from ingenious.models import config as config_models
 from ingenious.models import config_ns as config_ns_models
-from ingenious.models import profile as profile_models
+
+from ..domain.services import IConfigurationRepository, ISecretService
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class AzureKeyVaultSecretService(ISecretService):
         try:
             secret = self.client.get_secret(secret_name)
             return secret.value
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to retrieve secret {secret_name}")
             raise
 
@@ -116,7 +116,7 @@ class AzureKeyVaultSecretService(ISecretService):
         """Store a secret in Azure Key Vault."""
         try:
             self.client.set_secret(secret_name, secret_value)
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to store secret {secret_name}")
             raise
 

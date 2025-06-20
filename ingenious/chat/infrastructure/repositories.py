@@ -1,4 +1,5 @@
 from typing import Optional
+
 from ..domain.entities import Message, Thread
 from ..domain.services import IMessageRepository, IThreadRepository
 

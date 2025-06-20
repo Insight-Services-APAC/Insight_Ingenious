@@ -1,11 +1,12 @@
-from typing import Optional, List, Dict, Any
-from ..domain.entities import User, Permission, UserRole
+from typing import Any, Dict, List, Optional
+
 from ..application.use_cases import (
-    UserManagementUseCase,
     AuthenticationUseCase,
     AuthorizationUseCase,
     SecurityAuditUseCase,
+    UserManagementUseCase,
 )
+from ..domain.entities import Permission, UserRole
 
 
 class SecurityApplicationService:

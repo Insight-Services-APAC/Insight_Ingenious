@@ -12,7 +12,7 @@ from fastapi.security import HTTPBasicCredentials
 from typing_extensions import Annotated
 
 import ingenious.dependencies as igen_deps
-from ingenious.models.http_error import HTTPError
+from ingenious.shared.domain.models import HTTPError
 
 logger = logging.getLogger(__name__)
 

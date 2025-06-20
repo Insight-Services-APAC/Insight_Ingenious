@@ -1,21 +1,22 @@
 import asyncio
 import logging
-import psutil
 import time
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import psutil
 
 from ..domain.entities import (
     DiagnosticCheck,
     DiagnosticResult,
-    SystemHealth,
     HealthStatus,
+    SystemHealth,
 )
 from ..domain.services import (
+    IAlertingService,
     IDiagnosticService,
     IHealthCheckRepository,
     ISystemMetricsService,
-    IAlertingService,
 )
 
 logger = logging.getLogger(__name__)

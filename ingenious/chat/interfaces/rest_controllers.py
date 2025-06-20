@@ -1,23 +1,22 @@
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBasicCredentials
 from typing_extensions import Annotated
 
-from ..domain.models import ChatRequest, ChatResponse
-from ..domain.entities import Message
-from ..application.services import ChatApplicationService
-from ..infrastructure.services import LegacyChatServiceAdapter
-from ingenious.dependencies import get_chat_service
+import ingenious.dependencies as igen_deps
 from ingenious.errors.content_filter_error import ContentFilterError
 from ingenious.errors.token_limit_exceeded_error import TokenLimitExceededError
-from ingenious.models.http_error import HTTPError
-from ingenious.models.message_feedback import (
+from ingenious.shared.domain.models import HTTPError
+
+from ..application.services import ChatApplicationService
+from ..domain.entities import Message
+from ..domain.models import (
+    ChatRequest,
+    ChatResponse,
     MessageFeedbackRequest,
     MessageFeedbackResponse,
 )
-import ingenious.dependencies as igen_deps
-import ingenious.utils.namespace_utils as ns_utils
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,3 @@
-from abc import ABC, abstractmethod
-from typing import Optional
 from ..domain.models import ChatRequest, ChatResponse
 from ..domain.services import IChatService
 

@@ -1,10 +1,11 @@
-from typing import Optional, List
-from ..domain.entities import File, Directory, FileSystemObject
+from typing import List, Optional
+
+from ..domain.entities import Directory, File, FileSystemObject
 from ..domain.services import (
-    IFileRepository,
-    IFileStorageService,
     IDirectoryService,
     IFileMetadataService,
+    IFileRepository,
+    IFileStorageService,
 )
 
 

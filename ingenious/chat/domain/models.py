@@ -1,4 +1,5 @@
 from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -29,6 +30,21 @@ class ChatResponse(BaseModel):
     topic: Optional[str] = None
     memory_summary: Optional[str] = None
     event_type: Optional[str] = None
+
+
+class MessageFeedbackRequest(BaseModel):
+    """Request model for message feedback."""
+
+    thread_id: str
+    message_id: str
+    user_id: Optional[str]
+    positive_feedback: Optional[bool]
+
+
+class MessageFeedbackResponse(BaseModel):
+    """Response model for message feedback."""
+
+    message: str
 
 
 # Legacy aliases for backward compatibility

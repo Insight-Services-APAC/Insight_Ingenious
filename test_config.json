@@ -1,0 +1,16 @@
+{
+  "models": [
+    {
+      "base_url": "https://test.openai.azure.com/",
+      "api_key": "test-key",
+      "api_version": "2023-12-01-preview",
+      "model": "gpt-4"
+    }
+  ],
+  "chainlit_configuration": {
+    "enable": false
+  },
+  "logging": {
+    "level": "INFO"
+  }
+}

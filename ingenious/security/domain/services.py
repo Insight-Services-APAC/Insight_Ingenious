@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List, Dict, Any
-from .entities import User, AuthenticationToken, SecurityEvent, Permission
+from typing import Any, Dict, List, Optional
+
+from .entities import AuthenticationToken, Permission, SecurityEvent, User
 
 
 class IUserRepository(ABC):

@@ -1,7 +1,4 @@
-import asyncio
-import importlib
 import os
-import pkgutil
 import shutil
 from pathlib import Path
 from sysconfig import get_paths
@@ -9,13 +6,9 @@ from typing import Optional
 
 import typer
 import uvicorn
-from rich import print
 from rich.console import Console
 from rich.theme import Theme
 from typing_extensions import Annotated
-
-from ingenious.utils.log_levels import LogLevel
-from ingenious.utils.namespace_utils import import_class_with_fallback
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_show_locals=False)
 
@@ -102,7 +95,7 @@ def run_rest_api_server(
             )
             raise typer.Exit(1)
 
-    console.print(f"[info]🚀 Starting Insight Ingenious server...[/info]")
+    console.print("[info]🚀 Starting Insight Ingenious server...[/info]")
     console.print(f"[info]📁 Config: {project_dir}[/info]")
     console.print(f"[info]🔐 Profiles: {profile_dir}[/info]")
     console.print(f"[info]🌐 Server: http://{host}:{port}[/info]")
@@ -331,7 +324,7 @@ def _create_gitignore_file(current_dir: Path):
         ]
         with open(gitignore_path, "w") as f:
             f.write("\n".join(gitignore_content))
-        console.print(f"[info]✅ Created .gitignore file.[/info]")
+        console.print("[info]✅ Created .gitignore file.[/info]")
 
 
 def _create_config_files(current_dir: Path, project_name: str):
@@ -457,7 +450,7 @@ file_storage:
 
     with open(config_path, "w") as f:
         f.write(config_content)
-    console.print(f"[info]✅ Created config.yml with helpful documentation.[/info]")
+    console.print("[info]✅ Created config.yml with helpful documentation.[/info]")
 
     # Create profiles.yml in project directory (not home directory)
     profiles_path = current_dir / "profiles.yml"
@@ -570,9 +563,9 @@ file_storage:
 
     with open(profiles_path, "w") as f:
         f.write(profiles_content)
-    console.print(f"[info]✅ Created profiles.yml with example configuration.[/info]")
+    console.print("[info]✅ Created profiles.yml with example configuration.[/info]")
     console.print(
-        f"[warning]⚠️  Remember to update API keys and passwords in profiles.yml![/warning]"
+        "[warning]⚠️  Remember to update API keys and passwords in profiles.yml![/warning]"
     )
 
 
@@ -770,7 +763,7 @@ Create: `ingenious_extensions/templates/prompts/cooking_expert_prompt.jinja`
     with open(readme_path, "w") as f:
         f.write(readme_content)
     console.print(
-        f"[info]✅ Created comprehensive SETUP.md with bicycle expert guide.[/info]"
+        "[info]✅ Created comprehensive SETUP.md with bicycle expert guide.[/info]"
     )
 
 
@@ -865,7 +858,7 @@ def _create_ingenious_extensions_structure(destination: Path, project_name: str)
     (destination / "templates" / "prompts" / "__init__.py").touch()
 
     # Create the main agent model file
-    agent_model_content = f"""from ingenious.models.agent import Agent, Agents, IProjectAgents
+    agent_model_content = """from ingenious.models.agent import Agent, Agents, IProjectAgents
 from ingenious.models.config import Config
 
 
@@ -1002,7 +995,7 @@ Surly Long Haul Trucker,Surly,Touring,1499,"Steel frame, rack mounts, adventure 
         f.write(sample_data_content)
 
     console.print(
-        f"[info]✅ Created ingenious_extensions structure with bicycle expert example.[/info]"
+        "[info]✅ Created ingenious_extensions structure with bicycle expert example.[/info]"
     )
 
 

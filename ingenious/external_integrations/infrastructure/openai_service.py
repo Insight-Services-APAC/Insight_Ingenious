@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from openai import NOT_GIVEN, AzureOpenAI, BadRequestError
 from openai.types.chat import (
@@ -9,9 +9,10 @@ from openai.types.chat import (
     ChatCompletionToolParam,
 )
 
-from ..domain.services import ILLMService, IContentModerationService
 from ingenious.errors.content_filter_error import ContentFilterError
 from ingenious.errors.token_limit_exceeded_error import TokenLimitExceededError
+
+from ..domain.services import IContentModerationService, ILLMService
 
 logger = logging.getLogger(__name__)
 

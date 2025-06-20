@@ -1,9 +1,9 @@
-from typing import Optional
-from ..domain.models import ChatRequest, ChatResponse
-from ..domain.services import IChatService, IConversationService
-from ..domain.entities import Message, Thread, ChatSession
 from ingenious.config.config import Config
 from ingenious.utils.namespace_utils import import_class_with_fallback
+
+from ..domain.entities import ChatSession
+from ..domain.models import ChatRequest, ChatResponse
+from ..domain.services import IChatService, IConversationService
 
 
 class LegacyChatServiceAdapter(IChatService):

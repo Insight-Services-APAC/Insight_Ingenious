@@ -1,7 +1,6 @@
-from typing import Optional
+from ..domain.entities import ChatSession
 from ..domain.models import ChatRequest, ChatResponse
 from ..domain.services import IChatService, IConversationService
-from ..domain.entities import Message, Thread, ChatSession
 
 
 class ChatUseCase:

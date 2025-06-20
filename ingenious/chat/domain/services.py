@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from .entities import Message, Thread, ChatSession
+
+from .entities import ChatSession, Message, Thread
 from .models import ChatRequest, ChatResponse
 
 
@@ -39,6 +40,25 @@ class IThreadRepository(ABC):
     @abstractmethod
     async def get_threads_by_user(self, user_id: str) -> list[Thread]:
         """Get all threads for a user."""
+        pass
+
+
+class IChatRepository(ABC):
+    """Repository interface for chat data persistence."""
+
+    @abstractmethod
+    async def save_chat_session(self, session: ChatSession) -> None:
+        """Save a chat session to storage."""
+        pass
+
+    @abstractmethod
+    async def get_chat_session(self, session_id: str) -> Optional[ChatSession]:
+        """Retrieve a chat session by ID."""
+        pass
+
+    @abstractmethod
+    async def get_chat_history(self, session_id: str) -> list[Message]:
+        """Get chat history for a session."""
         pass
 
 

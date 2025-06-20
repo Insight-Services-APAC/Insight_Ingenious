@@ -3,7 +3,6 @@ import os
 import sqlite3
 import uuid
 from datetime import datetime
-from types import SimpleNamespace
 from typing import Dict, List, Optional
 
 import ingenious.config.config as Config

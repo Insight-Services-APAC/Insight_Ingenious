@@ -2,8 +2,7 @@
 
 import importlib
 import logging
-from typing import Any, Type, Optional
-
+from typing import Any, Optional, Type
 
 logger = logging.getLogger(__name__)
 

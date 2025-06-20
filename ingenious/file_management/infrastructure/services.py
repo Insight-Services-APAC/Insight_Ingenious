@@ -1,16 +1,16 @@
-import os
-from pathlib import Path
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional
 
-from ..domain.entities import File, Directory, FileSystemObject
+import ingenious.models.config as config_models
+
+from ..domain.entities import Directory, File, FileSystemObject
 from ..domain.services import (
-    IFileRepository,
-    IFileStorageService,
     IDirectoryService,
     IFileMetadataService,
+    IFileRepository,
+    IFileStorageService,
 )
-from ingenious.models.config import Config, FileStorageContainer
 
 
 class LocalFileStorageService(IFileStorageService):
@@ -230,7 +230,7 @@ class FileSystemMetadataService(IFileMetadataService):
 class LegacyFileStorageAdapter(IFileStorageService):
     """Adapter for legacy file storage implementation."""
 
-    def __init__(self, config: Config, category: str = "revisions"):
+    def __init__(self, config: config_models.Config, category: str = "revisions"):
         from ingenious.files.files_repository import FileStorage
 
         self._legacy_storage = FileStorage(config, category)
@@ -250,7 +250,7 @@ class LegacyFileStorageAdapter(IFileStorageService):
 
     async def list_files(self, file_path: str) -> List[FileSystemObject]:
         """List files using legacy storage."""
-        result = await self._legacy_storage.list_files(file_path)
+        await self._legacy_storage.list_files(file_path)
         # Legacy returns string, need to parse into FileSystemObject list
         # This would need adaptation based on legacy return format
         return []

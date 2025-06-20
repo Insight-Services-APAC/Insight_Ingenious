@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List
-from .entities import File, Directory, FileSystemObject
+from typing import List, Optional
+
+from .entities import Directory, File, FileSystemObject
 
 
 class IFileRepository(ABC):

@@ -11,8 +11,8 @@ all bounded contexts:
 - Domain events infrastructure
 """
 
-from .exceptions import DomainException, ValidationException
 from .events import DomainEvent, DomainEventHandler
+from .exceptions import DomainException, ValidationException
 from .interfaces.rest_controllers import EventsController
 
 __all__ = [

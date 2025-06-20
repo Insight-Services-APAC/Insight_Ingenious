@@ -1,17 +1,18 @@
-from typing import Optional, List, Dict, Any
+from typing import List, Optional
+
 from ..domain.entities import (
-    User,
     AuthenticationToken,
-    SecurityEvent,
     Permission,
+    SecurityEvent,
+    User,
     UserRole,
 )
 from ..domain.services import (
-    IUserRepository,
     IAuthenticationService,
     IAuthorizationService,
-    ISecurityEventService,
     IPasswordService,
+    ISecurityEventService,
+    IUserRepository,
 )
 
 
