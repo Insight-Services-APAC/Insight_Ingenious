@@ -4,6 +4,8 @@ Welcome to the Insight Ingenious documentation. This collection of guides will h
 
 ## Table of Contents
 
+- [Quickstart](quick_onboarding/GettingStarted.md): A very simple guide to get you started working with the Insight Ingenious library.
+
 - [Architecture Overview](architecture/README.md): High-level architecture and design principles
 - [Configuration Guide](configuration/README.md): How to configure the framework
 - [Usage Guide](usage/README.md): How to use the framework for common tasks
