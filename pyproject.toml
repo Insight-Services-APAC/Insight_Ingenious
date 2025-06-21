@@ -39,8 +39,6 @@ test = [
     "freezegun>=1.4.0",
 ]
 
-[project.optional-dependencies]
-
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
@@ -55,8 +53,3 @@ ingen = "ingenious.cli:app"
 [tool.ruff.lint]
 extend-select = ["I"]
 ignore = ["E402"]
-
-[tool.uv.workspace]
-members = [
-    "ingenious-dev-workspace",
-]
