@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 from typing import List
 
-import uvicorn
 from rich.console import Console
 from rich.theme import Theme
 
@@ -44,7 +43,9 @@ class FileSystemProjectService(IProjectService):
         (project_path / "files").mkdir(exist_ok=True)
         (project_path / ".tmp").mkdir(exist_ok=True)
 
-        console.print(f"[info]✅ Created project structure for '{config.name}'[/info]")
+        console.print(
+            f"[info]✅ Created project directory structure for '{config.name}'[/info]"
+        )
 
     async def project_exists(self, project_path: Path) -> bool:
         """Check if a project exists at the given path."""
@@ -62,7 +63,23 @@ class FileSystemProjectService(IProjectService):
     async def validate_project(self, project_path: Path) -> bool:
         """Validate if a project exists and is properly configured."""
         config_file = project_path / "config.yml"
-        return config_file.exists()
+        profiles_file = project_path / "profiles.yml"
+
+        if not config_file.exists():
+            console.print(f"[error]❌ config.yml not found in {project_path}[/error]")
+            console.print(
+                "[info]Run 'ingen init' to create configuration files.[/info]"
+            )
+            return False
+
+        if not profiles_file.exists():
+            console.print(f"[error]❌ profiles.yml not found in {project_path}[/error]")
+            console.print(
+                "[info]Run 'ingen init' to create configuration files.[/info]"
+            )
+            return False
+
+        return True
 
 
 class UvicornServerService(IServerService):
@@ -100,9 +117,16 @@ class UvicornServerService(IServerService):
                 raise FileNotFoundError("profiles.yml not found")
 
             console.print(
-                f"[info]🚀 Starting server on {config.host}:{config.port}[/info]"
+                f"[info]🚀 Starting Insight Ingenious server on {config.host}:{config.port}[/info]"
             )
-            console.print(f"[info]📁 Working directory: {working_dir}[/info]")
+            console.print(f"[info]📁 Project directory: {working_dir}[/info]")
+            console.print(f"[info]📄 Using config file: {config_file}[/info]")
+            console.print(f"[info]🔐 Using profiles file: {profiles_file}[/info]")
+
+            # Start server message
+            console.print("[info]🎯 Server starting up...[/info]")
+            console.print("[info]💡 Press Ctrl+C to stop the server[/info]")
+            console.print()
 
             # Import FastAPI app after setting environment variables
             from ingenious.configuration.domain.models import MinimalConfig
@@ -113,6 +137,8 @@ class UvicornServerService(IServerService):
             app_instance = FastAgentAPI(minimal_config)
 
             # Run uvicorn server
+            import uvicorn
+
             uvicorn.run(
                 app_instance.app, host=config.host, port=config.port, log_level="info"
             )
@@ -303,26 +329,45 @@ ingen init
 
 ```
 {project_name}/
-├── config.yml          # Main configuration
-├── profiles.yml        # Sensitive credentials (not in git)
-├── .gitignore          # Git ignore rules
+├── config.yml          # Main configuration (non-sensitive settings)
+├── profiles.yml        # Sensitive credentials (API keys, not in git)
+├── .gitignore          # Git ignore rules (excludes profiles.yml)
 ├── SETUP.md            # This setup guide
-├── data/               # Data files
-├── files/              # Project files
-└── .tmp/              # Temporary files
+├── data/               # Data files and datasets
+├── files/              # Project files and documents
+└── .tmp/              # Temporary files (auto-created)
 ```
 
 ## 🛠️ Troubleshooting
 
 ### Server won't start
-1. Check that `config.yml` and `profiles.yml` exist
-2. Verify your API keys in `profiles.yml`
-3. Ensure the port isn't already in use
+1. **Check configuration files exist:**
+   - `config.yml` should exist in your project directory
+   - `profiles.yml` should exist in your project directory
+   - If missing, run `ingen init` to create them
+
+2. **Verify API keys:**
+   - Open `profiles.yml` and check your Azure OpenAI API key
+   - Ensure the `base_url` points to your Azure OpenAI resource
+
+3. **Check port availability:**
+   - Default port is 8000
+   - Try a different port: `ingen run --port 8001`
+   - Check if another service is using the port
 
 ### API key issues
-1. Get your Azure OpenAI API key from Azure Portal
-2. Update the `api_key` field in `profiles.yml`
-3. Restart the server
+1. **Get your Azure OpenAI credentials:**
+   - API key: Azure Portal > Your OpenAI Resource > Keys and Endpoint
+   - Endpoint: Format should be `https://YOUR_RESOURCE.openai.azure.com/openai/deployments/MODEL_NAME/chat/completions?api-version=2024-08-01-preview`
+
+2. **Update profiles.yml:**
+   - Replace `REPLACE_WITH_YOUR_AZURE_OPENAI_API_KEY` with your actual key
+   - Replace `REPLACE_WITH_YOUR_RESOURCE_NAME` with your Azure resource name
+   - Restart the server after making changes
+
+### File permission issues
+- Ensure the current user has read/write access to the project directory
+- Check that `.tmp/`, `data/`, and `files/` directories are writable
 
 ### Need help?
 - Check the API documentation at `/docs`

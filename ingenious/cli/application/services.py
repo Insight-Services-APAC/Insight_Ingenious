@@ -154,7 +154,10 @@ class CLIApplicationService:
 
         # Validate project exists
         if not await self._project_service.validate_project(current_dir):
-            raise ValueError("No valid project found in current directory")
+            raise ValueError(
+                f"No valid project found in current directory: {current_dir}. "
+                "Run 'ingen init' to initialize a new project."
+            )
 
         # Start server with default configuration
         await self.start_rest_api_server(

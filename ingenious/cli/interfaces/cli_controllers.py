@@ -2,7 +2,13 @@
 CLI controllers.
 
 This module contains the interface controllers that handle CLI command interactions
-and coordinate with the application layer.
+and coordinate with the appli                console.print("🚀 [bold]Next steps:[/bold]")
+        console.print(
+            "   1️⃣ Edit [bold]profiles.yml[/bold] and add your Azure OpenAI API key"
+        )ole.print("📁 [bold]Directories created:[/bold]")
+        console.print("   ✅ data/ - Data files storage")
+        console.print("   ✅ files/ - Project files storage")
+        console.print("   ✅ .tmp/ - Temporary files")on layer.
 """
 
 from pathlib import Path
@@ -49,14 +55,14 @@ class CLIController:
             Optional[str],
             typer.Option(
                 "--project-dir",
-                help="Path to config.yml file. Defaults to ./config.yml",
+                help="Directory containing config.yml file. Defaults to current directory",
             ),
         ] = None,
         profile_dir: Annotated[
             Optional[str],
             typer.Option(
                 "--profile-dir",
-                help="Path to profiles.yml file. Defaults to ./profiles.yml",
+                help="Directory containing profiles.yml file. Defaults to current directory",
             ),
         ] = None,
         host: Annotated[
@@ -133,7 +139,12 @@ class CLIController:
         console.print("   ✅ .gitignore - Git ignore rules")
         console.print("   ✅ SETUP.md - Setup instructions")
         console.print()
-        console.print("🚀 [bold]Next steps:[/bold]")
+        console.print("� [bold]Directories created:[/bold]")
+        console.print("   ✅ data/ - Data files storage")
+        console.print("   ✅ files/ - Project files storage")
+        console.print("   ✅ .tmp/ - Temporary files")
+        console.print()
+        console.print("�🚀 [bold]Next steps:[/bold]")
         console.print(
             "   1️⃣ Edit [bold]profiles.yml[/bold] and add your Azure OpenAI API key"
         )
