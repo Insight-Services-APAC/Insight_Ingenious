@@ -107,17 +107,26 @@ Example configuration file (`config.json`):
 }
 ```
 
+#### Create Predefined Ensembles
+
+```bash
+# Create a multi-perspective analysis ensemble
+ingen ensemble create-predefined multi_perspective_analysis topic-analyzer
+
+# Available predefined types
+ingen ensemble create-predefined document_review contract-analyzer
+ingen ensemble create-predefined code_review code-analyzer
+ingen ensemble create-predefined research_synthesis research-analyzer
+```
+
 #### List Ensembles
 
 ```bash
 # List all ensemble configurations
 ingen ensemble list
 
-# Show detailed information
-ingen ensemble list --verbose
-
-# Filter by strategy
-ingen ensemble list --strategy parallel
+# Limit results and filter
+ingen ensemble list --limit 20 --prefix analysis
 ```
 
 #### Execute Ensembles
@@ -139,35 +148,24 @@ ingen ensemble execute config-id --input data.json --output results.json
 # Show ensemble details
 ingen ensemble get config-id
 
-# Show template details
-ingen ensemble get config-id --templates
-
 # List execution history
-ingen ensemble executions --config-id config-id
+ingen ensemble executions --config-id config-id --limit 10
 
 # Get specific execution result
-ingen ensemble result execution-id --agents
-```
-
-#### Create Predefined Ensembles
-
-```bash
-# Create a multi-perspective analysis ensemble
-ingen ensemble create-predefined multi_perspective_analysis topic-analyzer
-
-# Available predefined types: multi_perspective_analysis, document_review, code_review, research_synthesis
-ingen ensemble create-predefined document_review contract-analyzer
+ingen ensemble result execution-id
 ```
 
 #### Generate Sample Configurations
 
 ```bash
-# Generate basic sample configuration
-ingen ensemble sample-config config.json --ensemble-type basic
+# Generate sample configuration template
+ingen ensemble sample-config config.json
 
-# Generate advanced sample configuration
+# Generate for specific ensemble type
 ingen ensemble sample-config config.json --ensemble-type advanced
 ```
+
+**Note**: Some ensemble features use mock services in development mode. For full functionality, ensure proper Azure OpenAI and Blob Storage configuration.
 
 
 

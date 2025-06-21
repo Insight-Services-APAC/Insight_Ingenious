@@ -15,39 +15,54 @@ Welcome to the Ingenious Framework documentation. Ingenious is a production-read
 - [Best Practices](best-practices.md) - Recommended patterns and practices
 - [Troubleshooting](troubleshooting.md) - Common issues and solutions
 
-## What is Ingenious?
+## What is Insight Ingenious?
 
-Ingenious is a Domain-Driven Design (DDD) based framework that enables developers to create sophisticated AI applications using prompt ensemble patterns. It provides:
+Insight Ingenious is a Domain-Driven Design (DDD) based framework that enables developers to create sophisticated AI applications using prompt ensemble patterns and comprehensive service integration. It provides:
 
-- **Prompt Ensemble Orchestration**: Decompose complex prompts into sub-prompts, process them in parallel/sequential/hierarchical patterns, and aggregate results
-- **Azure Service Integration**: Built-in support for Azure OpenAI, Blob Storage, SQL Database, and Cognitive Services
+- **AI Agent Integration**: Built-in support for Azure OpenAI and other LLM services
+- **Chat Management**: Advanced conversation handling with message feedback and thread management
+- **File Management**: Comprehensive file operations including upload, download, and directory management
+- **Configuration Management**: Flexible configuration system with secret management
+- **Security**: Authentication, authorization, and user management
+- **Prompt Ensemble Orchestration**: Decompose complex prompts, process in parallel/sequential patterns, and aggregate results
 - **Production-Ready Architecture**: Clean architecture with dependency injection, comprehensive error handling, and monitoring
-- **Flexible Configuration**: Python API, CLI, and template-based configuration
-- **Developer-Friendly**: Rich CLI experience, comprehensive documentation, and extensible design
+- **Developer-Friendly**: Rich CLI experience, FastAPI integration, and extensible design
 
 ## Core Concepts
 
 ### Bounded Contexts
 
-Ingenious follows Domain-Driven Design principles with clear bounded contexts:
+Insight Ingenious follows Domain-Driven Design principles with clear bounded contexts:
 
-- **Chat**: Conversation management and chat interfaces
+- **Chat**: Conversation management and AI interactions
+- **CLI**: Command-line interface and project management
 - **Configuration**: System settings and configuration management
 - **Diagnostics**: Health monitoring and system diagnostics
-- **External Integrations**: Third-party service integrations (Azure, etc.)
+- **External Integrations**: Third-party service integrations (Azure OpenAI, etc.)
 - **File Management**: File operations and storage management
 - **Prompt Management**: Prompt templates and ensemble orchestration
 - **Security**: Authentication, authorization, and security features
 - **Shared**: Cross-cutting concerns and shared utilities
 
-### Prompt Ensembles
+### Architecture Principles
 
-The core innovation of Ingenious is its prompt ensemble capability:
+Each bounded context follows clean architecture with:
+- **Domain Layer**: Pure business logic and rules
+- **Application Layer**: Use cases and application services
+- **Infrastructure Layer**: External implementations (databases, APIs, etc.)
+- **Interface Layer**: REST controllers and CLI handlers
 
-1. **Main Prompt**: A complex task description
-2. **Sub-Prompts**: Decomposed tasks using Jinja2 templates
-3. **Agent Roles**: Specialized roles (analyzer, critic, synthesizer, etc.)
-4. **Execution Strategies**: Parallel, sequential, or hierarchical processing
+### Current Status
+
+**Note**: Insight Ingenious is actively developed with some features in various stages of implementation:
+
+- ✅ **Core CLI and API**: Fully functional
+- ✅ **Chat endpoints**: Basic functionality available
+- ✅ **File management**: Complete CRUD operations
+- ✅ **Configuration management**: File-based configuration
+- 🚧 **Prompt ensembles**: CLI available, some services use mock implementations
+- 🚧 **Security features**: Basic authentication, advanced features in development
+- 🚧 **Azure integrations**: Some endpoints use mock services for development
 5. **Result Aggregation**: Intelligent synthesis of sub-prompt outputs
 
 ## Quick Example

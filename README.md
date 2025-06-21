@@ -109,8 +109,8 @@ uv run ingen ensemble [COMMAND]
 
 **`ingen run`** - Start the Insight Ingenious server
 
-- `--project-dir TEXT`: Path to config.yml file (default: ./config.yml)
-- `--profile-dir TEXT`: Path to profiles.yml file (default: ./profiles.yml)
+- `--project-dir TEXT`: Directory containing config.yml file (default: current directory)
+- `--profile-dir TEXT`: Directory containing profiles.yml file (default: current directory)
 - `--host TEXT`: Host to bind to (default: 127.0.0.1)
 - `--port INTEGER`: Port to run the server on (default: 8000)
 
@@ -134,25 +134,16 @@ Starts the server with default settings for the current directory.
 uv run ingen ensemble create my-analysis --config config.json
 ```
 
-**`ingen ensemble create-predefined`** - Create predefined ensemble
-```bash
-uv run ingen ensemble create-predefined multi_perspective_analysis my-analysis
-```
+**Available ensemble commands:**
+- `create` - Create ensemble configurations
+- `list` - List available configurations
+- `execute` - Execute an ensemble
+- `get` - Get ensemble details
+- `executions` - List execution history
+- `result` - Get execution results
+- `sample-config` - Generate sample configuration
 
-**`ingen ensemble execute`** - Execute an ensemble
-```bash
-uv run ingen ensemble execute config-id --input data.json
-```
-
-**`ingen ensemble list`** - List available configurations
-
-**`ingen ensemble get`** - Get ensemble details
-
-**`ingen ensemble executions`** - List execution history
-
-**`ingen ensemble result`** - Get execution results
-
-**`ingen ensemble sample-config`** - Generate sample configuration
+*Note: Some ensemble commands are in development. See CLI help for current available options.*
 
 ## API Endpoints
 
@@ -194,8 +185,8 @@ The REST API provides comprehensive functionality across all bounded contexts:
 - `GET /api/v1/users/{user_id}` - Get user details
 
 ### Prompt Management
-- `GET /api/v1/prompts/list/{revision_id}` - List prompts
-- `GET /api/v1/prompts/view/{revision_id}/{filename}` - View prompt
+- `GET /api/v1/prompts/list/{revision_id}` - List prompts for revision
+- `GET /api/v1/prompts/view/{revision_id}/{filename}` - View specific prompt
 - `POST /api/v1/prompts/update/{revision_id}/{filename}` - Update prompt
 
 ### Diagnostics
@@ -203,10 +194,12 @@ The REST API provides comprehensive functionality across all bounded contexts:
 
 ### Current Limitations
 
-**Note**: Some API endpoints are currently in development or have limited functionality:
+**Note**: Some API endpoints have limited functionality or are in development:
 
-- **Conversation History**: The `GET /conversations/{thread_id}` endpoint currently returns an empty list as the chat history repository was removed during refactoring.
-- **Message Feedback**: The `PUT /messages/{message_id}/feedback` endpoint accepts feedback but doesn't persist it as the feedback service was removed.
+- **Conversation History**: The `GET /api/v1/conversations/{thread_id}` endpoint currently returns an empty list as the chat history repository was removed during refactoring.
+- **Message Feedback**: The `PUT /api/v1/messages/{message_id}/feedback` endpoint accepts feedback but doesn't persist it as the feedback service was removed.
+- **Secret Management**: Secret endpoints are defined but may not have full Azure Key Vault integration.
+- **Some External Integration endpoints**: Use mock implementations for development.
 
 These features are planned for future releases as the application evolves.
 

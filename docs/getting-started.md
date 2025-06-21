@@ -1,103 +1,130 @@
-# Getting Started with Ingenious
+# Getting Started with Insight Ingenious
 
-This guide will help you build your first Ingenious application and understand the core concepts.
+This guide will help you set up and start using Insight Ingenious for AI-powered applications.
 
-## Your First Ensemble
+## Quick Setup
 
-Let's create a simple prompt ensemble that analyzes a topic from multiple perspectives.
+### 1. Installation
 
-### Step 1: Basic Setup
+First, ensure you have Python 3.13+ and uv installed:
 
-```python
-import asyncio
-from ingenious.external_integrations.infrastructure.openai_service import AzureOpenAIService
-from ingenious.external_integrations.infrastructure.blob_storage_service import AzureBlobStorageService
-from ingenious.prompt_management.application.ensemble_use_cases import EnsembleManagementUseCase
-from ingenious.prompt_management.domain.ensemble import (
-    EnsemblePromptTemplate,
-    AgentRole,
-    EnsembleStrategy
-)
+```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Configure Azure OpenAI
-openai_service = AzureOpenAIService(
-    azure_endpoint="https://your-endpoint.openai.azure.com",
-    api_key="your-api-key",
-    api_version="2024-06-01",
-    model="gpt-4"
-)
+# Clone the repository
+git clone <repository-url>
+cd Insight_Ingenious
 
-# Configure Azure Blob Storage (optional)
-blob_service = AzureBlobStorageService(
-    account_url="https://youraccount.blob.core.windows.net",
-    credential="your-credential"
-)
-
-# Create ensemble use case
-ensemble_use_case = EnsembleManagementUseCase(
-    llm_service=openai_service,
-    storage_service=blob_service
-)
+# Install dependencies
+uv sync
 ```
 
-### Step 2: Define Your Ensemble
+### 2. Initialize Your First Project
 
-```python
-async def create_topic_analysis_ensemble():
-    # Define sub-prompt templates
-    sub_prompts = [
-        {
-            "name": "strengths_analyzer",
-            "content": "Analyze the strengths and benefits of {{ topic }}. Focus on positive aspects and opportunities. Provide specific examples.",
-            "role": "analyzer",
-            "priority": 1
-        },
-        {
-            "name": "challenges_critic",
-            "content": "Critically examine the challenges and limitations of {{ topic }}. What are the main obstacles and concerns?",
-            "role": "critic",
-            "priority": 1
-        },
-        {
-            "name": "implementation_specialist",
-            "content": "Provide practical implementation advice for {{ topic }}. How can this be applied in real-world scenarios?",
-            "role": "specialist",
-            "priority": 2
-        }
-    ]
-
-    # Create ensemble configuration
-    config = await ensemble_use_case.create_ensemble_configuration(
-        name="topic_analysis",
-        description="Multi-perspective analysis of any topic",
-        main_prompt_template="Analyze {{ topic }} comprehensively from multiple angles.",
-        sub_prompt_templates=sub_prompts,
-        reduce_prompt_template="""
-        Based on the following analyses, provide a balanced and comprehensive summary:
-
-        Strengths Analysis: {{ strengths_analyzer }}
-
-        Challenges Analysis: {{ challenges_critic }}
-
-        Implementation Advice: {{ implementation_specialist }}
-
-        Create a balanced overview that acknowledges both opportunities and challenges,
-        with practical next steps.
-        """,
-        strategy="parallel",
-        max_concurrent_agents=3,
-        timeout_seconds=300
-    )
-
-    return config
+```bash
+# Initialize a new project
+uv run ingen init
 ```
 
-### Step 3: Execute Your Ensemble
+This creates:
+- `config.yml` - Main application configuration
+- `profiles.yml` - API keys and secrets template
+- `.gitignore` - Git ignore rules
+- `SETUP.md` - Detailed setup instructions
+- Directory structure (data/, files/, .tmp/)
 
-```python
-async def analyze_topic(topic: str):
-    # Create the ensemble configuration
-    config = await create_topic_analysis_ensemble()
+### 3. Configure Azure OpenAI
+
+Edit the `profiles.yml` file to add your Azure OpenAI credentials:
+
+```yaml
+- name: dev
+  models:
+    - model: gpt-4o
+      api_key: "YOUR_AZURE_OPENAI_API_KEY"
+      base_url: "https://YOUR_RESOURCE_NAME.openai.azure.com/"
+      api_version: "2023-05-15"
+```
+
+### 4. Start the Server
+
+```bash
+# Start in development mode
+uv run ingen dev
+
+# Or start with custom options
+uv run ingen run --host 127.0.0.1 --port 8000
+```
+
+Visit http://localhost:8000/docs to explore the API.
+
+## Your First API Request
+
+Once the server is running, you can make your first chat request:
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/chat" \
+  -H "Content-Type: application/json" \
+  -u "testuser:testpass" \
+  -d '{
+    "user_prompt": "Hello! Can you help me understand AI?",
+    "conversation_flow": "general",
+    "user_id": "user-123"
+  }'
+```
+
+## Working with Ensembles
+
+Insight Ingenious supports prompt ensembles for complex analysis tasks.
+
+### Creating an Ensemble Configuration
+
+```bash
+# Create a simple ensemble
+uv run ingen ensemble create my-analysis --config analysis-config.json
+```
+
+Example `analysis-config.json`:
+
+```json
+{
+  "description": "Multi-perspective topic analysis",
+  "main_prompt_template": "Analyze {{ topic }} comprehensively.",
+  "sub_prompt_templates": [
+    {
+      "name": "strengths_analyzer",
+      "content": "Analyze the strengths of {{ topic }}.",
+      "role": "analyzer",
+      "priority": 1
+    },
+    {
+      "name": "challenges_critic",
+      "content": "Identify challenges with {{ topic }}.",
+      "role": "critic",
+      "priority": 1
+    }
+  ],
+  "reduce_prompt_template": "Synthesize: {{ strengths_analyzer }} {{ challenges_critic }}",
+  "variables": {
+    "topic": "renewable energy"
+  }
+}
+```
+
+### Executing Ensembles
+
+```bash
+# Execute an ensemble
+uv run ingen ensemble execute config-id --input analysis-data.json
+
+# List your ensembles
+uv run ingen ensemble list
+```
+
+## Programming with the API
+
+### Python Client Example
 
     # Execute the ensemble
     result = await ensemble_use_case.execute_ensemble(
