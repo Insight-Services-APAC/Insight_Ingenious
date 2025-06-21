@@ -104,6 +104,17 @@ class AzureOpenAIService(ILLMService):
             logger.exception(e)
             raise
 
+    async def generate_completion(self, prompt: str, **kwargs) -> str:
+        """Generate a text completion for a given prompt (compatibility method)."""
+        try:
+            # Convert simple prompt to chat format
+            messages = [{"role": "user", "content": prompt}]
+            response = await self.generate_response(messages, **kwargs)
+            return response.content or ""
+        except Exception as e:
+            logger.exception(e)
+            raise
+
 
 class OpenAIContentModerationService(IContentModerationService):
     """OpenAI-based content moderation service."""
