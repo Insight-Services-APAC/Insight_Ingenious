@@ -18,6 +18,17 @@ class ValidationException(DomainException):
         self.field = field
 
 
+# Alias for compatibility
+ValidationError = ValidationException
+
+
+class BusinessLogicError(DomainException):
+    """Exception for business logic errors."""
+
+    def __init__(self, message: str):
+        super().__init__(message, "BUSINESS_LOGIC_ERROR")
+
+
 class AuthorizationException(DomainException):
     """Exception for authorization errors."""
 

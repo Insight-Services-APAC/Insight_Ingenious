@@ -12,6 +12,7 @@ from typing import Any, Callable
 import typer
 
 from .application.services import CLIApplicationService
+from .ensemble_commands import ensemble_app
 from .infrastructure.services import (
     FileSystemProjectService,
     TemplateGenerationService,
@@ -52,6 +53,9 @@ def create_cli_app() -> typer.Typer:
     controller.app.command()(async_command(controller.run))
     controller.app.command()(async_command(controller.dev))
     controller.app.command()(async_command(controller.init))
+
+    # Add ensemble commands as a sub-application
+    controller.app.add_typer(ensemble_app, name="ensemble")
 
     return controller.app
 

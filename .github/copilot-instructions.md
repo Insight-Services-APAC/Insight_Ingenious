@@ -82,7 +82,3 @@ A uv workspace lets you manage multiple related Python packages in a single repo
 
 - `uv sync` will sync all workspace members.
 - `uv lock` will update the lockfile for the entire workspace.
-
-### More Info
-
-- See: https://docs.astral.sh/uv/concepts/projects/workspaces/

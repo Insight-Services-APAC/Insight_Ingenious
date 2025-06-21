@@ -1,0 +1,62 @@
+{
+    "description": "Code quality assessment ensemble with security, performance, and maintainability analysis",
+    "main_prompt_template": "Perform comprehensive code review of: {{ code }}",
+    "sub_prompt_templates": [
+        {
+            "name": "security_auditor",
+            "content": "Conduct a security audit of the following code:\n\nCode:\n```{{ language | default('') }}\n{{ code }}\n```\n\nLanguage: {{ language | default('Unknown') }}\nContext: {{ context | default('No additional context') }}\n\nSecurity Analysis Focus:\n- Input validation and sanitization\n- Authentication and authorization vulnerabilities\n- Data exposure and privacy risks\n- Injection attacks (SQL, XSS, etc.)\n- Cryptographic implementation issues\n- Dependency and third-party library risks\n- Error handling and information disclosure\n\nProvide a detailed security assessment with:\n1. Identified vulnerabilities (severity: Critical/High/Medium/Low)\n2. Specific code locations and issues\n3. Remediation recommendations\n4. Best practices for improvement",
+            "role": "specialist",
+            "priority": 1,
+            "dependencies": [],
+            "variables": {
+                "security_standards": "OWASP",
+                "audit_depth": "comprehensive"
+            }
+        },
+        {
+            "name": "performance_analyzer",
+            "content": "Analyze the performance characteristics of the following code:\n\nCode:\n```{{ language | default('') }}\n{{ code }}\n```\n\nLanguage: {{ language | default('Unknown') }}\nExpected Scale: {{ scale | default('Unknown') }}\n\nPerformance Analysis:\n- Algorithm complexity and efficiency\n- Memory usage patterns and optimization\n- I/O operations and blocking behavior\n- Database query optimization\n- Caching opportunities\n- Scalability considerations\n- Resource utilization patterns\n\nProvide performance insights including:\n1. Current performance characteristics\n2. Bottlenecks and optimization opportunities\n3. Scalability assessment\n4. Specific improvement recommendations\n5. Performance testing suggestions",
+            "role": "analyzer",
+            "priority": 1,
+            "dependencies": [],
+            "variables": {
+                "performance_targets": "{{ targets | default('general') }}",
+                "optimization_focus": "throughput_and_latency"
+            }
+        },
+        {
+            "name": "maintainability_reviewer",
+            "content": "Review the code for maintainability and development best practices:\n\nCode:\n```{{ language | default('') }}\n{{ code }}\n```\n\nLanguage: {{ language | default('Unknown') }}\nTeam Size: {{ team_size | default('Unknown') }}\n\nMaintainability Assessment:\n- Code clarity and readability\n- Documentation and commenting\n- Modularity and separation of concerns\n- Testing coverage and quality\n- Error handling and logging\n- Code organization and structure\n- Adherence to language/framework conventions\n- Technical debt indicators\n\nProvide maintainability feedback covering:\n1. Code quality assessment\n2. Documentation gaps\n3. Refactoring opportunities\n4. Testing recommendations\n5. Long-term maintenance considerations",
+            "role": "reviewer",
+            "priority": 1,
+            "dependencies": [],
+            "variables": {
+                "coding_standards": "{{ standards | default('industry_standard') }}",
+                "documentation_level": "comprehensive"
+            }
+        },
+        {
+            "name": "architecture_critic",
+            "content": "Critically evaluate the architectural decisions and design patterns in the code:\n\nCode:\n```{{ language | default('') }}\n{{ code }}\n```\n\nLanguage: {{ language | default('Unknown') }}\nArchitectural Context: {{ architecture | default('No context provided') }}\n\nArchitectural Review:\n- Design pattern usage and appropriateness\n- Architectural principles adherence (SOLID, DRY, etc.)\n- Coupling and cohesion analysis\n- Extensibility and flexibility\n- Integration patterns and interfaces\n- Data flow and state management\n- Configuration and environment handling\n\nProvide architectural critique including:\n1. Design strength and weaknesses\n2. Pattern usage evaluation\n3. Structural improvement suggestions\n4. Extensibility recommendations\n5. Integration considerations",
+            "role": "critic",
+            "priority": 2,
+            "dependencies": [
+                "security_auditor",
+                "performance_analyzer",
+                "maintainability_reviewer"
+            ],
+            "variables": {
+                "architectural_style": "{{ style | default('pragmatic') }}",
+                "design_principles": "SOLID"
+            }
+        }
+    ],
+    "reduce_prompt_template": "Compile a comprehensive code review report based on expert analysis:\n\n{% for role, response in agent_responses.items() %}\n## {{ role.title().replace('_', ' ') }} Review\n{{ response }}\n\n{% endfor %}\n\n## Code Review Summary\n\nBased on {{ successful_count }} expert reviews, provide a consolidated assessment:\n\n### Critical Issues\nList any critical security vulnerabilities or blocking issues that must be addressed immediately.\n\n### High Priority Improvements\nIdentify the top 3-5 most impactful improvements across security, performance, and maintainability.\n\n### Architecture Assessment\nSummarize the overall architectural quality and design decisions.\n\n### Performance Characteristics\nHighlight key performance considerations and optimization opportunities.\n\n### Security Posture\nOverview of security strengths and vulnerabilities.\n\n### Maintainability Score\nAssess the long-term maintainability and development experience.\n\n### Action Plan\n1. **Immediate Actions** (Critical/Blocking issues)\n2. **Short-term Improvements** (High-impact, manageable scope)\n3. **Long-term Enhancements** (Architectural and strategic improvements)\n\n### Recommendations\nProvide specific, actionable recommendations for code improvement with estimated effort and impact.\n\nPresent this as a professional code review suitable for development team planning and decision-making.",
+    "variables": {
+        "review_depth": "comprehensive",
+        "language": "python",
+        "team_size": "small",
+        "scale": "medium",
+        "standards": "PEP8"
+    }
+}
