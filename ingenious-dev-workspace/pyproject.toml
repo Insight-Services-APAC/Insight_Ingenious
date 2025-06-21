@@ -1,0 +1,16 @@
+[project]
+name = "ingenious-dev-workspace"
+version = "0.1.0"
+description = "Development workspace for iterative testing and development of the ingenious framework"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "insight-ingenious",
+    "httpx>=0.25.0",
+    "rich>=14.0.0",
+    "asyncio-throttle>=1.0.2",
+    "jinja2>=3.1.6",
+]
+
+[tool.uv.sources]
+insight-ingenious = { workspace = true }

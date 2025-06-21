@@ -1,0 +1,204 @@
+{
+  "timestamp": 87811.870909,
+  "service_availability": {
+    "Azure OpenAI": {
+      "service": "Azure OpenAI",
+      "available": true,
+      "port": 5001,
+      "endpoints_tested": [
+        {
+          "endpoint": "/openai/deployments/gpt-4/chat/completions?api-version=2024-06-01",
+          "success": true,
+          "status_code": 404
+        }
+      ],
+      "errors": [],
+      "status_code": 404
+    },
+    "Azure Blob Storage": {
+      "service": "Azure Blob Storage",
+      "available": false,
+      "port": 5002,
+      "endpoints_tested": [],
+      "errors": [
+        "Connection failed: All connection attempts failed"
+      ]
+    },
+    "Azure Search": {
+      "service": "Azure Search",
+      "available": true,
+      "port": 5003,
+      "endpoints_tested": [
+        {
+          "endpoint": "/indexes?api-version=2024-07-01",
+          "success": true,
+          "status_code": 404
+        },
+        {
+          "endpoint": "/servicestats?api-version=2024-07-01",
+          "success": true,
+          "status_code": 404
+        }
+      ],
+      "errors": [],
+      "status_code": 404
+    },
+    "Azure SQL": {
+      "service": "Azure SQL",
+      "available": true,
+      "port": 5004,
+      "endpoints_tested": [
+        {
+          "endpoint": "/databases",
+          "success": true,
+          "status_code": 404
+        },
+        {
+          "endpoint": "/servers",
+          "success": true,
+          "status_code": 404
+        }
+      ],
+      "errors": [],
+      "status_code": 404
+    }
+  },
+  "functionality_tests": {
+    "Azure OpenAI": {
+      "service": "Azure OpenAI",
+      "tests": [
+        {
+          "test": "Chat Completions",
+          "success": false,
+          "details": {
+            "status_code": 404,
+            "response_body": "{\"type\":\"https://stoplight.io/prism/errors#NO_PATH_MATCHED_ERROR\",\"title\":\"Route not resolved, no path matched\",\"status\":404,\"detail\":\"The route /openai/deployments/gpt-4/chat/completions hasn't been found in the specification file\"}"
+          }
+        },
+        {
+          "test": "Concurrent Requests",
+          "success": true,
+          "details": {
+            "total_requests": 3,
+            "successful_requests": 3
+          }
+        }
+      ]
+    },
+    "Azure Blob Storage": {
+      "service": "Azure Blob Storage",
+      "tests": [
+        {
+          "test": "Container Operations",
+          "success": false,
+          "details": {
+            "error": "All connection attempts failed"
+          }
+        },
+        {
+          "test": "Blob Upload Simulation",
+          "success": false,
+          "details": {
+            "error": "All connection attempts failed"
+          }
+        }
+      ]
+    }
+  },
+  "storage_plan": {
+    "validation": "Storage Integration Plan",
+    "components": [
+      {
+        "component": "Conversation Storage",
+        "strategy": "Hybrid SQL + Blob",
+        "details": {
+          "sql_storage": {
+            "purpose": "Metadata and indexing",
+            "schema": {
+              "conversations": [
+                "id",
+                "created_at",
+                "user_id",
+                "message_count",
+                "blob_path"
+              ],
+              "messages": [
+                "id",
+                "conversation_id",
+                "role",
+                "timestamp",
+                "content_hash"
+              ]
+            }
+          },
+          "blob_storage": {
+            "purpose": "Full conversation content",
+            "structure": "conversations/{conversation_id}/messages.json",
+            "format": "JSON with full message history"
+          }
+        },
+        "benefits": [
+          "Fast metadata queries via SQL",
+          "Scalable content storage via Blob",
+          "Cost-effective for large conversations"
+        ]
+      },
+      {
+        "component": "Ensemble Execution Storage",
+        "strategy": "Blob-primary with SQL indexing",
+        "details": {
+          "sql_storage": {
+            "purpose": "Execution metadata and search",
+            "schema": {
+              "ensemble_executions": [
+                "id",
+                "created_at",
+                "main_prompt_hash",
+                "num_sub_prompts",
+                "status",
+                "blob_path"
+              ],
+              "sub_prompt_results": [
+                "id",
+                "ensemble_id",
+                "prompt_index",
+                "processing_time",
+                "response_hash"
+              ]
+            }
+          },
+          "blob_storage": {
+            "purpose": "Full execution artifacts",
+            "structure": "ensembles/{ensemble_id}/execution.json",
+            "format": "JSON with prompts, responses, and synthesis"
+          }
+        },
+        "benefits": [
+          "Detailed execution tracking",
+          "Reusable prompt patterns",
+          "Performance analytics"
+        ]
+      },
+      {
+        "component": "Configuration Storage",
+        "strategy": "Blob storage with caching",
+        "details": {
+          "blob_storage": {
+            "purpose": "Configuration templates and user settings",
+            "structure": "configs/{user_id}/{config_type}.json",
+            "format": "JSON configuration files"
+          },
+          "caching": {
+            "purpose": "Fast access to frequently used configs",
+            "strategy": "In-memory cache with TTL"
+          }
+        },
+        "benefits": [
+          "Versioned configuration management",
+          "User-specific customizations",
+          "Template sharing capabilities"
+        ]
+      }
+    ]
+  }
+}
