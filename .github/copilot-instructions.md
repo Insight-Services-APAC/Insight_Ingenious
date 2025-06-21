@@ -21,6 +21,16 @@ This project uses uv for Python package and environment management.
 - **List out packages in environment in a tree structure**
   `uv tree`
 
+## Mock Azure Service APIs
+
+You can start and stop local mock Azure service APIs using the provided bash script:
+
+- **Start mock services:**
+  `./mock-azure-services.sh start`
+
+- **Stop mock services:**
+  `./mock-azure-services.sh stop`
+
 ## Note
 
 - Do **not** use `pip` or `pip-tools` directly; use `uv` commands above.
