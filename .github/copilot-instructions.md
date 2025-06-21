@@ -21,10 +21,10 @@ This project uses uv for Python package and environment management.
 - **List out packages in environment in a tree structure**
   `uv tree`
 
-## Architectural Consistency
-
-- For all actions and code generated, strictly follow the project's Domain-Driven Design (DDD), bounded contexts, and clean architecture conventions.
-
 ## Note
 
 - Do **not** use `pip` or `pip-tools` directly; use `uv` commands above.
+
+# Architectural Consistency
+
+- For all actions and code generated, strictly follow the project's Domain-Driven Design (DDD), bounded contexts, and clean architecture conventions.
