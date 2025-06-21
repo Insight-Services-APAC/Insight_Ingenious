@@ -57,7 +57,7 @@ class SimpleTopicAnalyzer:
         if azure_config.get("storage_account_url"):
             self.storage_service = AzureBlobStorageService(
                 account_url=azure_config["storage_account_url"],
-                credential=azure_config.get("storage_credential", "mock-credential"),
+                credential=azure_config.get("storage_credential", ""),
             )
 
         # Create ensemble use case

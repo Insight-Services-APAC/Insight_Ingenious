@@ -696,32 +696,59 @@ ingen [global-options] <command> [command-options] [arguments]
 
 **init**: Initialize a new project
 ```bash
-ingen init [project-name] [options]
+ingen init
 ```
 
 **run**: Start production server
 ```bash
-ingen run [options]
+ingen run [--host HOST] [--port PORT] [--project-dir DIR] [--profile-dir DIR]
 ```
 
 **dev**: Start development server
 ```bash
-ingen dev [options]
+ingen dev
 ```
 
-**config**: Manage configuration
+### Ensemble Commands
+
+**ensemble create**: Create new ensemble configuration
 ```bash
-ingen config <subcommand> [options]
+ingen ensemble create NAME --config CONFIG_FILE [--strategy STRATEGY] [--max-agents N] [--timeout SECONDS]
 ```
 
-**ensemble**: Manage ensembles
+**ensemble create-predefined**: Create predefined ensemble
 ```bash
-ingen ensemble <subcommand> [options]
+ingen ensemble create-predefined TYPE NAME [--description DESC]
 ```
 
-**health**: Check system health
+**ensemble execute**: Execute ensemble
 ```bash
-ingen health [options]
+ingen ensemble execute CONFIG_ID --input FILE|--text TEXT [--output FILE]
+```
+
+**ensemble list**: List configurations
+```bash
+ingen ensemble list [--limit N] [--prefix PREFIX]
+```
+
+**ensemble get**: Get ensemble details
+```bash
+ingen ensemble get CONFIG_ID [--templates]
+```
+
+**ensemble executions**: List executions
+```bash
+ingen ensemble executions [--config-id ID] [--status STATUS] [--limit N]
+```
+
+**ensemble result**: Get execution result
+```bash
+ingen ensemble result EXECUTION_ID [--agents] [--output FILE]
+```
+
+**ensemble sample-config**: Generate sample config
+```bash
+ingen ensemble sample-config OUTPUT_FILE [--ensemble-type TYPE]
 ```
 
 ## Error Handling

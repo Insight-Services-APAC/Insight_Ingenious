@@ -1,24 +1,36 @@
 # Installation Guide
 
-This guide covers installation of the Ingenious framework using standard Python package managers.
+This guide covers installation of the Ingenious framework using `uv`, the recommended package manager for this project.
 
 ## Prerequisites
 
 - Python 3.13 or higher
-- pip or uv package manager
+- [uv package manager](https://github.com/astral-sh/uv) (recommended)
 
 ## Installation Methods
 
-### Using pip (Recommended)
+### Using uv (Recommended)
+
+For new projects using Ingenious:
+
+```bash
+# Create a new project
+uv init my-ingenious-project
+cd my-ingenious-project
+
+# Add Ingenious as a dependency
+uv add insight-ingenious
+
+# Initialize Ingenious project structure
+uv run ingen init
+```
+
+### Using pip (Alternative)
+
+If you prefer using pip:
 
 ```bash
 pip install insight-ingenious
-```
-
-### Using uv (Alternative)
-
-```bash
-uv add insight-ingenious
 ```
 
 ### Development Installation
@@ -30,11 +42,11 @@ If you're contributing to the framework or need the latest development version:
 git clone https://github.com/your-org/insight-ingenious.git
 cd insight-ingenious
 
-# Install in development mode
-pip install -e .
-
-# Or with uv
+# Install dependencies with uv
 uv sync
+
+# Install in development mode (optional)
+uv pip install -e .
 ```
 
 ## Verify Installation
@@ -43,9 +55,13 @@ After installation, verify that Ingenious is correctly installed:
 
 ```bash
 # Check CLI availability
-ingen --help
+uv run ingen --help
 
 # Check Python import
+uv run python -c "import ingenious; print(f'Ingenious {ingenious.__version__} installed successfully')"
+
+# Alternative with pip installation
+ingen --help
 python -c "import ingenious; print(f'Ingenious {ingenious.__version__} installed successfully')"
 ```
 

@@ -92,14 +92,17 @@ The `ingen` command provides powerful project management capabilities:
 ### Available Commands
 
 ```bash
-# Initialize a new project
+# Initialize a new project in current directory
 uv run ingen init
 
-# Start the server
+# Start the server with options
 uv run ingen run [OPTIONS]
 
-# Quick development mode
+# Quick development mode (starts server with defaults)
 uv run ingen dev
+
+# Ensemble management
+uv run ingen ensemble [COMMAND]
 ```
 
 ### Command Options
@@ -113,15 +116,43 @@ uv run ingen dev
 
 **`ingen init`** - Initialize a new project
 
-Creates essential configuration files:
+Creates essential configuration files in the current directory:
 - `config.yml` - Main application configuration
 - `profiles.yml` - API keys and secrets
 - `.gitignore` - Git ignore rules
 - `SETUP.md` - Detailed setup instructions
+- Directory structure (data/, files/, .tmp/)
 
 **`ingen dev`** - Quick development mode
 
 Starts the server with default settings for the current directory.
+
+### Ensemble Commands
+
+**`ingen ensemble create`** - Create a new ensemble configuration
+```bash
+uv run ingen ensemble create my-analysis --config config.json
+```
+
+**`ingen ensemble create-predefined`** - Create predefined ensemble
+```bash
+uv run ingen ensemble create-predefined multi_perspective_analysis my-analysis
+```
+
+**`ingen ensemble execute`** - Execute an ensemble
+```bash
+uv run ingen ensemble execute config-id --input data.json
+```
+
+**`ingen ensemble list`** - List available configurations
+
+**`ingen ensemble get`** - Get ensemble details
+
+**`ingen ensemble executions`** - List execution history
+
+**`ingen ensemble result`** - Get execution results
+
+**`ingen ensemble sample-config`** - Generate sample configuration
 
 ## API Endpoints
 
@@ -139,6 +170,8 @@ The REST API provides comprehensive functionality across all bounded contexts:
 - `GET /api/v1/files/{file_id}/download` - Download files
 - `DELETE /api/v1/files/{file_id}` - Delete files
 - `POST /api/v1/directories` - Create directories
+- `GET /api/v1/directories/{directory_path}/contents` - List directory contents
+- `DELETE /api/v1/directories/{directory_path}` - Delete directories
 
 ### Configuration
 - `GET /api/v1/configuration` - Get current configuration
@@ -151,17 +184,31 @@ The REST API provides comprehensive functionality across all bounded contexts:
 - `POST /api/v1/llm/chat` - Chat completions
 - `POST /api/v1/moderation` - Content moderation
 - `GET /api/v1/health` - Service health status
+- `GET /api/v1/health/{service_name}` - Specific service health
 
 ### Security
 - `POST /api/v1/auth/login` - User authentication
 - `POST /api/v1/auth/logout` - User logout
 - `POST /api/v1/users` - Create users
 - `GET /api/v1/users` - List users
+- `GET /api/v1/users/{user_id}` - Get user details
 
 ### Prompt Management
 - `GET /api/v1/prompts/list/{revision_id}` - List prompts
 - `GET /api/v1/prompts/view/{revision_id}/{filename}` - View prompt
 - `POST /api/v1/prompts/update/{revision_id}/{filename}` - Update prompt
+
+### Diagnostics
+- `GET /api/v1/diagnostic` - System diagnostic information
+
+### Current Limitations
+
+**Note**: Some API endpoints are currently in development or have limited functionality:
+
+- **Conversation History**: The `GET /conversations/{thread_id}` endpoint currently returns an empty list as the chat history repository was removed during refactoring.
+- **Message Feedback**: The `PUT /messages/{message_id}/feedback` endpoint accepts feedback but doesn't persist it as the feedback service was removed.
+
+These features are planned for future releases as the application evolves.
 
 ## Configuration
 
@@ -208,17 +255,25 @@ llm:
 ```
 ingenious/
 ├── __init__.py           # Main package initialization
-├── cli.py               # CLI entry point
+├── cli.py               # CLI entry point (compatibility)
 ├── dependencies.py      # Dependency injection
 ├── main.py             # FastAPI application
 ├── chat/               # Chat bounded context
+│   ├── application/    # Application services & use cases
+│   ├── domain/         # Domain entities & services
+│   ├── infrastructure/ # External implementations
+│   └── interfaces/     # REST controllers
 ├── cli/                # CLI bounded context
+│   ├── application/    # CLI application services
+│   ├── domain/         # CLI domain entities
+│   ├── infrastructure/ # CLI implementations
+│   └── interfaces/     # CLI controllers
 ├── configuration/      # Configuration bounded context
-├── core/               # Core infrastructure
+├── core/               # Core infrastructure (logging, DI)
 ├── diagnostics/        # Diagnostics bounded context
 ├── external_integrations/ # External services integration
-├── file_management/    # File operations
-├── prompt_management/  # Prompt templates
+├── file_management/    # File operations bounded context
+├── prompt_management/  # Prompt templates bounded context
 ├── security/           # Authentication & authorization
 └── shared/             # Cross-cutting concerns
 ```

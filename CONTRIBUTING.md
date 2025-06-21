@@ -46,7 +46,7 @@ Before contributing, ensure you have:
 
 5. **Verify the setup**:
    ```bash
-   uv run pytest
+   uv run pytest --asyncio-mode=auto --tb=short -q
    uv run ruff check
    ```
 
@@ -390,24 +390,24 @@ class TestChatAPI:
 ### Running Tests
 
 ```bash
-# Run all tests
-uv run pytest
+# Run all tests (recommended default)
+uv run pytest --asyncio-mode=auto --tb=short -q
+
+# Run all tests with verbose output
+uv run pytest --asyncio-mode=auto --tb=short -v
 
 # Run specific test categories
-uv run pytest tests/unit/
-uv run pytest tests/integration/
+uv run pytest tests/unit/ --asyncio-mode=auto --tb=short
+uv run pytest tests/integration/ --asyncio-mode=auto --tb=short
 
 # Run with coverage
-uv run pytest --cov=ingenious --cov-report=html
+uv run pytest --asyncio-mode=auto --tb=short --cov=ingenious --cov-report=html
 
 # Run tests for specific bounded context
-uv run pytest tests/unit/chat/
-
-# Run tests with verbose output
-uv run pytest -v
+uv run pytest tests/unit/chat/ --asyncio-mode=auto --tb=short
 
 # Run tests matching a pattern
-uv run pytest -k "test_chat"
+uv run pytest -k "test_chat" --asyncio-mode=auto --tb=short
 ```
 
 ### Test Guidelines

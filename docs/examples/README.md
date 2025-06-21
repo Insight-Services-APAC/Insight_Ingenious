@@ -2,7 +2,7 @@
 
 This directory contains practical examples demonstrating how to use the Ingenious framework for various AI applications.
 
-## Basic Examples
+## Available Examples
 
 ### [Simple Topic Analysis](simple-topic-analysis.py)
 A straightforward example showing how to create and execute a basic prompt ensemble that analyzes any topic from multiple perspectives.
@@ -26,124 +26,71 @@ Comprehensive business analysis using specialized agents for market research, co
 
 **Use case:** Business planning and market research
 
-### [Content Creation Pipeline](content-creation.py)
-Multi-stage content creation workflow that generates, reviews, and refines content using different AI agents.
+## Running Examples
 
-**Features:**
-- Sequential execution for iterative refinement
-- Content quality assurance
-- Style and tone consistency
-- Multi-format output
+Each example can be run independently:
 
-**Use case:** Content marketing and documentation
+```bash
+# Simple topic analysis
+cd docs/examples
+uv run python simple-topic-analysis.py "artificial intelligence"
 
-## Advanced Examples
+# Business analysis
+uv run python business-analysis.py "electric vehicle startup" "automotive"
+```
 
-### [Multi-Language Translation](translation-ensemble.py)
-Translation and localization workflow that handles context, cultural adaptation, and quality assurance.
+## Configuration
 
-**Features:**
-- Parallel translation to multiple languages
-- Cultural context adaptation
-- Quality review and validation
-- Terminology consistency
+Examples require proper environment configuration:
 
-**Use case:** International content localization
+1. Set up your Azure OpenAI credentials in environment variables:
+   ```bash
+   export AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com/"
+   export AZURE_OPENAI_API_KEY="your-api-key"
+   export AZURE_OPENAI_MODEL="gpt-4"  # optional
+   ```
 
-### [Code Review Ensemble](code-review.py)
-Automated code review system using specialized AI agents for different aspects of code quality.
+2. Ensure Ingenious is properly installed:
+   ```bash
+   uv sync
+   ```
 
-**Features:**
-- Security analysis agent
-- Performance optimization agent
-- Code style and maintainability review
-- Documentation quality assessment
+3. Run examples from the project root or examples directory
 
-**Use case:** Software development workflows
+## Future Examples
 
-### [Research Synthesis](research-synthesis.py)
-Academic research analysis and synthesis from multiple sources and perspectives.
+The following examples are planned for future releases:
 
-**Features:**
-- Literature review and analysis
-- Methodology evaluation
-- Finding synthesis and comparison
-- Citation and reference management
-
-**Use case:** Academic research and systematic reviews
-
-## Integration Examples
-
-### [FastAPI Web Application](fastapi-integration/)
-Complete web application demonstrating how to integrate Ingenious into a FastAPI backend.
-
-**Includes:**
-- REST API endpoints
-- Authentication and authorization
-- Real-time execution monitoring
-- Result caching and storage
-
-### [Jupyter Notebook Workflows](jupyter-notebooks/)
+### Jupyter Notebook Workflows
 Interactive Jupyter notebooks showing different Ingenious workflows and analysis patterns.
 
-**Includes:**
-- Data analysis ensembles
-- Visualization of results
-- Parameter tuning examples
-- Performance benchmarking
-
-### [CLI Applications](cli-applications/)
+### CLI Applications
 Command-line applications built with Ingenious for various automation tasks.
 
-**Includes:**
-- Batch processing scripts
-- Configuration management tools
-- Monitoring and reporting utilities
-- Integration with external systems
-
-## Configuration Examples
-
-### [Development Setup](config-examples/development.yaml)
-Complete development environment configuration with mock services.
-
-### [Production Deployment](config-examples/production.yaml)
-Production-ready configuration with Azure services and security settings.
-
-### [Multi-Environment](config-examples/)
-Examples showing how to manage configurations across different environments.
-
-## Testing Examples
-
-### [Unit Testing](testing/unit-tests.py)
-Comprehensive unit tests for ensemble configurations and executions.
-
-### [Integration Testing](testing/integration-tests.py)
-Integration tests with real Azure services and mock alternatives.
-
-### [Performance Testing](testing/performance-tests.py)
-Load testing and performance benchmarking examples.
+### Configuration Examples
+Complete configuration templates for different environments and use cases.
 
 ## Getting Started
 
 1. **Choose an example** that matches your use case
-2. **Install dependencies** as specified in each example
-3. **Configure Azure services** using the configuration templates
-4. **Run the example** following the instructions in each file
+2. **Set up environment variables** with your Azure OpenAI credentials
+3. **Install dependencies** with `uv sync`
+4. **Run the example** following the usage instructions in each file
 5. **Modify and adapt** the code for your specific needs
 
-## Example Structure
+## Current Example Structure
 
-Each example follows this structure:
+Each example is a standalone Python file with:
 
-```
-example-name/
-├── README.md           # Detailed instructions and explanation
-├── main.py            # Main implementation
-├── config.yaml        # Configuration template
-├── requirements.txt   # Python dependencies
-├── .env.example       # Environment variables template
-└── tests/             # Example-specific tests
-```
+- **Complete implementation** ready to run
+- **Detailed docstring** explaining the purpose and usage
+- **Command-line interface** for easy execution
+- **Error handling** and informative output
+- **Environment variable** support for configuration
+
+Examples are located directly in the `docs/examples/` directory:
+- `simple-topic-analysis.py` - Basic multi-perspective analysis
+- `business-analysis.py` - Comprehensive business analysis
 
 ## Contributing Examples
 

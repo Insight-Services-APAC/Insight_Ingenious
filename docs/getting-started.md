@@ -139,11 +139,14 @@ cd my-ai-project
 # Create a new ensemble configuration
 ingen ensemble create topic-analysis --config ensemble-config.json
 
+# Create a predefined ensemble
+ingen ensemble create-predefined multi_perspective_analysis topic-analysis
+
 # List available ensembles
 ingen ensemble list
 
 # Execute an ensemble
-ingen ensemble run topic-analysis --variables '{"topic": "artificial intelligence"}'
+ingen ensemble execute config-id --input '{"topic": "artificial intelligence"}'
 ```
 
 ### Start the Development Server
