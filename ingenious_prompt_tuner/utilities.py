@@ -89,7 +89,7 @@ class utils_class:
                 for file in os.listdir(source_prompt_folder):
                     if ".jinja" in file:
                         # read the file and write it to the local_files
-                        with open(f"{source_prompt_folder}/{file}", "r") as f:
+                        with open(f"{source_prompt_folder}/{file}", "r", encoding="utf-8") as f:
                             content = f.read()
                             await self.fs.write_file(content, file, target_prompt_folder)
             self.prompt_template_folder = target_prompt_folder
@@ -125,7 +125,7 @@ class utils_class:
                 for file in source_files_filtered:
                     if ".md" in file or ".yml" or '.json' in file:
                         # read the file and write it to the local_files
-                        with open(f"{source_folder_code}/{file}", "r") as f:
+                        with open(f"{source_folder_code}/{file}", "r", encoding='utf-8') as f:
                             content = f.read()
                             if file == "events.yml":
                                 # write the event file to the same location as the prompts
@@ -159,7 +159,7 @@ class utils_class:
                 for file in os.listdir(source_folder):
                     if ".json" in file:
                         # read the file and write it to the local_files
-                        with open(f"{source_folder}/{file}", "r") as f:
+                        with open(f"{source_folder}/{file}", "r", encoding='utf-8') as f:
                             content = f.read()
                             await self.fs_data.write_file(content, file, target_folder)
             self.data_folder = target_folder
