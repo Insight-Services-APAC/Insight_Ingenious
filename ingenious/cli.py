@@ -1,3 +1,6 @@
+# Insight_Ingenious/ingenious/cli.py
+from __future__ import annotations
+
 import asyncio
 import importlib
 import os
@@ -19,13 +22,20 @@ from rich.theme import Theme
 from typing_extensions import Annotated
 
 import ingenious.utils.stage_executor as stage_executor_module
+from ingenious.utils.lazy_group import LazyGroup
 from ingenious.utils.log_levels import LogLevel
 from ingenious.utils.namespace_utils import import_class_with_fallback
-from ingenious.dataprep.cli import dataprep as _dataprep
 
-app = typer.Typer(no_args_is_help=True, pretty_exceptions_show_locals=False)
-
-app.add_typer(_dataprep, name="dataprep")
+# ────────────────────────────────────────────────────────────────────────────
+# Typer application singleton
+# ────────────────────────────────────────────────────────────────────────────
+#: Root command group – exported via ``__all__`` so that *pipx* / entry‑points
+#: can reference ``ingenious.cli:app``.
+app: typer.Typer = typer.Typer(
+    cls=LazyGroup,
+    no_args_is_help=True,  # `ingen_cli` → show help when no args
+    pretty_exceptions_show_locals=False,  # cleaner tracebacks in production
+)
 
 custom_theme = Theme(
     {

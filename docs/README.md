@@ -9,9 +9,13 @@ Welcome to the Insight Ingenious documentation. This collection of guides will h
 - [Usage Guide](usage/README.md): How to use the framework for common tasks
 - [Development Guide](development/README.md): Information for developers extending the framework
 - [Components Reference](components/README.md): Detailed reference for framework components
-- **Optional Dependencies**: Feature packs you can install on demand
-  &nbsp;&nbsp;&nbsp;• [Optional Dependencies Index](optional_dependencies/README.md)
-  &nbsp;&nbsp;&nbsp;• [Dataprep Crawler](optional_dependencies/dataprep/README.md): Scrapfly-powered scraping CLI
+
+### Optional Dependencies
+Feature packs you can install on demand
+
+- [Optional Dependencies Index](optional_dependencies/README.md)
+- [Dataprep Crawler](optional_dependencies/dataprep/README.md): Scrapfly-powered scraping CLI
+- [Document-processing](optional_dependencies/document_processing/README.md): Unified PDF/DOCX/PPTX extraction engines
 
 ## Quick Links
 

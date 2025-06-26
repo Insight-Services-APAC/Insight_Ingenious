@@ -62,6 +62,14 @@ dataprep = [
     "backoff==2.2"
 ]
 
+document-processing = [
+  "pymupdf==1.26.1",
+  "azure-ai-documentintelligence==1.0.2"
+]
+
+pdfminer     = ["pdfminer.six==20250506"]
+unstructured = ["unstructured[all-docs]==0.17.2"]
+
 tests = [
   "pytest==8.3.5",
   "pytest-asyncio==0.26.0",
@@ -93,6 +101,16 @@ extend-select = ["I"]
 ignore = ["E402"]
 
 [tool.pytest.ini_options]
+addopts = "-p no:doctest"
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+
 markers = [
-    "e2e: live network integration test (requires SCRAPFLY_API_KEY)",
+  "integration: mark test as integration test",
+  "e2e: live network integration test (requires SCRAPFLY_API_KEY)",
+  "docs: tests that parse large documents or require extra dependencies",
+]
+
+filterwarnings = [
+  "ignore:.*(SwigPy|swigvarlink).* has no __module__ attribute:DeprecationWarning"
 ]
