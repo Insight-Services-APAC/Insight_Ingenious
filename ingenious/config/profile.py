@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from pathlib import Path
 
@@ -7,6 +8,8 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
 from ingenious.models import profile as profile_models
+
+logger = logging.getLogger(__name__)
 
 
 class Profiles:
@@ -42,13 +45,23 @@ class Profiles:
     def _get_profiles(profiles_path=None):
         # Check if os.getenv('INGENIOUS_PROFILE') is set
         if os.getenv("APPSETTING_INGENIOUS_PROFILE", "") != "":
-            # print("Profile JSON loaded from environment variable")
             profile_string = os.getenv("APPSETTING_INGENIOUS_PROFILE", "{}")
-            profile_object = json.loads(profile_string)
-            # Convert the json string to a yaml string
-            profile_yml = yaml.dump(profile_object)
-            profile = Profiles.from_yaml_str(profile_yml)
-            return profile
+
+            # Try YAML first (new standard)
+            try:
+                profile = Profiles.from_yaml_str(profile_string)
+                logger.debug("Profile loaded as YAML")
+                return profile
+            except yaml.YAMLError:
+                # Fallback to JSON for backward compatibility
+                try:
+                    profile_object = json.loads(profile_string)
+                    profile_yml = yaml.dump(profile_object)
+                    profile = Profiles.from_yaml_str(profile_yml)
+                    logger.debug("Profile loaded as JSON")
+                    return profile
+                except json.JSONDecodeError as e:
+                    raise ValueError(f"Contains invalid YAML or JSON: {e}")
 
         # Load the configuration from the YAML file
         if profiles_path is None or profiles_path == "":

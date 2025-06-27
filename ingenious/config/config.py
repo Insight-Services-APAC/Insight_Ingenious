@@ -77,11 +77,21 @@ def get_config(config_path=None) -> config_models.Config:
     # Check if os.getenv('INGENIOUS_CONFIG') is set
     if os.getenv("APPSETTING_INGENIOUS_CONFIG"):
         config_string = os.getenv("APPSETTING_INGENIOUS_CONFIG", "")
-        config_object = json.loads(config_string)
-        # Convert the json string to a yaml string
-        config_yml = yaml.dump(config_object)
-        config = Config.from_yaml_str(config_yml)
-        return config
+        # Try YAML first (new standard)
+        try:
+            config = Config.from_yaml_str(config_string)
+            logger.debug("Config loaded as YAML")
+            return config
+        except yaml.YAMLError:
+            # Fallback to JSON for backward compatibility
+            try:
+                config_object = json.loads(config_string)
+                config_yml = yaml.dump(config_object)
+                config = Config.from_yaml_str(config_yml)
+                logger.debug("Config loaded as JSON")
+                return config
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Contains invalid YAML or JSON: {e}")
 
     if config_path is None:
         env_config_path = os.getenv("INGENIOUS_PROJECT_PATH")
