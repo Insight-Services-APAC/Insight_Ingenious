@@ -5,6 +5,7 @@ import importlib
 import os
 import pkgutil
 import shutil
+import stat
 from pathlib import Path
 from sysconfig import get_paths
 from typing import Optional
@@ -20,6 +21,7 @@ from rich.console import Console
 from rich.theme import Theme
 from typing_extensions import Annotated
 
+import ingenious.config.config as ingen_config
 import ingenious.utils.stage_executor as stage_executor_module
 from ingenious.utils.lazy_group import LazyGroup
 from ingenious.utils.log_levels import LogLevel
@@ -45,10 +47,10 @@ Quick Start:
   ingen workflows               # List available workflows
 
 Common Commands:
-  init, serve, test, workflows, prompt-tuner
+  init, serve, test, workflows, prompt-tuner, document-parse
 
 Data Processing:
-  dataprep, document-processing
+  dataprep, document-processing, document-parse
 
 Get help for any command with: ingen <command> --help
     """.strip(),
@@ -1462,4 +1464,210 @@ def validate():
         console.print("  • Edit credentials: [bold]nano .env[/bold]")
 
     if not validation_passed:
+        raise typer.Exit(1)
+
+
+@app.command(name="document-parse", help="Parse documents and extract structured data")
+def document_parse(
+    files: Annotated[
+        list[str],
+        typer.Argument(help="One or more document files to parse")
+    ],
+    output: Annotated[
+        Optional[str],
+        typer.Option(
+            "--output", "-o",
+            help="Output file path (for single file)"
+        )
+    ] = None,
+    output_dir: Annotated[
+        Optional[str],
+        typer.Option(
+            "--output-dir",
+            help="Output directory for multiple files"
+        )
+    ] = None,
+    pretty: Annotated[
+        bool,
+        typer.Option(
+            "--pretty",
+            help="Pretty print JSON output"
+        )
+    ] = False,
+    verbose: Annotated[
+        bool,
+        typer.Option(
+            "--verbose", "-v",
+            help="Enable verbose logging"
+        )
+    ] = False,
+    template: Annotated[
+        Optional[str],
+        typer.Option(
+            "--template", "-t",
+            help="Template string to render"
+        )
+    ] = None,
+    template_file: Annotated[
+        Optional[str],
+        typer.Option(
+            "--template-file",
+            help="Template file to use"
+        )
+    ] = None,
+    template_example: Annotated[
+        Optional[str],
+        typer.Option(
+            "--template-example",
+            help="Use a predefined template example: summary, detailed_report, json_summary"
+        )
+    ] = None,
+):
+    """
+    📄 Parse documents and extract structured data.
+    
+    Supports PDF and DOCX files. Can output raw JSON or render with templates.
+    
+    Examples:
+      ingen document-parse document.pdf --output result.json
+      ingen document-parse *.pdf *.docx --output-dir results/
+      ingen document-parse document.pdf --template-example summary
+      ingen document-parse document.pdf --template "{{ document.filename }}: {{ total_pages }} pages"
+    """
+    try:
+        from ingenious.document_parser.core.parser import DocumentParser
+        from ingenious.document_parser.utils.exceptions import DocumentParsingError
+        from ingenious.document_parser.utils.logging import setup_logger
+        from ingenious.document_parser.utils.templates import TEMPLATE_EXAMPLES
+        
+        # Setup logging
+        log_level = 10 if verbose else 20  # DEBUG if verbose, INFO otherwise
+        setup_logger(level=log_level)
+        
+        # Validate arguments
+        if len(files) > 1 and output:
+            typer.secho(
+                "Error: Cannot use --output with multiple files. Use --output-dir instead.",
+                fg="red", err=True
+            )
+            raise typer.Exit(1)
+        
+        # Check if file exists
+        for file_path in files:
+            if not Path(file_path).exists():
+                typer.secho(f"Error: File not found: {file_path}", fg="red", err=True)
+                raise typer.Exit(1)
+        
+        parser = DocumentParser()
+        
+        # Process files
+        for file_path in files:
+            try:
+                typer.echo(f"Processing: {file_path}")
+                
+                # Check if file type is supported
+                if not parser.supports_file(file_path):
+                    typer.secho(f"Warning: Unsupported file type: {file_path}", fg="yellow", err=True)
+                    continue
+                
+                # Parse the file
+                result = parser.parse_file(file_path)
+                
+                # Handle template rendering if specified
+                if template or template_file or template_example:
+                    if template:
+                        rendered = parser.render_template(template, result)
+                    elif template_example:
+                        if template_example not in TEMPLATE_EXAMPLES:
+                            typer.secho(f"Error: Template example '{template_example}' not found", fg="red", err=True)
+                            continue
+                        template_string = TEMPLATE_EXAMPLES[template_example]
+                        rendered = parser.render_template(template_string, result)
+                    elif template_file:
+                        if not Path(template_file).exists():
+                            typer.secho(f"Error: Template file not found: {template_file}", fg="red", err=True)
+                            continue
+                        rendered = parser.render_template_file(Path(template_file).name, result)
+                    
+                    # Output rendered result
+                    if output:
+                        with open(output, "w", encoding="utf-8") as f:
+                            f.write(rendered)
+                        typer.echo(f"Rendered output saved to: {output}")
+                    elif output_dir:
+                        Path(output_dir).mkdir(parents=True, exist_ok=True)
+                        base_name = Path(file_path).stem
+                        output_path = Path(output_dir) / f"{base_name}.txt"
+                        with open(output_path, "w", encoding="utf-8") as f:
+                            f.write(rendered)
+                        typer.echo(f"Rendered output saved to: {output_path}")
+                    else:
+                        typer.echo(rendered)
+                else:
+                    # Output JSON
+                    if output:
+                        result.save_to_file(output, pretty=pretty)
+                        typer.echo(f"Saved: {output}")
+                    elif output_dir:
+                        Path(output_dir).mkdir(parents=True, exist_ok=True)
+                        base_name = Path(file_path).stem
+                        output_path = Path(output_dir) / f"{base_name}.json"
+                        result.save_to_file(str(output_path), pretty=pretty)
+                        typer.echo(f"Saved: {output_path}")
+                    else:
+                        typer.echo(result.to_json(pretty=pretty))
+                
+            except DocumentParsingError as e:
+                typer.secho(f"Error parsing {file_path}: {str(e)}", fg="red", err=True)
+                continue
+            except Exception as e:
+                typer.secho(f"Unexpected error processing {file_path}: {str(e)}", fg="red", err=True)
+                continue
+                
+    except ImportError:
+        typer.secho("Error: Document parser dependencies not available", fg="red", err=True)
+        typer.secho("Install with: uv add python-docx PyPDF2 jinja2", fg="yellow")
+        raise typer.Exit(1)
+    except Exception as e:
+        typer.secho(f"Fatal error: {str(e)}", fg="red", err=True)
+        raise typer.Exit(1)
+
+
+@app.command(name="document-info", help="Show document parser information")
+def document_info():
+    """
+    📄 Show information about supported document types and template examples.
+    """
+    try:
+        from ingenious.document_parser.core.parser import DocumentParser
+        from ingenious.document_parser.utils.templates import TEMPLATE_EXAMPLES
+        
+        parser = DocumentParser()
+        extensions = parser.get_supported_extensions()
+        
+        console.print("[bold blue]Document Parser Information[/bold blue]")
+        console.print("=" * 30)
+        console.print(f"[bold]Supported file types:[/bold] {', '.join(extensions)}")
+        
+        console.print("\n[bold]Example usage:[/bold]")
+        console.print("  [cyan]ingen document-parse document.pdf --output result.json[/cyan]")
+        console.print("  [cyan]ingen document-parse *.pdf *.docx --output-dir results/[/cyan]")
+        console.print("  [cyan]ingen document-parse document.pdf --template-example summary[/cyan]")
+        
+        console.print("\n[bold]Available Template Examples:[/bold]")
+        for name, template in TEMPLATE_EXAMPLES.items():
+            console.print(f"  • [cyan]{name}[/cyan]: {template.split('\\n')[0][:50]}...")
+            
+        console.print("\n[bold]Template Variables Available:[/bold]")
+        console.print("  • document: Document metadata (filename, file_type, total_pages, etc.)")
+        console.print("  • pages: List of page objects with content and metadata")
+        console.print("  • total_pages, total_words, total_chars: Summary statistics")
+        console.print("  • all_text, all_paragraphs, all_headings: Aggregated content")
+        
+    except ImportError:
+        console.print("[red]Error: Document parser dependencies not available[/red]")
+        console.print("[yellow]Install with: uv add python-docx PyPDF2 jinja2[/yellow]")
+        raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"[red]Error: {str(e)}[/red]")
         raise typer.Exit(1)

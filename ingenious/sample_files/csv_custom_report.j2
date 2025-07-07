@@ -1,0 +1,20 @@
+# CSV Data Report: {{ document_info.filename }}
+
+## File Information
+- **File:** {{ document_info.filename }}
+- **Size:** {{ "%.2f KB" | format(document_info.file_size / 1024) }}
+- **Processed:** {{ processing_date }}
+- **Rows:** {{ total_rows }}
+
+## Data Preview
+{% if pages and pages[0].content.text %}
+```csv
+{{ pages[0].content.text.split('\n')[:10] | join('\n') }}
+{% if pages[0].content.text.split('\n')|length > 10 %}
+... ({{ pages[0].content.text.split('\n')|length - 10 }} more rows)
+{% endif %}
+```
+{% endif %}
+
+## Notes
+{{ notes if notes else "No additional notes." }}

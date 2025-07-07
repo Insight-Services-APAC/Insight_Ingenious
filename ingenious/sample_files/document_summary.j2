@@ -1,0 +1,74 @@
+# Document Summary Report
+
+**Document Information:**
+- **Filename:** {{ document_info.filename }}
+- **File Type:** {{ document_info.file_type | upper }}
+- **Total Pages:** {{ document_info.total_pages }}
+- **File Size:** {{ "%.2f KB" | format(document_info.file_size / 1024) }}
+- **Created:** {{ document_info.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+
+---
+
+## Content Overview
+
+{% if document_info.file_type in ['pdf', 'docx'] %}
+### Text Content Analysis
+- **Total Word Count:** {{ total_words }}
+- **Total Character Count:** {{ total_chars }}
+- **Average Words per Page:** {{ "%.1f" | format(total_words / document_info.total_pages) if document_info.total_pages > 0 else 0 }}
+
+{% if all_headings %}
+### Document Structure (Headings)
+{% for heading in all_headings %}
+{{ "  " * (heading.level - 1) }}{{ loop.index }}. {{ heading.text }}
+{% endfor %}
+{% endif %}
+
+### Page-by-Page Breakdown
+{% for page in pages %}
+**Page {{ page.page_number }}:**
+- Words: {{ page.metadata.word_count }}
+- Characters: {{ page.metadata.char_count }}
+{% if page.content.headings %}
+- Headings: {{ page.content.headings | length }}
+{% endif %}
+- Preview: {{ page.content.text[:150] | replace('\n', ' ') }}{% if page.content.text | length > 150 %}...{% endif %}
+
+{% endfor %}
+
+{% elif document_info.file_type in ['xlsx', 'xls', 'csv'] %}
+### Data Analysis
+- **Total Rows:** {{ total_rows }}
+- **Total Columns:** {{ total_columns }}
+{% if sheet_names %}
+- **Sheets:** {{ sheet_names | join(', ') }}
+{% endif %}
+
+### Data Structure
+{% for page in pages %}
+{% if document_info.file_type in ['xlsx', 'xls'] %}
+**Sheet: {{ page.content.text.split('\n')[0] if page.content.text }}**
+{% else %}
+**CSV Data:**
+{% endif %}
+- Rows in this section: {{ page.metadata.word_count }}
+- Data preview:
+```
+{{ page.content.text.split('\n')[:5] | join('\n') }}
+{% if page.content.text.split('\n') | length > 5 %}...{% endif %}
+```
+
+{% endfor %}
+{% endif %}
+
+---
+
+## Quick Statistics
+- **Processing Date:** {{ processing_date if processing_date else "N/A" }}
+- **Parser Version:** {{ parser_version if parser_version else "1.0.0" }}
+- **File Status:** ✅ Successfully Parsed
+
+{% if notes %}
+## Additional Notes
+{{ notes }}
+{% endif %}

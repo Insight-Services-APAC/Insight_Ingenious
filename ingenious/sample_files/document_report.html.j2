@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Analysis Report - {{ document_info.filename }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 3px solid #007acc;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .document-title {
+            color: #007acc;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .document-meta {
+            color: #666;
+            margin-top: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #007acc, #0056b3);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section-title {
+            color: #333;
+            border-left: 4px solid #007acc;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+        .page-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .page-header {
+            font-weight: bold;
+            color: #007acc;
+            margin-bottom: 10px;
+        }
+        .page-stats {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+        }
+        .page-stat {
+            background-color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .preview-text {
+            background-color: white;
+            padding: 10px;
+            border-left: 3px solid #007acc;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .headings-list {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .heading-item {
+            margin: 5px 0;
+            padding-left: calc(var(--level) * 20px);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .data-table th,
+        .data-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #007acc;
+            color: white;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1 class="document-title">📄 {{ document_info.filename }}</h1>
+            <div class="document-meta">
+                <strong>File Type:</strong> {{ document_info.file_type | upper }} |
+                <strong>Size:</strong> {{ "%.2f KB" | format(document_info.file_size / 1024) }} |
+                <strong>Processed:</strong> {{ document_info.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ document_info.total_pages }}</div>
+                <div class="stat-label">{% if document_info.file_type in ['xlsx', 'xls'] %}Sheets{% elif document_info.file_type == 'csv' %}Sections{% else %}Pages{% endif %}</div>
+            </div>
+            {% if document_info.file_type in ['pdf', 'docx'] %}
+            <div class="stat-card">
+                <div class="stat-value">{{ total_words | default(0) }}</div>
+                <div class="stat-label">Total Words</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ all_headings | length if all_headings else 0 }}</div>
+                <div class="stat-label">Headings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ "%.0f" | format(total_words / document_info.total_pages) if document_info.total_pages > 0 and total_words else 0 }}</div>
+                <div class="stat-label">Avg Words/Page</div>
+            </div>
+            {% elif document_info.file_type in ['xlsx', 'xls', 'csv'] %}
+            <div class="stat-card">
+                <div class="stat-value">{{ total_rows | default(0) }}</div>
+                <div class="stat-label">Total Rows</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_columns | default(0) }}</div>
+                <div class="stat-label">Columns</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ total_cells | default(0) }}</div>
+                <div class="stat-label">Total Cells</div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if document_info.file_type in ['pdf', 'docx'] %}
+        <!-- Document Structure -->
+        {% if all_headings %}
+        <div class="section">
+            <h2 class="section-title">📚 Document Structure</h2>
+            <div class="headings-list">
+                {% for heading in all_headings %}
+                <div class="heading-item" style="--level: {{ heading.level - 1 }}">
+                    <strong>H{{ heading.level }}:</strong> {{ heading.text }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div class="section">
+            <h2 class="section-title">📖 Page-by-Page Analysis</h2>
+            {% for page in pages %}
+            <div class="page-card">
+                <div class="page-header">Page {{ page.page_number }}</div>
+                <div class="page-stats">
+                    <span class="page-stat">📝 {{ page.metadata.word_count }} words</span>
+                    <span class="page-stat">🔤 {{ page.metadata.char_count }} characters</span>
+                    {% if page.content.headings %}
+                    <span class="page-stat">📋 {{ page.content.headings | length }} headings</span>
+                    {% endif %}
+                </div>
+                {% if page.content.text %}
+                <div class="preview-text">
+                    {{ page.content.text[:300] | replace('\n', '<br>') | safe }}
+                    {% if page.content.text | length > 300 %}
+                    <span style="color: #666; font-style: italic;">... (truncated)</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        {% elif document_info.file_type in ['xlsx', 'xls', 'csv'] %}
+        <!-- Data Analysis -->
+        <div class="section">
+            <h2 class="section-title">📊 Data Analysis</h2>
+            {% for page in pages %}
+            <div class="page-card">
+                <div class="page-header">
+                    {% if document_info.file_type in ['xlsx', 'xls'] %}
+                    Sheet {{ page.page_number }}: {{ page.content.text.split('\n')[0] if page.content.text else 'Unnamed Sheet' }}
+                    {% else %}
+                    CSV Data Section {{ page.page_number }}
+                    {% endif %}
+                </div>
+                <div class="page-stats">
+                    <span class="page-stat">📊 {{ page.metadata.word_count }} rows</span>
+                    <span class="page-stat">📈 Columns detected</span>
+                </div>
+                {% if page.content.text %}
+                <div class="preview-text">
+                    {% set lines = page.content.text.split('\n')[:6] %}
+                    {% for line in lines %}
+                    {{ line }}<br>
+                    {% endfor %}
+                    {% if page.content.text.split('\n') | length > 6 %}
+                    <span style="color: #666; font-style: italic;">... ({{ page.content.text.split('\n') | length - 6 }} more rows)</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated by Document Parser v{{ parser_version | default('1.0.0') }} on {{ processing_date | default(document_info.created_at.strftime('%Y-%m-%d')) }}</p>
+            {% if notes %}
+            <p><strong>Notes:</strong> {{ notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
