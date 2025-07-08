@@ -60,6 +60,20 @@ flowchart TD
    uv run ingen init
    ```
 
+Note: Before running, don't forget to setup your project and profile configuration:
+#### For Linux-based Environments
+```bash
+export INGENIOUS_PROJECT_PATH=$(pwd)/config.yml
+export INGENIOUS_PROFILE_PATH=$(pwd)/profiles.yml
+```
+
+#### For Windows-based Environments
+```powershell
+$env:INGENIOUS_PROJECT_PATH = "{your_project_folder}/config.yml"
+$env:INGENIOUS_PROFILE_PATH = "{profile_folder_location}/profiles.yml"                        
+uv run ingen validate  # Check configuration before starting
+```
+
 ## Project Architecture
 
 ### Core Framework Structure

@@ -76,10 +76,19 @@ ValidationError: 9 validation errors for Profiles
    ```
 
 3. **Set environment variables**:
-   ```bash
-   export INGENIOUS_PROJECT_PATH=$(pwd)/config.yml
-   export INGENIOUS_PROFILE_PATH=$(pwd)/profiles.yml
-   ```
+   #### For Linux-based Environments
+    ```bash
+    export INGENIOUS_PROJECT_PATH=$(pwd)/config.yml
+    export INGENIOUS_PROFILE_PATH=$(pwd)/profiles.yml
+    uv run ingen validate  # Check configuration before starting
+    ```
+
+    #### For Windows-based Environments
+    ```bash
+    $env:INGENIOUS_PROJECT_PATH = "{your_project_folder}/config.yml"
+    $env:INGENIOUS_PROFILE_PATH = "{profile_folder_location}/profiles.yml"                        
+    uv run ingen validate  # Check configuration before starting
+    ```
 
 ---
 
@@ -103,8 +112,15 @@ ValidationError: 9 validation errors for Profiles
    ```
 
 2. **Set port in environment variables**:
+   Linux:
    ```bash
    export WEB_PORT=8080
+   uv run ingen serve
+   ```
+
+   Windows:
+   ```bash
+   $env:$WEB_PORT=8080
    uv run ingen serve
    ```
 
@@ -115,6 +131,11 @@ ValidationError: 9 validation errors for Profiles
    ```
 
 4. **Check if port is available**:
+
+   **Note: Commands require admin privileges.**
+
+   Linux:
+
    ```bash
    # Check what's using port 80
    lsof -i :80
@@ -126,12 +147,33 @@ ValidationError: 9 validation errors for Profiles
    sudo kill -9 $(lsof -t -i:80)
    ```
 
+   Windows:
+   ```bash
+   # Check what's using port 80
+   netstat -ano | findstr :80
+
+   # Check what's using your target port
+   netstat -ano | findstr :8080
+
+   # Kill processes if needed (be careful!)
+   # The PID is the process ID of found process
+   taskkill /PID <PID> /F
+   ```
+
 5. **For production deployments on port 80**:
+   
+   Linux:
+
    ```bash
    # Run with elevated privileges (Linux/macOS)
    sudo uv run ingen serve
 
    # Or use a reverse proxy (nginx, apache)
+   ```
+
+   For Windows, easiest way would be running the command below in a terminal that is ran with admin privileges:
+   ```bash
+   uv run ingen serve
    ```
 
 **Note**: Port 80 requires administrative privileges on most systems. For development, use ports 8080, 8000, or 3000.
@@ -148,9 +190,26 @@ ModuleNotFoundError: No module named 'ingenious_extensions'
 **Solutions**:
 
 1. **Make sure you're in the project root**:
+   
+   Linux:
+
    ```bash
    pwd  # Should be your project directory
    ls   # Should see ingenious_extensions/ folder
+   ```
+
+   Windows:
+
+   If in powershell, both command could work the same way.
+   ```bash
+   pwd  # Should be your project directory
+   ls   # Should see ingenious_extensions/ folder
+   ```
+
+   Alternate commands (PowerShell):
+   ```
+   Get-Location
+   dir
    ```
 
 2. **Reinstall the library**:
@@ -242,6 +301,15 @@ ModuleNotFoundError: No module named 'ingenious_extensions'
 
    # Or check if .env file is properly formatted
    cat .env | grep AZURE_SQL
+   ```
+
+   **Windows (PowerShell):**
+   ```powershell
+   echo $Env:AZURE_SQL_CONNECTION_STRING
+   # Should show your connection string
+
+   # Or check if .env file is properly formatted
+   Select-String "AZURE_SQL" .env
    ```
 
 3. **Verify .env file format** (critical):
@@ -551,18 +619,35 @@ uv run python -c "import ingenious; print('✅ Ingenious imported successfully')
 ```
 
 ### Check Configuration Loading
+
 ```bash
 export INGENIOUS_PROJECT_PATH=$(pwd)/config.yml
 export INGENIOUS_PROFILE_PATH=$(pwd)/profiles.yml
 uv run python -c "
 import ingenious.config.config as config
 try:
-    cfg = config.get_config()
-    print('✅ Configuration loaded successfully')
-    print(f'Models: {len(cfg.models)}')
-    print(f'Profile: {cfg.chat_history.database_type}')
+   cfg = config.get_config()
+   print('✅ Configuration loaded successfully')
+   print(f'Models: {len(cfg.models)}')
+   print(f'Profile: {cfg.chat_history.database_type}')
 except Exception as e:
-    print(f'❌ Configuration error: {e}')
+   print(f'❌ Configuration error: {e}')
+"
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:INGENIOUS_PROJECT_PATH = "$(Get-Location)/config.yml"
+$env:INGENIOUS_PROFILE_PATH = "$(Get-Location)/profiles.yml"
+uv run python -c "
+import ingenious.config.config as config
+try:
+   cfg = config.get_config()
+   print('✅ Configuration loaded successfully')
+   print(f'Models: {len(cfg.models)}')
+   print(f'Profile: {cfg.chat_history.database_type}')
+except Exception as e:
+   print(f'❌ Configuration error: {e}')
 "
 ```
 
@@ -738,6 +823,30 @@ cp .env.example .env
 # 5. Set environment
 export INGENIOUS_PROJECT_PATH=$(pwd)/config.yml
 export INGENIOUS_PROFILE_PATH=$(pwd)/profiles.yml
+
+# 6. Test
+uv run ingen status
+uv run ingen serve
+```
+
+**Windows (PowerShell):**
+```powershell
+# 1. Clean slate
+Remove-Item -Recurse -Force ingenious_extensions, tmp, config.yml, profiles.yml, .env -ErrorAction SilentlyContinue
+
+# 2. Reinstall
+uv add ingenious
+
+# 3. Initialize
+uv run ingen init
+
+# 4. Configure
+Copy-Item .env.example .env
+# Edit .env with your Azure OpenAI credentials
+
+# 5. Set environment
+$env:INGENIOUS_PROJECT_PATH = "$(Get-Location)/config.yml"
+$env:INGENIOUS_PROFILE_PATH = "$(Get-Location)/profiles.yml"
 
 # 6. Test
 uv run ingen status

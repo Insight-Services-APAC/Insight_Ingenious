@@ -62,6 +62,17 @@ ls -la config.yml
 ls -la profiles.yml
 ```
 
+For Windows (PowerShell)
+```powershell
+# Set correct paths
+$env:INGENIOUS_PROJECT_PATH="{project_path}/config.yml"
+$env:INGENIOUS_PROFILE_PATH="{profile_path}/profiles.yml"
+
+# Verify files exist
+Get-ChildItem config.yml
+Get-ChildItem profiles.yml
+```
+
 **❌ Error: "Permission denied accessing profiles.yml"**
 
 **Solution:**
@@ -141,9 +152,13 @@ azure_sql_services:
 
 **Solution:**
 1. Find what's using the port:
-   ```bash
-   lsof -i :8081
-   ```
+  ```bash
+  # On Linux/Mac
+  lsof -i :8081
+
+  # On Windows
+  netstat -ano | findstr :8081
+  ```
 
 2. Kill the process or use a different port:
    ```bash
@@ -277,9 +292,17 @@ print('OpenAI service created successfully')
 
 **Solutions:**
 1. Clear temporary files:
-   ```bash
-   rm -rf .tmp/*
-   ```
+  ```bash
+  # Linux/Mac
+  rm -rf .tmp/*
+
+  # Windows Command Prompt
+  rmdir /s /q .tmp
+  mkdir .tmp
+
+  # Windows PowerShell
+  Remove-Item -Recurse -Force .tmp\*
+  ```
 
 2. Restart the server periodically
 3. Monitor memory usage

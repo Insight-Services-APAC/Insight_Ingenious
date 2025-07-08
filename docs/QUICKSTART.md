@@ -43,7 +43,7 @@ Get up and running in 5 minutes with Azure OpenAI!
     ```
 
     #### For Windows-based Environments
-    ```bash
+    ```powershell
     $env:INGENIOUS_PROJECT_PATH = "{your_project_folder}/config.yml"
     $env:INGENIOUS_PROFILE_PATH = "{profile_folder_location}/profiles.yml"                        
     uv run ingen validate  # Check configuration before starting
