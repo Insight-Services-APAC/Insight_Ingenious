@@ -1,0 +1,45 @@
+{
+  "name": "Ingenious Dev Container",
+  "image": "ghcr.io/astral-sh/uv:python3.13-bookworm-slim",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true,
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "version": "lts"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.pylint",
+        "charliermarsh.ruff",
+        "ms-vscode.vscode-typescript-next",
+        "ms-vscode.vscode-json"
+      ]
+    }
+  },
+  "postCreateCommand": "uv sync && npm install -g @anthropic-ai/claude-code",
+  "workspaceFolder": "/workspaces/ingenious",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/ingenious,type=bind,consistency=cached",
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+  ],
+  "forwardPorts": [8081, 8080],
+  "containerEnv": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "remoteUser": "vscode"
+}

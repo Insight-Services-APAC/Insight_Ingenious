@@ -27,9 +27,9 @@ graph TB
     subgraph "API Layer"
         FASTAPI[FastAPI Application]
         CHAT_API[Chat API\n/api/v1/chat]
-        DIAGNOSTIC_API[Diagnostic API\n/api/v1/workflow-status\n/api/v1/workflows\n/api/v1/diagnostic\n/api/v1/health]
+        DIAGNOSTIC_API[Diagnostic API\n/api/v1/workflow-status/{workflow_name}\n/api/v1/workflows\n/api/v1/diagnostic\n/api/v1/health]
         PROMPTS_API[Prompts API\n/api/v1/prompts]
-        FEEDBACK_API[Feedback API\n/api/v1/messages/_message_id_/feedback]
+        FEEDBACK_API[Feedback API\n/api/v1/messages/{message_id}/feedback]
     end
 
     subgraph "Backend Services"
@@ -123,7 +123,7 @@ graph LR
     end
 
     subgraph "Diagnostic Endpoints"
-        WORKFLOW_STATUS[GET /api/v1/workflow-status/_name_\nCheck Workflow Status]
+        WORKFLOW_STATUS[GET /api/v1/workflow-status/{workflow_name}\nCheck Workflow Status]
         WORKFLOWS_LIST[GET /api/v1/workflows\nList All Workflows]
         DIAGNOSTIC[GET /api/v1/diagnostic\nSystem Diagnostic]
     end
@@ -133,10 +133,10 @@ graph LR
     end
 
     subgraph "Management Endpoints"
-        PROMPTS_VIEW[GET /api/v1/prompts/view/_revision_id_/_filename_\nView Prompt]
-        PROMPTS_LIST[GET /api/v1/prompts/list/_revision_id_\nList Prompts]
-        PROMPTS_UPDATE[POST /api/v1/prompts/update/_revision_id_/_filename_\nUpdate Prompt]
-        FEEDBACK[PUT /api/v1/messages/_message_id_/feedback\nMessage Feedback]
+        PROMPTS_VIEW[GET /api/v1/prompts/view/{revision_id}/{filename}\nView Prompt]
+        PROMPTS_LIST[GET /api/v1/prompts/list/{revision_id}\nList Prompts]
+        PROMPTS_UPDATE[POST /api/v1/prompts/update/{revision_id}/{filename}\nUpdate Prompt]
+        FEEDBACK[PUT /api/v1/messages/{message_id}/feedback\nMessage Feedback]
     end
 
     classDef chat fill:#e8f5e8
@@ -163,10 +163,12 @@ flowchart TD
 
     LOAD_CONTEXT --> SELECT_WORKFLOW{Select Workflow}
     SELECT_WORKFLOW --> CLASSIFICATION[classification-agent]
+    SELECT_WORKFLOW --> BIKE_INSIGHTS[bike-insights - template only]
     SELECT_WORKFLOW --> KNOWLEDGE_BASE[knowledge-base-agent]
     SELECT_WORKFLOW --> SQL_AGENT[sql-manipulation-agent]
 
     CLASSIFICATION --> PROCESS_MESSAGE[Process Multi-Agent Workflow]
+    BIKE_INSIGHTS --> PROCESS_MESSAGE
     KNOWLEDGE_BASE --> PROCESS_MESSAGE
     SQL_AGENT --> PROCESS_MESSAGE
 
@@ -309,6 +311,16 @@ Returns the health status of the API service.
 GET /api/v1/workflows
 ```
 Returns a list of all available workflow types and their configurations.
+
+### Workflow Naming Conventions
+
+Insight Ingenious supports both hyphenated and underscored workflow names for backward compatibility:
+- `classification-agent` or `classification_agent`
+- `bike-insights` or `bike_insights` (template only)
+- `knowledge-base-agent` or `knowledge_base_agent`
+- `sql-manipulation-agent` or `sql_manipulation_agent`
+
+**Note**: `bike-insights` is only available in projects created with `ingen init`, not in the core library.
 
 ### Common API Patterns
 

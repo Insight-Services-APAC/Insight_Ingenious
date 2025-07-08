@@ -151,3 +151,6 @@ test-output/
 .ruff_cache/
 
 .chainlit/
+
+#AI
+CLAUDE.md

@@ -1,7 +1,7 @@
 import asyncio
 import json
-import subprocess
 import logging
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import List
@@ -19,7 +19,7 @@ from flask import (
 )
 
 import ingenious_prompt_tuner.payload as rp1
-from ingenious.models.agent import AgentChat, Agents
+from ingenious.models.agent import Agents
 from ingenious.models.test_data import Event, Events
 from ingenious_prompt_tuner.event_processor import functional_tests
 from ingenious_prompt_tuner.response_wrapper import AgentChatWrapper
@@ -164,7 +164,7 @@ def get_agent_response():
         current_app.config["test_output_path"]
         + f"/{get_selected_revision_direct_call()}"
     )
-    
+
     try:
         agent_response_md = asyncio.run(
             utils.fs.read_file(file_name=file_name, file_path=output_path)
@@ -227,7 +227,9 @@ def get_agent_response():
                 identifier=identifier,
                 event_type=event_type,
                 agent_name=agent_chat_wrapper.target_agent_name,
-                execution_time=f"{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) // 60)}:{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) % 60):02d}" if agent_chat_wrapper.end_time and agent_chat_wrapper.start_time else "N/A",
+                execution_time=f"{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) // 60)}:{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) % 60):02d}"
+                if agent_chat_wrapper.end_time and agent_chat_wrapper.start_time
+                else "N/A",
                 start_time=datetime.fromtimestamp(
                     agent_chat_wrapper.start_time
                 ).strftime("%H:%M:%S")
@@ -247,7 +249,7 @@ def get_agent_response():
                         <p>Error: {str(e)}</p>
                         <details>
                             <summary>Raw file contents:</summary>
-                            <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{'...' if len(agent_response_md) > 1000 else ''}</pre>
+                            <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{"..." if len(agent_response_md) > 1000 else ""}</pre>
                         </details>
                     </div>
                 </div>
@@ -264,7 +266,7 @@ def get_agent_response():
                         <p>Error: {str(e)}</p>
                         <details>
                             <summary>Raw file contents:</summary>
-                            <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{'...' if len(agent_response_md) > 1000 else ''}</pre>
+                            <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{"..." if len(agent_response_md) > 1000 else ""}</pre>
                         </details>
                     </div>
                 </div>
@@ -298,7 +300,7 @@ def get_agent_inputs():
         current_app.config["test_output_path"]
         + f"/{get_selected_revision_direct_call()}"
     )
-    
+
     try:
         agent_response_md = asyncio.run(
             utils.fs.read_file(file_name=file_name, file_path=output_path)
@@ -330,8 +332,8 @@ def get_agent_inputs():
             return f"""
                 <div class="markdown-content">
                     <div class="alert alert-info" role="alert">
-                        <h6>No {input_type.replace('_', ' ').title()} Available</h6>
-                        <p>No {input_type.replace('_', ' ')} found for this agent.</p>
+                        <h6>No {input_type.replace("_", " ").title()} Available</h6>
+                        <p>No {input_type.replace("_", " ")} found for this agent.</p>
                     </div>
                 </div>
             """
@@ -363,7 +365,7 @@ def get_agent_inputs():
                     <p>Error: {str(e)}</p>
                     <details>
                         <summary>Raw file contents:</summary>
-                        <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{'...' if len(agent_response_md) > 1000 else ''}</pre>
+                        <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{"..." if len(agent_response_md) > 1000 else ""}</pre>
                     </details>
                 </div>
             </div>
@@ -381,7 +383,7 @@ def get_agent_inputs():
                     <p>Error: {str(e)}</p>
                     <details>
                         <summary>Raw file contents:</summary>
-                        <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{'...' if len(agent_response_md) > 1000 else ''}</pre>
+                        <pre style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{agent_response_md[:1000]}{"..." if len(agent_response_md) > 1000 else ""}</pre>
                     </details>
                 </div>
             </div>
@@ -459,12 +461,14 @@ def get_agent_response_from_file():
         current_app.config["test_output_path"]
         + f"/{get_selected_revision_direct_call()}"
     )
-    
+
     try:
         file_contents = asyncio.run(
             utils.fs.read_file(file_name=file_name, file_path=output_path)
         )
-        logger.info(f"Successfully read file {file_name}, content length: {len(file_contents) if file_contents else 0}")
+        logger.info(
+            f"Successfully read file {file_name}, content length: {len(file_contents) if file_contents else 0}"
+        )
     except Exception as e:
         logger.error(f"Error reading file {file_name}: {e}")
         print(f"Error reading file {file_name}: {e}")
@@ -492,9 +496,11 @@ def get_agent_response_from_file():
         # Load the agent chat data with our wrapper to handle the Response object
         logger.debug(f"Parsing JSON content for file {file_name}")
         agent_chat_data = json.loads(file_contents)
-        logger.debug(f"JSON parsed successfully, creating AgentChatWrapper")
+        logger.debug("JSON parsed successfully, creating AgentChatWrapper")
         agent_chat_wrapper = AgentChatWrapper.from_dict(agent_chat_data)
-        logger.debug(f"AgentChatWrapper created successfully for agent: {agent_chat_wrapper.target_agent_name}")
+        logger.debug(
+            f"AgentChatWrapper created successfully for agent: {agent_chat_wrapper.target_agent_name}"
+        )
 
         # Access the chat message content via our wrapper
         if agent_chat_wrapper.chat_response_wrapper:
@@ -527,10 +533,12 @@ def get_agent_response_from_file():
             identifier=identifier,
             event_type=event_type,
             agent_name=agent_chat_wrapper.target_agent_name,
-            execution_time=f"{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) // 60)}:{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) % 60):02d}" if agent_chat_wrapper.end_time and agent_chat_wrapper.start_time else "N/A",
-            start_time=datetime.fromtimestamp(
-                agent_chat_wrapper.start_time
-            ).strftime("%H:%M:%S")
+            execution_time=f"{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) // 60)}:{int((agent_chat_wrapper.end_time - agent_chat_wrapper.start_time) % 60):02d}"
+            if agent_chat_wrapper.end_time and agent_chat_wrapper.start_time
+            else "N/A",
+            start_time=datetime.fromtimestamp(agent_chat_wrapper.start_time).strftime(
+                "%H:%M:%S"
+            )
             if agent_chat_wrapper.start_time
             else "N/A",
             identifier_group=identifier_group,
@@ -546,7 +554,7 @@ def get_agent_response_from_file():
                     <p>Error: {str(e)}</p>
                     <details>
                         <summary>Raw file contents:</summary>
-                        <pre style="max-height: 300px; overflow-y: auto;">{file_contents[:1000]}{'...' if len(file_contents) > 1000 else ''}</pre>
+                        <pre style="max-height: 300px; overflow-y: auto;">{file_contents[:1000]}{"..." if len(file_contents) > 1000 else ""}</pre>
                     </details>
                 </div>
             </div>
@@ -562,7 +570,7 @@ def get_agent_response_from_file():
                     <p>Error: {str(e)}</p>
                     <details>
                         <summary>Raw file contents:</summary>
-                        <pre style="max-height: 300px; overflow-y: auto;">{file_contents[:1000]}{'...' if len(file_contents) > 1000 else ''}</pre>
+                        <pre style="max-height: 300px; overflow-y: auto;">{file_contents[:1000]}{"..." if len(file_contents) > 1000 else ""}</pre>
                     </details>
                 </div>
             </div>
@@ -614,12 +622,12 @@ def run_live_progress():
 
     return Response(stream_with_context(generate()), content_type="text/event-stream")
 
+
 @bp.route("/test_response_parsing", methods=["GET"])
 @requires_auth
 def test_response_parsing():
     """Test endpoint to verify response parsing functionality"""
-    utils: utils_class = current_app.utils
-    
+
     test_data = {
         "chat_name": "test_chat",
         "target_agent_name": "test_agent",
@@ -630,28 +638,30 @@ def test_response_parsing():
         "chat_response": {
             "chat_message": {
                 "content": "This is a test response from the agent.",
-                "source": "test_agent"
+                "source": "test_agent",
             },
             "inner_messages": [
                 {"role": "system", "content": "System message"},
                 {"role": "user", "content": "User query"},
-                {"role": "assistant", "content": "Agent response"}
-            ]
+                {"role": "assistant", "content": "Agent response"},
+            ],
         },
         "completion_tokens": 50,
         "prompt_tokens": 25,
         "start_time": datetime.now().timestamp(),
-        "end_time": (datetime.now().timestamp() + 5)
+        "end_time": (datetime.now().timestamp() + 5),
     }
-    
+
     try:
         # Test the wrapper functionality
         agent_chat_wrapper = AgentChatWrapper.from_dict(test_data)
-        
+
         if agent_chat_wrapper.chat_response_wrapper:
-            message_content = agent_chat_wrapper.chat_response_wrapper.chat_message_content
+            message_content = (
+                agent_chat_wrapper.chat_response_wrapper.chat_message_content
+            )
             inner_messages = agent_chat_wrapper.chat_response_wrapper.inner_messages
-            
+
             if inner_messages:
                 message_content += "\n\n### Inner Messages \n\n"
                 message_content += (
@@ -661,12 +671,12 @@ def test_response_parsing():
                 )
         else:
             message_content = "No message content available"
-        
+
         html_content = markdown.markdown(
             message_content,
             extensions=["extra", "md_in_html", "toc", "fenced_code", "codehilite"],
         )
-        
+
         test_response = render_template(
             "responses/agent_response.html",
             agent_response=html_content,
@@ -677,9 +687,9 @@ def test_response_parsing():
             agent_name=agent_chat_wrapper.target_agent_name,
             execution_time="0:05",
             start_time="12:00:00",
-            identifier_group="test"
+            identifier_group="test",
         )
-        
+
         return f"""
         <div class="container mt-3">
             <div class="alert alert-success" role="alert">
@@ -690,7 +700,7 @@ def test_response_parsing():
             {test_response}
         </div>
         """
-        
+
     except Exception as e:
         logger.error(f"Test response parsing failed: {e}")
         return f"""
@@ -705,7 +715,8 @@ def test_response_parsing():
             </div>
         </div>
         """
-        
+
+
 @bp.route("/test")
 @requires_auth
 def test_page():

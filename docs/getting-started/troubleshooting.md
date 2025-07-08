@@ -108,7 +108,14 @@ chmod 600 profiles.yml
 
 **❌ Error: "Search service not configured"**
 
-**Solution for `knowledge-base-agent`:**
+**Solution for `knowledge-base-agent` (Recommended - Local ChromaDB):**
+No configuration needed! The knowledge-base-agent uses local ChromaDB by default.
+
+1. Simply add documents to: `./.tmp/knowledge_base/`
+2. Documents are automatically indexed in ChromaDB
+3. Works immediately without external services
+
+**Alternative: Azure Search (Experimental - May contain bugs):**
 1. Add Azure Search to `config.yml`:
    ```yaml
    azure_search_services:
@@ -125,9 +132,7 @@ chmod 600 profiles.yml
 
 **❌ Error: "Database connection failed"**
 
-**Solution for `sql-manipulation-agent`:**
-
-*Option 1: Use Local SQLite*
+**Solution for `sql-manipulation-agent` (Recommended - Local SQLite):**
 ```yaml
 # config.yml
 azure_sql_services:
@@ -137,7 +142,7 @@ local_sql_db:
   sample_csv_path: "./data/your_data.csv"
 ```
 
-*Option 2: Use Azure SQL*
+**Alternative: Azure SQL (Experimental - May contain bugs):**
 ```yaml
 # profiles.yml
 azure_sql_services:

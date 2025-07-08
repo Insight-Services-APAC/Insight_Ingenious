@@ -208,12 +208,12 @@ os.environ['INGENIOUS_PROFILE_PATH'] = os.path.join(os.getcwd(), 'profiles.yml')
 async def setup_azure_prompts():
     from ingenious.dependencies import get_config
     from ingenious.files.files_repository import FileStorage
-    
+
     config = get_config()
     storage = FileStorage(config, "revisions")
-    
+
     source_templates = Path("templates/prompts/quickstart-1")
-    
+
     for template_file in source_templates.glob("*.jinja"):
         content = template_file.read_text()
         await storage.write_file(
@@ -222,7 +222,7 @@ async def setup_azure_prompts():
             file_path="templates/prompts/quickstart-1"
         )
         print(f"✅ Uploaded {template_file.name} to Azure Blob Storage")
-    
+
     files = await storage.list_files("templates/prompts/quickstart-1")
     print(f"✅ Verified {len(files)} files in Azure Blob Storage")
 

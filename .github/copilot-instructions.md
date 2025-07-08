@@ -12,11 +12,11 @@ This project uses uv for Python package and environment management.
 - **Remove a dependency:**
   `uv remove <package>` or `uv remove <package> --group dev` for dev dependencies
 
-- **Run tests (run after implementing changes to ensure nothing broke):**
-  `uv run pytest`
-
 - **List out packages in environment in a tree structure**
   `uv tree`
+
+- **Run tests (run after implementing changes to ensure nothing broke):**
+  `uv run pytest`
 
 ## Note
 

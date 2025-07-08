@@ -393,11 +393,11 @@ curl -X POST http://localhost:80/api/v1/chat \
   }'
 ```
 
-#### 🔍 Azure Search Required Workflows
-These require Azure Cognitive Search configuration:
+#### 🔍 Local Knowledge Base (Stable Implementation)
+These use local ChromaDB for vector search:
 
 ```bash
-# Knowledge base search (requires Azure Search service + indexes)
+# Knowledge base search using local ChromaDB (stable)
 curl -X POST http://localhost:80/api/v1/chat \
   -H "Content-Type: application/json" \
   -d '{
@@ -406,13 +406,13 @@ curl -X POST http://localhost:80/api/v1/chat \
   }'
 ```
 
-**Configuration needed**: Azure Search endpoint + API key in config files
+**Configuration needed**: None! Just add documents to `./.tmp/knowledge_base/`
 
-#### 📊 Database Required Workflows
-These require database connections:
+#### 📊 Local Database (Stable Implementation)
+These use local SQLite database:
 
 ```bash
-# SQL queries (requires Azure SQL or local SQLite)
+# SQL queries using local SQLite (stable)
 curl -X POST http://localhost:80/api/v1/chat \
   -H "Content-Type: application/json" \
   -d '{
@@ -421,7 +421,21 @@ curl -X POST http://localhost:80/api/v1/chat \
   }'
 ```
 
-**Configuration needed**: Database connection strings
+**Configuration needed**: Set `database_name: "skip"` in profiles.yml to enable SQLite mode
+
+#### 🚧 Experimental Azure Integrations (May contain bugs)
+
+**Azure Search workflows** (experimental):
+```bash
+# Requires Azure Search service configuration
+# May contain bugs - use local ChromaDB instead
+```
+
+**Azure SQL workflows** (experimental):
+```bash
+# Requires Azure SQL database connection
+# May contain bugs - use local SQLite instead
+```
 
 #### 🌐 Optional Features
 

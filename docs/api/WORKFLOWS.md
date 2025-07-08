@@ -133,11 +133,16 @@ curl -X POST http://localhost:80/api/v1/chat \
 
 **Purpose**: Search and retrieve information from configured knowledge bases
 
-**Availability**: Core library (available when Azure Search is configured)
+**Availability**: Core library (stable local ChromaDB implementation)
 
-**Requirements**:
-- Azure Search Service configured
-- Knowledge base indexed
+**Local Implementation (Stable)**:
+- Uses ChromaDB for local vector storage
+- No additional configuration required
+- Documents stored in `./.tmp/knowledge_base/`
+
+**Experimental Azure Search Implementation**:
+- Requires Azure Search Service configured
+- May contain bugs
 
 **Example Request**:
 ```bash
@@ -149,19 +154,21 @@ curl -X POST http://localhost:80/api/v1/chat \
   }'
 ```
 
+> **Recommendation**: Use the local ChromaDB implementation for stable operation.
+
 ---
 
 ### 4. sql-manipulation-agent - SQL Database Queries
 
 **Purpose**: Execute SQL queries based on natural language input, supporting both SQLite (local) and Azure SQL databases
 
-**Availability**: Core library (available when database is configured)
+**Availability**: Core library (stable local SQLite implementation)
 
 **Database Options**:
-- **SQLite**: Local development and testing (recommended for getting started)
-- **Azure SQL**: Production deployments with cloud database
+- **SQLite**: Local development and testing (stable, recommended for getting started)
+- **Azure SQL**: Production deployments with cloud database (experimental, may contain bugs)
 
-#### Quick Setup for SQLite (Recommended)
+#### Quick Setup for SQLite (Recommended - Stable)
 
 1. **Configure profiles.yml** for SQLite mode:
 ```yaml
@@ -196,7 +203,9 @@ curl -X POST http://localhost:80/api/v1/chat \
   }'
 ```
 
-#### Advanced Setup for Azure SQL
+#### Advanced Setup for Azure SQL (Experimental - May contain bugs)
+
+> **Warning**: Azure SQL integration is experimental and may contain bugs. Use SQLite for stable operation.
 
 1. **Configure profiles.yml** for Azure SQL:
 ```yaml

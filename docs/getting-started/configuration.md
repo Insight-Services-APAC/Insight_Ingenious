@@ -55,7 +55,7 @@ profile: "dev"  # Name of the profile to use from profiles.yml
 models:
   - model: "gpt-4.1-nano"
     api_type: "azure"
-    api_version: "2024-08-01-preview"
+    api_version: "2024-12-01-preview"
 
 logging:
   root_log_level: "debug"
@@ -116,7 +116,7 @@ file_storage:
   models:
     - model: "gpt-4.1-nano"
       api_key: "your-api-key"
-      base_url: "https://your-endpoint.openai.azure.com/openai/deployments/gpt-4.1-nano/chat/completions?api-version=2024-08-01-preview"
+      base_url: "https://your-endpoint.openai.azure.com/openai/deployments/gpt-4.1-nano/chat/completions?api-version=2024-12-01-preview"
 
   chat_history:
     database_connection_string: "AccountEndpoint=..."
@@ -276,7 +276,7 @@ Configures LLM models:
 models:
   - model: "gpt-4.1-nano"  # Model identifier
     api_type: "azure"  # API type (azure, openai)
-    api_version: "2024-08-01-preview"  # API version
+    api_version: "2024-12-01-preview"  # API version
 ```
 
 In `profiles.yml`:
@@ -285,7 +285,7 @@ In `profiles.yml`:
 models:
   - model: "gpt-4.1-nano"
     api_key: "your-api-key"  # OpenAI or Azure OpenAI API key
-    base_url: "https://your-endpoint.openai.azure.com/openai/deployments/gpt-4.1-nano/chat/completions?api-version=2024-08-01-preview"  # API endpoint
+    base_url: "https://your-endpoint.openai.azure.com/openai/deployments/gpt-4.1-nano/chat/completions?api-version=2024-12-01-preview"  # API endpoint
 ```
 
 ### Logging
@@ -531,11 +531,13 @@ Insight Ingenious supports several built-in conversation flows for different use
 | Workflow | Description | External Services Required | Configuration Complexity | Availability |
 |----------|-------------|----------------------------|--------------------------|--------------|
 | `classification-agent` | Routes input to specialized agents | Azure OpenAI only | ✅ Minimal | Core library |
-| `knowledge-base-agent` | Search knowledge bases | Azure OpenAI + Azure Search | 🔍 Moderate | Core library |
-| `sql-manipulation-agent` | Execute SQL queries | Azure OpenAI + Database | 📊 Moderate | Core library |
+| `knowledge-base-agent` | Search knowledge bases | Azure OpenAI only (uses local ChromaDB) | ✅ Minimal | Core library (stable local implementation) |
+| `sql-manipulation-agent` | Execute SQL queries | Azure OpenAI only (uses local SQLite) | ✅ Minimal | Core library (stable local implementation) |
 | `bike-insights` | Sample domain-specific analysis | Azure OpenAI only | ✅ Minimal | Extension template* |
 
 *Created when you run `ingen init` - part of project template, not core library.
+
+> **Note**: Only local implementations (ChromaDB for knowledge-base-agent, SQLite for sql-manipulation-agent) are currently stable. Azure Search and Azure SQL integrations are experimental and may contain bugs.
 
 ### Workflow-Specific Configuration
 
@@ -547,9 +549,10 @@ For `classification-agent` and `bike-insights` (if created via `ingen init`), yo
 # config.yml
 profile: dev
 models:
-  - model: "gpt-4.1-nano"
+  - model: ${AZURE_OPENAI_MODEL_NAME:gpt-4.1-nano}  # Environment variable substitution
     api_type: azure
-    api_version: "2024-08-01-preview"
+    api_version: ${AZURE_OPENAI_API_VERSION:2024-12-01-preview}
+    deployment: ${AZURE_OPENAI_DEPLOYMENT:gpt-4.1-nano}
 chat_service:
   type: multi_agent
 ```
@@ -565,27 +568,35 @@ chat_service:
 
 #### 🔍 Knowledge Base Workflows
 
-For `knowledge-base-agent`, add Azure Search configuration:
+For `knowledge-base-agent`, the local ChromaDB implementation is used by default and is stable:
 
+**Local ChromaDB Implementation (Recommended - Stable)**
+```yaml
+# No additional configuration needed!
+# The knowledge-base-agent uses local ChromaDB storage automatically
+# Simply add documents to: ./.tmp/knowledge_base/
+```
+
+**Experimental Azure Search (May contain bugs)**
 ```yaml
 # config.yml (additional)
 azure_search_services:
   - service: "default"
     endpoint: "https://your-search-service.search.windows.net"
-```
 
-```yaml
 # profiles.yml (additional)
 azure_search_services:
   - service: "default"
     key: "your-search-key"
 ```
 
+> **Recommendation**: Use the local ChromaDB implementation, which requires no additional configuration and is stable.
+
 #### 📊 Database Workflows (SQL Manipulation Agent)
 
 For `sql-manipulation-agent` workflow, you have two database options:
 
-**Option 1: SQLite (Recommended for Development)**
+**Local SQLite (Recommended - Stable)**
 ```yaml
 # config.yml
 local_sql_db:
@@ -597,7 +608,7 @@ azure_sql_services:
   database_name: "skip"  # This enables SQLite mode
 ```
 
-**Option 2: Azure SQL (Production)**
+**Experimental Azure SQL (May contain bugs)**
 ```yaml
 # config.yml
 azure_sql_services:
@@ -627,6 +638,8 @@ curl -X POST http://localhost:80/api/v1/chat \
     "conversation_flow": "sql-manipulation-agent"
   }'
 ```
+
+> **Recommendation**: Use the local SQLite implementation, which is simpler to set up and stable.
 
 > 📖 **For complete SQL agent setup instructions**, see the [SQL Agent Setup Guide](../guides/sql-agent-setup.md)
 

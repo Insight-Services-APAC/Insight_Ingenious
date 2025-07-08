@@ -26,7 +26,7 @@ The `ConversationPattern` class is the foundation for defining how agents intera
 | `classification-agent` | Classifies input and routes to topic-specific agents | Content classification, intent detection |
 | `knowledge-base-agent` | Searches and retrieves information from knowledge bases | Question answering, information retrieval |
 | `sql-manipulation-agent` | Generates and executes SQL queries | Database interactions, data querying |
-| `education_expert` | Generates educational content and lesson plans | Educational material creation (pattern only) |
+| `bike-insights` | Multi-agent bike sales analysis | Template workflow example |
 
 #### Key Methods
 
@@ -77,15 +77,28 @@ Agents are defined in markdown files with the following sections:
 
 These models define the structure of chat interactions:
 
-- `ChatRequest`: Represents a user request
+- `IChatRequest`: Represents a user request
   - `thread_id`: Conversation thread identifier
   - `user_prompt`: User's input message
   - `event_type`: Type of event
   - `conversation_flow`: Which conversation flow to use
+  - `user_id`: User identifier (optional)
+  - `user_name`: User display name (optional)
+  - `topic`: Conversation topic (optional)
+  - `memory_record`: Whether to record in memory (default: True)
+  - `thread_chat_history`: Previous conversation history
+  - `thread_memory`: Thread-specific memory context
 
-- `ChatResponse`: Represents an agent response
-  - `response`: The content returned to the user
-  - `metadata`: Additional information about the response
+- `IChatResponse`: Represents an agent response
+  - `thread_id`: Conversation thread identifier
+  - `message_id`: Unique message identifier
+  - `agent_response`: The content returned to the user
+  - `followup_questions`: Suggested follow-up questions
+  - `token_count`: Number of tokens used
+  - `max_token_count`: Maximum tokens available
+  - `topic`: Response topic
+  - `memory_summary`: Summary for memory storage
+  - `event_type`: Type of response event
 
 ### Configuration Models
 
@@ -112,16 +125,16 @@ These models define the structure of configuration:
 
 ### ChatService
 
-The `ChatService` interface defines the chat interaction API:
+The `IChatService` interface defines the chat interaction API:
 
-- `get_chat_response(chat_request: IChatRequest) -> IChatResponse`: Processes a chat request and returns a response
+- `get_chat_response(chat_request: ChatRequest) -> ChatResponse`: Processes a chat request and returns a response
 
-#### MultiAgentChatService
+#### ChatService
 
-Implementation of `ChatService` that uses the multi-agent framework:
+Implementation of `IChatService` that dynamically loads chat service types:
 
-- `__init__(config: Config, chat_history_repository: ChatHistoryRepository, conversation_flow: str)`: Initializes the service
-- `get_chat_response(chat_request: IChatRequest) -> IChatResponse`: Processes a chat request using the specified conversation flow
+- `__init__(chat_service_type: str, chat_history_repository: ChatHistoryRepository, conversation_flow: str, config: Config, revision: str)`: Initializes the service
+- `get_chat_response(chat_request: ChatRequest) -> ChatResponse`: Processes a chat request using the specified conversation flow
 
 ### ToolFunctions
 
@@ -165,8 +178,9 @@ The `FileStorage` class manages file operations:
 
 The `MemoryManager` class provides cloud-aware conversation memory management:
 
-- `write_memory(content: str, thread_id: str = None) -> bool`: Writes memory content
+- `__init__(config: Config, memory_path: str = None)`: Initializes the memory manager
 - `read_memory(thread_id: str = None, default_content: str = "") -> str`: Reads memory content
+- `write_memory(content: str, thread_id: str = None) -> bool`: Writes memory content
 - `maintain_memory(new_content: str, max_words: int = 150, thread_id: str = None) -> bool`: Maintains memory with word limits
 - `delete_memory(thread_id: str = None) -> bool`: Deletes memory content
 
@@ -224,9 +238,13 @@ The CLI provides commands for managing the framework:
 
 - `init`: Creates a new project structure with template files
 - `serve`: Starts the FastAPI server with REST endpoints
-- `run-test-batch`: Runs tests on agent prompts with configurable options
-- `run-prompt-tuner`: Starts the prompt tuning web application
-- `dataprep`: Data preparation utilities including Scrapfly crawler for web scraping
+- `test`: Runs tests on agent prompts with configurable options
+- `prompt-tuner`: Starts the prompt tuning web application
+- `workflows`: Shows available workflows and their requirements
+- `status`: Check system status and configuration
+- `validate`: Validate system configuration and requirements
+- `version`: Show version information
+- `help`: Show detailed help and getting started guide
 
 ## API Layer
 

@@ -91,9 +91,11 @@ Insight Ingenious provides multiple conversation workflows with different config
 ### **Core Workflows (Azure OpenAI only)**
 - `classification-agent` - Route input to specialized agents based on content
 
-### **EXPERIMENTAL/MAY CONTAIN BUGS: Other Core Workflows (Require Additional Services)**
-- `knowledge-base-agent` - Search knowledge bases (requires Azure Search Service)
-- `sql-manipulation-agent` - Execute SQL queries (requires database connection)
+### **Local Stable Implementations**
+- `knowledge-base-agent` - Search knowledge bases using local ChromaDB (stable local implementation)
+- `sql-manipulation-agent` - Execute SQL queries using local SQLite (stable local implementation)
+
+> **Note**: Only local implementations (ChromaDB for knowledge-base-agent, SQLite for sql-manipulation-agent) are currently stable. Azure Search and Azure SQL integrations are experimental and may contain bugs.
 
 ## Azure SQL Database Setup (Optional)
 

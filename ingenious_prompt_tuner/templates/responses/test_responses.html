@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Test API Responses{% endblock %}
 {% block head %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-<style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          rel="stylesheet">
+    <style>
     .test-card {
         margin: 1rem 0;
         border: 1px solid #dee2e6;
@@ -24,71 +25,83 @@
         background-color: #f8d7da;
         border: 1px solid #f5c2c7;
     }
-</style>
+    </style>
 {% endblock %}
-
 {% block content %}
-<div class="container-fluid mt-3">
-    <div class="row">
-        <div class="col-12">
-            <h2><i class="fas fa-vial"></i> API Response Testing</h2>
-            <p class="text-muted">Test the response parsing and display functionality of the ingenious prompt tuner.</p>
-
-            <div class="test-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-check-circle text-success"></i> Response Parser Test</h5>
-                </div>
-                <div class="card-body">
-                    <p>Test the AgentChatWrapper and response parsing functionality with sample data.</p>
-                    <button class="btn btn-primary" onclick="runResponseParserTest()">
-                        <i class="fas fa-play"></i> Run Response Parser Test
-                    </button>
-                    <div id="response-parser-result" class="test-result" style="display: none;"></div>
-                </div>
-            </div>
-
-            <div class="test-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-file-alt"></i> File Reading Test</h5>
-                </div>
-                <div class="card-body">
-                    <p>Test the file reading functionality for agent responses.</p>
-                    <div class="form-group mb-3">
-                        <label for="test-identifier">Test Identifier:</label>
-                        <input type="text" class="form-control" id="test-identifier" value="test_001">
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-12">
+                <h2>
+                    <i class="fas fa-vial"></i> API Response Testing
+                </h2>
+                <p class="text-muted">Test the response parsing and display functionality of the ingenious prompt tuner.</p>
+                <div class="test-card">
+                    <div class="card-header">
+                        <h5>
+                            <i class="fas fa-check-circle text-success"></i> Response Parser Test
+                        </h5>
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="test-event-type">Event Type:</label>
-                        <input type="text" class="form-control" id="test-event-type" value="bike_insights">
+                    <div class="card-body">
+                        <p>Test the AgentChatWrapper and response parsing functionality with sample data.</p>
+                        <button class="btn btn-primary" onclick="runResponseParserTest()">
+                            <i class="fas fa-play"></i> Run Response Parser Test
+                        </button>
+                        <div id="response-parser-result" class="test-result" style="display: none"></div>
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="test-agent-name">Agent Name:</label>
-                        <input type="text" class="form-control" id="test-agent-name" value="BikeInsightsAgent">
+                </div>
+                <div class="test-card">
+                    <div class="card-header">
+                        <h5>
+                            <i class="fas fa-file-alt"></i> File Reading Test
+                        </h5>
                     </div>
-                    <button class="btn btn-primary" onclick="runFileReadingTest()">
-                        <i class="fas fa-folder-open"></i> Test File Reading
-                    </button>
-                    <div id="file-reading-result" class="test-result" style="display: none;"></div>
+                    <div class="card-body">
+                        <p>Test the file reading functionality for agent responses.</p>
+                        <div class="form-group mb-3">
+                            <label for="test-identifier">Test Identifier:</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="test-identifier"
+                                   value="test_001">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="test-event-type">Event Type:</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="test-event-type"
+                                   value="bike_insights">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="test-agent-name">Agent Name:</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="test-agent-name"
+                                   value="BikeInsightsAgent">
+                        </div>
+                        <button class="btn btn-primary" onclick="runFileReadingTest()">
+                            <i class="fas fa-folder-open"></i> Test File Reading
+                        </button>
+                        <div id="file-reading-result" class="test-result" style="display: none;"></div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="test-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-list"></i> Available Test Files</h5>
-                </div>
-                <div class="card-body">
-                    <p>List all available test data files for the current revision.</p>
-                    <button class="btn btn-info" onclick="listTestFiles()">
-                        <i class="fas fa-list"></i> List Test Files
-                    </button>
-                    <div id="test-files-result" class="test-result" style="display: none;"></div>
+                <div class="test-card">
+                    <div class="card-header">
+                        <h5>
+                            <i class="fas fa-list"></i> Available Test Files
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>List all available test data files for the current revision.</p>
+                        <button class="btn btn-info" onclick="listTestFiles()">
+                            <i class="fas fa-list"></i> List Test Files
+                        </button>
+                        <div id="test-files-result" class="test-result" style="display: none;"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
+    <script>
     function runResponseParserTest() {
         const resultDiv = document.getElementById('response-parser-result');
         resultDiv.style.display = 'block';
@@ -204,5 +217,5 @@
                 resultDiv.className = 'test-result error';
             });
     }
-</script>
+    </script>
 {% endblock %}

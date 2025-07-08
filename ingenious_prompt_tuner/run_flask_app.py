@@ -67,16 +67,17 @@ pcw = ProgressConsoleWrapper(progress=progress, log_level="INFO")
 utils = utils_class(config=ig_deps.config)
 
 # Configure app with utils and other required components
-app.config['utils'] = utils
-app.config['test_output_path'] = functional_test_dir
-app.config['agents'] = ig_deps.config.agents
-app.config['response_agent_name'] = 'summary'  # Default response agent
+app.config["utils"] = utils
+app.config["test_output_path"] = functional_test_dir
+app.config["agents"] = ig_deps.config.agents
+app.config["response_agent_name"] = "summary"  # Default response agent
 
 # Register the responses blueprint for full functionality
 app.register_blueprint(responses_bp)
 
 # Make utils available to templates
 app.utils = utils
+
 
 # Add a context processor to make utils available in templates
 @app.context_processor
@@ -455,6 +456,7 @@ def download_responses():
 def run_simple_tests():
     try:
         import subprocess
+
         result = subprocess.run(
             ["ingen", "run-test-batch"], capture_output=True, text=True, check=False
         )

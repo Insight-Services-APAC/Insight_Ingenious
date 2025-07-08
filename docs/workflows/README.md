@@ -17,34 +17,43 @@ This guide outlines the configuration requirements for each conversation workflo
 
 ```mermaid
 graph TB
-    subgraph "Workflow Types"
+    subgraph "Core Library Workflows"
         CLASSIFICATION[Classification Agent<br/>Route to specialists]
         KNOWLEDGE[Knowledge Base Agent<br/>Information retrieval]
         SQL[SQL Manipulation Agent<br/>Database queries]
-        EDUCATION[Education Expert<br/>Educational content]
+    end
+
+    subgraph "Template Workflows"
+        BIKE_INSIGHTS[Bike Insights<br/>Multi-agent analysis]
     end
 
     subgraph "Configuration Levels"
         MINIMAL[Minimal Config<br/>Azure OpenAI only]
-        SEARCH[+ Azure Search]
-        DATABASE[+ Database]
+        LOCAL_IMPL[Local Implementations<br/>ChromaDB + SQLite]
+        AZURE_EXPERIMENTAL[Azure Services<br/>Experimental/Unstable]
     end
 
     subgraph "External Dependencies"
         AZURE_OPENAI[Azure OpenAI]
-        AZURE_SEARCH[Azure Cognitive Search]
-        AZURE_SQL[Azure SQL Database]
+        CHROMADB[ChromaDB<br/>Local Vector DB]
+        SQLITE[SQLite<br/>Local Database]
+        AZURE_SEARCH[Azure Cognitive Search<br/>Experimental]
+        AZURE_SQL[Azure SQL Database<br/>Experimental]
     end
 
     CLASSIFICATION --> MINIMAL
-    EDUCATION --> MINIMAL
+    BIKE_INSIGHTS --> MINIMAL
 
-    KNOWLEDGE --> SEARCH
-
-    SQL --> DATABASE
+    KNOWLEDGE --> LOCAL_IMPL
+    SQL --> LOCAL_IMPL
 
     MINIMAL --> AZURE_OPENAI
-    SEARCH --> AZURE_OPENAI
+    LOCAL_IMPL --> AZURE_OPENAI
+    LOCAL_IMPL --> CHROMADB
+    LOCAL_IMPL --> SQLITE
+
+    AZURE_EXPERIMENTAL --> AZURE_SEARCH
+    AZURE_EXPERIMENTAL --> AZURE_SQL
     SEARCH --> AZURE_SEARCH
     DATABASE --> AZURE_OPENAI
     DATABASE --> AZURE_SQL
@@ -53,10 +62,24 @@ graph TB
     classDef config fill:#f1f8e9
     classDef external fill:#fff3e0
 
-    class CLASSIFICATION,EDUCATION,KNOWLEDGE,SQL workflow
+    class CLASSIFICATION,KNOWLEDGE,SQL,BIKE_INSIGHTS workflow
     class MINIMAL,SEARCH,DATABASE config
     class AZURE_OPENAI,AZURE_SEARCH,AZURE_SQL external
 ```
+
+## Core vs Template Workflows
+
+### Core Library Workflows
+These workflows are built into the Insight Ingenious core library and are always available:
+- **classification-agent** - Routes user queries to appropriate specialized agents
+- **knowledge-base-agent** - Searches and retrieves information from knowledge bases
+- **sql-manipulation-agent** - Executes SQL queries based on natural language
+
+### Template Workflows
+These workflows are provided as examples in the `ingenious_extensions_template` when you run `ingen init`:
+- **bike-insights** - Multi-agent bike sales analysis (the "Hello World" example)
+
+**Important**: Template workflows like `bike-insights` are only available in projects created with `ingen init`, not in the core library.
 
 ## Detailed Workflow Flows
 
@@ -420,7 +443,7 @@ flowchart TD
     START([🤔 What do you want to do?]) --> DECISION{Choose your use case}
 
     DECISION -->|Route user queries<br/>to different specialists| CLASSIFICATION[🔍 Classification Agent]
-    DECISION -->|Analyze business data<br/>with multiple perspectives| BIKE_INSIGHTS[🚴 Bike Insights]
+    DECISION -->|Analyze business data<br/>with multiple perspectives| BIKE_INSIGHTS[🚴 Bike Insights<br/>(Template only)]
     DECISION -->|Search through<br/>documents and knowledge| KNOWLEDGE[📚 Knowledge Base Agent]
     DECISION -->|Query databases<br/>with natural language| SQL[🗄️ SQL Manipulation]
 

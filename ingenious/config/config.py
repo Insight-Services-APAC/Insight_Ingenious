@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import re
 from pathlib import Path
 
 import yaml
@@ -21,10 +20,34 @@ def substitute_environment_variables(yaml_content: str) -> str:
     """
     Substitute environment variables in YAML content.
     Supports patterns like ${VAR_NAME} and ${VAR_NAME:default_value}
+    Handles nested substitutions by doing multiple passes.
     """
 
-    def replacer(match):
-        var_expr = match.group(1)
+    def find_variable_expressions(content):
+        """Find all ${...} expressions, handling nested braces correctly."""
+        expressions = []
+        i = 0
+        while i < len(content):
+            if content[i : i + 2] == "${":
+                # Found start of expression
+                start = i
+                i += 2
+                brace_count = 1
+                while i < len(content) and brace_count > 0:
+                    if content[i] == "{":
+                        brace_count += 1
+                    elif content[i] == "}":
+                        brace_count -= 1
+                    i += 1
+                if brace_count == 0:
+                    # Found complete expression
+                    expressions.append((start, i, content[start + 2 : i - 1]))
+            else:
+                i += 1
+        return expressions
+
+    def replace_expression(content, var_expr):
+        """Replace a single variable expression."""
         if ":" in var_expr:
             var_name, default_value = var_expr.split(":", 1)
             env_value = os.getenv(var_name)
@@ -51,12 +74,27 @@ def substitute_environment_variables(yaml_content: str) -> str:
                     f"Critical: Environment variable {var_name} not found and no default provided. "
                     f"Please set {var_name} in your .env file or provide a default value in config."
                 )
-                return match.group(0)  # Return original if no env var found
+                return f"${{{var_expr}}}"  # Return original if no env var found
             return env_value
 
-    # Pattern matches ${VAR_NAME} or ${VAR_NAME:default}
-    pattern = r"\$\{([^}]+)\}"
-    return re.sub(pattern, replacer, yaml_content)
+    # Keep substituting until no more changes occur (handles nested substitutions)
+    max_iterations = 10  # Prevent infinite loops
+    for _ in range(max_iterations):
+        expressions = find_variable_expressions(yaml_content)
+        if not expressions:
+            break  # No more expressions to substitute
+
+        # Replace expressions from right to left to avoid index issues
+        new_content = yaml_content
+        for start, end, var_expr in reversed(expressions):
+            replacement = replace_expression(new_content, var_expr)
+            new_content = new_content[:start] + replacement + new_content[end:]
+
+        if new_content == yaml_content:
+            break  # No more changes
+        yaml_content = new_content
+
+    return yaml_content
 
 
 class Config(config_models.Config):

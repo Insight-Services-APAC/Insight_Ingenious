@@ -68,10 +68,10 @@ curl -X POST http://localhost:80/api/v1/chat \
   }'
 ```
 
-### 🔍 Azure Search Required Workflows
+### 🔍 Local Knowledge Base (Stable Implementation)
 
 #### Knowledge Base Agent
-Search and retrieve information from Azure Cognitive Search indexes:
+Search and retrieve information using local ChromaDB storage:
 
 ```bash
 curl -X POST http://localhost:80/api/v1/chat \
@@ -83,14 +83,13 @@ curl -X POST http://localhost:80/api/v1/chat \
 ```
 
 **Requirements:**
-- Azure Cognitive Search service
-- Pre-configured search indexes
-- Search API key in profiles.yml
+- None! Uses local ChromaDB automatically
+- Simply add documents to `./.tmp/knowledge_base/`
 
-### 📊 Database Required Workflows
+### 📊 Local Database (Stable Implementation)
 
 #### SQL Manipulation Agent
-Execute SQL queries based on natural language:
+Execute SQL queries using local SQLite database:
 
 ```bash
 curl -X POST http://localhost:80/api/v1/chat \
@@ -102,8 +101,18 @@ curl -X POST http://localhost:80/api/v1/chat \
 ```
 
 **Requirements:**
-- Azure SQL Database OR local SQLite database
-- Database connection string in profiles.yml
+- Set `database_name: "skip"` in profiles.yml for SQLite mode
+- Local SQLite database automatically created
+
+### 🚧 Experimental Azure Integrations (May contain bugs)
+
+#### Azure Search (Experimental)
+- Requires Azure Cognitive Search service
+- May contain bugs - use local ChromaDB instead
+
+#### Azure SQL (Experimental)
+- Requires Azure SQL Database
+- May contain bugs - use local SQLite instead
 
 ## 🔧 Configuration Management
 
