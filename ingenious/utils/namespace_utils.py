@@ -211,3 +211,118 @@ def get_namespaces():
     ]
 
     return namespaces
+
+
+def discover_workflows():
+    """
+    Dynamically discover all available workflows from all namespaces.
+    This function searches through core Ingenious and extension namespaces
+    to find available workflow modules.
+
+    Returns:
+        list: A list of workflow names (normalized with underscores)
+    """
+    workflows = set()
+
+    # Get all possible namespaces to search
+    namespaces = get_namespaces()
+
+    for namespace in namespaces:
+        try:
+            # Try to import the conversation flows package
+            flows_module_name = f"{namespace}.services.chat_services.multi_agent.conversation_flows"
+            print(f"DEBUG: Searching for workflows in {flows_module_name}")
+
+            try:
+                flows_package = importlib.import_module(flows_module_name)
+                if hasattr(flows_package, "__path__"):
+                    # Iterate through all modules in the conversation_flows package
+                    for module_info in pkgutil.iter_modules(flows_package.__path__):
+                        workflow_name = module_info.name
+                        print(f"DEBUG: Found potential workflow: {workflow_name}")
+
+                        # Try to import the workflow module to verify it has ConversationFlow class
+                        try:
+                            workflow_module_name = f"{flows_module_name}.{workflow_name}.{workflow_name}"
+                            workflow_module = importlib.import_module(workflow_module_name)
+
+                            # Check if it has a ConversationFlow class
+                            if hasattr(workflow_module, "ConversationFlow"):
+                                workflows.add(workflow_name)
+                                print(f"DEBUG: Confirmed workflow: {workflow_name}")
+
+                        except (ImportError, AttributeError) as e:
+                            print(f"DEBUG: Skipping {workflow_name} - not a valid workflow: {e}")
+                            continue
+
+            except ImportError as e:
+                print(f"DEBUG: No conversation flows found in {namespace}: {e}")
+                continue
+
+        except Exception as e:
+            print(f"DEBUG: Error searching namespace {namespace}: {e}")
+            continue
+
+    # Convert to sorted list
+    return sorted(list(workflows))
+
+
+def get_workflow_metadata(workflow_name):
+    """
+    Get metadata for a specific workflow.
+
+    Args:
+        workflow_name (str): The workflow name
+
+    Returns:
+        dict: Workflow metadata including description, category, etc.
+    """
+    # Default metadata structure
+    default_metadata = {
+        "description": "Custom workflow",
+        "category": "Custom Workflow",
+        "required_config": ["models", "chat_service"],
+        "optional_config": [],
+        "external_services": ["Azure OpenAI"],
+    }
+
+    # Define known workflow metadata
+    known_workflows = {
+        "classification_agent": {
+            "description": "Route input to specialized agents based on content",
+            "category": "Minimal Configuration",
+            "required_config": ["models", "chat_service"],
+            "optional_config": [],
+            "external_services": ["Azure OpenAI"],
+        },
+        "bike_insights": {
+            "description": "Sample domain-specific workflow for bike sales analysis",
+            "category": "Minimal Configuration",
+            "required_config": ["models", "chat_service"],
+            "optional_config": [],
+            "external_services": ["Azure OpenAI"],
+        },
+        "knowledge_base_agent": {
+            "description": "Search and retrieve information from knowledge bases",
+            "category": "Azure Search Required",
+            "required_config": ["models", "chat_service", "azure_search_services"],
+            "optional_config": [],
+            "external_services": ["Azure OpenAI", "Azure Cognitive Search"],
+        },
+        "sql_manipulation_agent": {
+            "description": "Execute SQL queries based on natural language",
+            "category": "Database Required",
+            "required_config": ["models", "chat_service"],
+            "optional_config": ["azure_sql_services", "local_sql_db"],
+            "external_services": ["Azure OpenAI", "Database (Azure SQL or SQLite)"],
+        },
+        "submission_over_criteria": {
+            "description": "Evaluate submissions against specified criteria using multi-agent analysis",
+            "category": "Custom Workflow",
+            "required_config": ["models", "chat_service"],
+            "optional_config": ["azure_blob_storage"],
+            "external_services": ["Azure OpenAI", "Azure Blob Storage (for templates)"],
+        },
+    }
+
+    return known_workflows.get(workflow_name, default_metadata)

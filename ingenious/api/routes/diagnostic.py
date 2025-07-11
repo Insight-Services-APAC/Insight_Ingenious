@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 
 import ingenious.dependencies as igen_deps
 from ingenious.models.http_error import HTTPError
-from ingenious.utils.namespace_utils import normalize_workflow_name
+from ingenious.utils.namespace_utils import normalize_workflow_name, discover_workflows, get_workflow_metadata
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -39,46 +39,18 @@ async def workflow_status(
         # Normalize workflow name to handle both hyphenated and underscored formats
         normalized_workflow_name = normalize_workflow_name(workflow_name)
 
-        # Define workflow requirements
-        workflow_requirements = {
-            "classification_agent": {
-                "description": "Route input to specialized agents based on content",
-                "category": "Minimal Configuration",
-                "required_config": ["models", "chat_service"],
-                "optional_config": [],
-                "external_services": ["Azure OpenAI"],
-            },
-            "bike_insights": {
-                "description": "Sample domain-specific workflow for bike sales analysis",
-                "category": "Minimal Configuration",
-                "required_config": ["models", "chat_service"],
-                "optional_config": [],
-                "external_services": ["Azure OpenAI"],
-            },
-            "knowledge_base_agent": {
-                "description": "Search and retrieve information from knowledge bases",
-                "category": "Azure Search Required",
-                "required_config": ["models", "chat_service", "azure_search_services"],
-                "optional_config": [],
-                "external_services": ["Azure OpenAI", "Azure Cognitive Search"],
-            },
-            "sql_manipulation_agent": {
-                "description": "Execute SQL queries based on natural language",
-                "category": "Database Required",
-                "required_config": ["models", "chat_service"],
-                "optional_config": ["azure_sql_services", "local_sql_db"],
-                "external_services": ["Azure OpenAI", "Database (Azure SQL or SQLite)"],
-            },
-        }
-
+        # Discover available workflows dynamically
+        available_workflows = discover_workflows()
+        
         # Check against normalized name
-        if normalized_workflow_name not in workflow_requirements:
+        if normalized_workflow_name not in available_workflows:
             raise HTTPException(
                 status_code=404,
-                detail=f"Unknown workflow: {workflow_name} (normalized: {normalized_workflow_name}). Available: {list(workflow_requirements.keys())}",
+                detail=f"Unknown workflow: {workflow_name} (normalized: {normalized_workflow_name}). Available: {available_workflows}",
             )
 
-        requirements = workflow_requirements[normalized_workflow_name]
+        # Get workflow metadata
+        requirements = get_workflow_metadata(normalized_workflow_name)
         missing_config = []
         configured = True
 
@@ -183,18 +155,14 @@ async def list_workflows(
     """
     List all available workflows and their configuration status.
     Supports both hyphenated (bike-insights) and underscored (bike_insights) naming formats.
+    Dynamically discovers workflows from all namespaces.
     """
     try:
-        # Base workflows (using underscored format as canonical)
-        base_workflows = [
-            "classification_agent",
-            "bike_insights",
-            "knowledge_base_agent",
-            "sql_manipulation_agent",
-        ]
-
+        # Dynamically discover all available workflows
+        discovered_workflows = discover_workflows()
+        
         workflow_statuses = []
-        for workflow in base_workflows:
+        for workflow in discovered_workflows:
             # Get status for each workflow
             status = await workflow_status(workflow, request, auth_user)
 
@@ -220,7 +188,7 @@ async def list_workflows(
             "workflows": workflow_statuses,
             "by_category": by_category,
             "summary": {
-                "total": len(base_workflows),
+                "total": len(discovered_workflows),
                 "configured": len([w for w in workflow_statuses if w["configured"]]),
                 "unconfigured": len(
                     [w for w in workflow_statuses if not w["configured"]]
