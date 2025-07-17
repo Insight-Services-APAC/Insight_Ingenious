@@ -40,10 +40,17 @@ Once you ran `uv run ingen init` successfully, you need to deal with two configu
 1. Edit `config.yml` in your project directory (**_Note: you may need to coordinate with your team lead with this so that you may be provided the necessary credentials._**)
 2. Create or edit `profiles.yml` in `path/to/your/project`
 3. Set environment variables. Replace `path/to/your/project` below with an actual file path, then run this in your terminal application:
+   #### For Linux-based Environments
    ```bash
    export INGENIOUS_PROJECT_PATH=/path/to/your/project/config.yml
    export INGENIOUS_PROFILE_PATH=/path/to/your/project/profiles.yml
    ```
+
+   #### For Windows-based Environments
+    ```powershell
+    $env:INGENIOUS_PROJECT_PATH = "{your_project_folder}/config.yml"
+    $env:INGENIOUS_PROFILE_PATH = "{profile_folder_location}/profiles.yml"
+    ```
 
 ## Testing out the CLI
 

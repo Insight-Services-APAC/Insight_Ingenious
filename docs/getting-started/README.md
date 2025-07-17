@@ -34,10 +34,24 @@ Get up and running in 5 minutes with Azure OpenAI!
     nano .env  # Add AZURE_OPENAI_API_KEY and AZURE_OPENAI_BASE_URL
     ```
 
+    #### For Windows-based Environments
+    ```powershell
+    # Edit .env with your Azure OpenAI credentials
+    copy .env.example .env
+    notepad .env  # Add AZURE_OPENAI_API_KEY and AZURE_OPENAI_BASE_URL
+    ```
+
 3. **Validate Setup** (Recommended):
     ```bash
     export INGENIOUS_PROJECT_PATH=$(pwd)/config.yml
     export INGENIOUS_PROFILE_PATH=$(pwd)/profiles.yml
+    uv run ingen validate  # Check configuration before starting
+    ```
+
+    #### For Windows-based Environments
+    ```powershell
+    $env:INGENIOUS_PROJECT_PATH = "{your_project_folder}/config.yml"
+    $env:INGENIOUS_PROFILE_PATH = "{profile_folder_location}/profiles.yml"                        
     uv run ingen validate  # Check configuration before starting
     ```
 
