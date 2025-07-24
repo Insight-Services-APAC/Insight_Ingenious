@@ -80,6 +80,28 @@ dev = [
 # Minimal installation - basic API functionality only
 minimal = []
 
+dev = [
+  "httpx==0.28.1",
+  "jsonpickle==4.1.1",
+  "mypy==1.16.1",
+  "pip-audit==2.9.0",
+  "pre-commit==4.2.0",
+  "pytest==8.3.5",
+  "pytest-asyncio==0.26.0",
+  "pytest-cov==6.1.1",
+  "pytest-mock==3.14.0",
+  "pytest-timeout==2.4.0",
+  "ruff==0.11.10",
+  "twine==6.0.0",
+  "types-markdown==3.8.0.20250708",
+  "types-psutil==7.0.0.20250601",
+  "types-pyyaml==6.0.12.20250516",
+  "types-requests==2.32.4.20250611",
+  "vulture==2.14",
+  "reportlab==4.4.2",
+  "hypothesis==6.136.2"
+]
+
 # Core features - common production functionality
 core = [
   "aiosqlite==0.21.0",
@@ -123,6 +145,15 @@ document-processing = [
 
 # Advanced document processing
 document-advanced = ["pdfminer.six==20250506", "unstructured[all-docs]==0.17.2"]
+
+chunk = [
+  "jsonlines==3.1.0",
+  "langchain-experimental==0.3.4",
+  "langchain-openai==0.3.0",
+  "langchain-text-splitters==0.3.0",
+  "regex==2024.11.6",
+  "xxhash==3.5.0"
+]
 
 # ML and embeddings
 ml = ["chromadb==1.0.11", "sentence-transformers==5.0.0"]

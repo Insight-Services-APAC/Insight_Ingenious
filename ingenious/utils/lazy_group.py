@@ -26,6 +26,11 @@ class LazyGroup(TyperGroup):
             "dataprep",
             "dataprep",
         ),
+        "chunk": (
+            "ingenious.chunk.cli",
+            "cli",
+            "chunk",
+        ),
     }
 
     def list_commands(self, ctx: Context) -> List[str]:
